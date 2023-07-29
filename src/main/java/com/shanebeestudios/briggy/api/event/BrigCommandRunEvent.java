@@ -6,22 +6,17 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class BrigCommandRunEvent extends Event {
+public class BrigCommandRunEvent extends BrigCommandEvent {
 
     private final static HandlerList handlers = new HandlerList();
 
-    private final BrigCommand brigCommand;
     private final CommandSender sender;
     private final Object[] args;
 
     public BrigCommandRunEvent(BrigCommand brigCommand, CommandSender sender, Object[] args) {
-        this.brigCommand = brigCommand;
+        super(brigCommand);
         this.sender = sender;
         this.args = args;
-    }
-
-    public BrigCommand getBrigCommand() {
-        return brigCommand;
     }
 
     public CommandSender getSender() {

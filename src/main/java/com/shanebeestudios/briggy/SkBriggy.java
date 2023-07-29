@@ -2,29 +2,40 @@ package com.shanebeestudios.briggy;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIConfig;
+import com.shanebeestudios.briggy.api.util.Utils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 
 public class SkBriggy extends JavaPlugin {
 
-    @Override
-    public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(true));
-    }
+//    @Override
+//    public void onLoad() {
+//        CommandAPI.onLoad(new CommandAPIBukkitConfig(this).verboseOutput(true));
+//    }
+    // temporarily removing shading (using plugin instead for testing)
 
     @Override
     public void onEnable() {
-        CommandAPI.onEnable(this);
+        Utils.log("Starting up SkBriggy!!!");
 
-        SkriptAddon skriptAddon = Skript.registerAddon(this);
-        try {
-            skriptAddon.loadClasses("com.shanebeestudios.briggy.skript", "elements");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (Skript.isAcceptRegistrations()) {
+            Utils.log("Skript IS accepting registrations!!!");
+            SkriptAddon skriptAddon = Skript.registerAddon(this);
+            try {
+                skriptAddon.loadClasses("com.shanebeestudios.briggy.skript");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            Utils.log("&cSkript isn't accepting registrations?!?!?");
         }
+        //CommandAPI.onEnable();
+    }
+
+    @Override
+    public void onDisable() {
+        //CommandAPI.onDisable();
     }
 
 }

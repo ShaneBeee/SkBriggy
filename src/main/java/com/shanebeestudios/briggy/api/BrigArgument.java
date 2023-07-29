@@ -5,12 +5,26 @@ import dev.jorel.commandapi.arguments.BiomeArgument;
 import dev.jorel.commandapi.arguments.BlockStateArgument;
 import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.DoubleArgument;
+import dev.jorel.commandapi.arguments.EnchantmentArgument;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.arguments.FloatArgument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
+import dev.jorel.commandapi.arguments.IntegerRangeArgument;
 import dev.jorel.commandapi.arguments.ItemStackArgument;
+import dev.jorel.commandapi.arguments.Location2DArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
+import dev.jorel.commandapi.arguments.LootTableArgument;
+import dev.jorel.commandapi.arguments.NamespacedKeyArgument;
+import dev.jorel.commandapi.arguments.ObjectiveArgument;
+import dev.jorel.commandapi.arguments.OfflinePlayerArgument;
+import dev.jorel.commandapi.arguments.ParticleArgument;
+import dev.jorel.commandapi.arguments.PotionEffectArgument;
+import dev.jorel.commandapi.arguments.RecipeArgument;
+import dev.jorel.commandapi.arguments.SoundArgument;
+import dev.jorel.commandapi.arguments.TeamArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
+import dev.jorel.commandapi.arguments.TimeArgument;
+import dev.jorel.commandapi.arguments.WorldArgument;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -18,18 +32,41 @@ import java.util.List;
 
 public enum BrigArgument {
 
+    // Numbers
     INT("int[eger]", IntegerArgument.class),
+    INT_RANGE("int[eger] range", IntegerRangeArgument.class), // TODO ClassInfo for this
     FLOAT("float", FloatArgument.class),
     DOUBLE("double", DoubleArgument.class),
-    BOOLEAN("boolean", BooleanArgument.class),
-    LOCATION("location", LocationArgument.class),
-    BLOCK("block[[ ]state]", BlockStateArgument.class),
-    ITEM("item[stack]", ItemStackArgument.class),
+
+    // Minecraft
     BIOME("biome", BiomeArgument.class),
+    BLOCK("block[[ ]state]", BlockStateArgument.class),
+    ENCHANT("enchant[ment]", EnchantmentArgument.class),
+    ITEM("item[stack]", ItemStackArgument.class),
+    LOOT("loot[ ]table", LootTableArgument.class),
+    OBJECTIVE("objective", ObjectiveArgument.class),
+    PARTICLE("particle", ParticleArgument.class),
+    POTION("potion effect[ type]", PotionEffectArgument.class),
+    RECIPE("recipe", RecipeArgument.class),
+    SOUND("sound", SoundArgument.class),
+    TEAM("team", TeamArgument.class),
+    TIME("time", TimeArgument.class),
+    WORLD("world", WorldArgument.class),
+
+    // Entity
     ENTITY("[single ]entity", EntitySelectorArgument.OneEntity.class),
-    ENTITY_M("multiple entity", EntitySelectorArgument.ManyEntities.class),
+    ENTITY_M("multiple entit(y|ies)", EntitySelectorArgument.ManyEntities.class),
     PLAYER("[single ]player", EntitySelectorArgument.OnePlayer.class),
-    PLAYER_M("multiple player", EntitySelectorArgument.ManyPlayers.class),
+    PLAYER_M("multiple player[s]", EntitySelectorArgument.ManyPlayers.class),
+    OFFLINE_PLAYER("offline player", OfflinePlayerArgument.class),
+
+    // Bukkit
+    LOCATION("location", LocationArgument.class),
+    LOCATION2D("location 2d", Location2DArgument.class),
+    NAMESPACEDKEY("namespaced key", NamespacedKeyArgument.class),
+
+    // Other
+    BOOLEAN("boolean", BooleanArgument.class),
     TEXT("text", TextArgument.class);
 
     private final String name;

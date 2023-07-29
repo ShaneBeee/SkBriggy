@@ -30,18 +30,19 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.2-R0.1-SNAPSHOT</version>
+            <version>1.19.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>dev.jorel</groupId>
-            <artifactId>commandapi-shade</artifactId>
-            <version>8.7.0</version>
+            <artifactId>commandapi-bukkit-core</artifactId>
+            <version>9.0.3</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.SkriptLang</groupId>
             <artifactId>Skript</artifactId>
-            <version>2.7</version>
+            <version>2.7.0-beta3</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -87,7 +88,7 @@
                         <version>3.2.0</version>
                         <configuration>
                             <!-- Put here wherever you would like the plugin to build -->
-                            <outputDirectory>/Users/ShaneBee/Desktop/Server/Skript/1-19/plugins</outputDirectory>
+                            <outputDirectory>/Users/ShaneBee/Desktop/Server/Skript/2.7/plugins</outputDirectory>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -136,13 +137,15 @@
                             </excludes>
                         </filter>
                     </filters>
+                    <!--
                     <relocations>
                         <relocation>
                             <pattern>dev.jorel.commandapi</pattern>
-                            <!-- TODO: Change this to my own package name -->
+
                             <shadedPattern>com.shanebeestudios.briggy.api</shadedPattern>
                         </relocation>
                     </relocations>
+                    -->
                 </configuration>
             </plugin>
             <plugin>

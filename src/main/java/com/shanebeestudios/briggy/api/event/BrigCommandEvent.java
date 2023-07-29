@@ -5,13 +5,18 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class BrigCommandCreateEvent extends BrigCommandEvent {
+public abstract class BrigCommandEvent extends Event {
 
     private final static HandlerList handlers = new HandlerList();
 
+    private final BrigCommand brigCommand;
 
-    public BrigCommandCreateEvent(BrigCommand brigCommand) {
-        super(brigCommand);
+    public BrigCommandEvent(BrigCommand brigCommand) {
+        this.brigCommand = brigCommand;
+    }
+
+    public BrigCommand getBrigCommand() {
+        return brigCommand;
     }
 
     @Override

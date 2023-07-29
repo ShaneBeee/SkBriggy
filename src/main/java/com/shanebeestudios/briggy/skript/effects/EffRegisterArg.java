@@ -1,4 +1,4 @@
-package com.shanebeestudios.briggy.skript.elements.effects;
+package com.shanebeestudios.briggy.skript.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Name;
@@ -6,11 +6,8 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.skript.lang.Variable;
-import ch.njol.skript.lang.VariableString;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.skript.registrations.Classes;
-import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
@@ -24,34 +21,24 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Name("Brig - Register Argument")
+@Name("Register Argument")
 @Since("INSERT VERSION")
 public class EffRegisterArg extends Effect {
 
     static {
-        String stringPattern;
-        StringBuilder stringBuilder = new StringBuilder();
-        int[] i = new int[1];
+        List<String> patterns = new ArrayList<>();
+        patterns.add("register [:optional] string arg[ument] %string% [using %-objects%]");
         BrigArgument.getNames().forEach((s) -> {
-            stringBuilder.append(i[0]);
-            stringBuilder.append(":");
-            stringBuilder.append(s);
-            stringBuilder.append("|");
-            i[0]++;
+            String pattern = "register [:optional] " + s + " arg[ument] %string%";
+            patterns.add(pattern);
         });
-
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-        stringPattern = stringBuilder.toString();
-
-        Skript.registerEffect(EffRegisterArg.class,
-                "register string arg %string% [using %-objects%]",
-                "register (" + stringPattern + ") arg %string% ");
+        Skript.registerEffect(EffRegisterArg.class, patterns.toArray(new String[0]));
     }
 
     private Expression<String> brigArg;
-    private Expression<Object> suggestions;
+    private Expression<?> suggestions;
     private int pattern;
-    private boolean stringArg;
+    private boolean optional;
 
     @SuppressWarnings({"NullableProblems", "unchecked"})
     @Override
@@ -60,12 +47,12 @@ public class EffRegisterArg extends Effect {
             Skript.error("A brig arg can only be registered in a brig command!", ErrorQuality.SEMANTIC_ERROR);
             return false;
         }
-        this.stringArg = matchedPattern == 0;
         this.brigArg = (Expression<String>) exprs[0];
         if (matchedPattern == 0) {
-            this.suggestions = (Expression<Object>) exprs[1];
+            this.suggestions = exprs[1];
         }
-        this.pattern = parseResult.mark;
+        this.pattern = matchedPattern;
+        this.optional = parseResult.hasTag("optional");
         return true;
     }
 
@@ -77,7 +64,7 @@ public class EffRegisterArg extends Effect {
         String arg = this.brigArg.getSingle(event);
 
         Argument<?> argument;
-        if (this.stringArg) {
+        if (this.pattern == 0) {
             argument = new StringArgument(arg);
             List<String> stringSuggestions = new ArrayList<>();
             if (this.suggestions != null) {
@@ -89,10 +76,11 @@ public class EffRegisterArg extends Effect {
                     argument.includeSuggestions(ArgumentSuggestions.strings(stringSuggestions));
             }
         } else {
-            argument = BrigArgument.getArgument(this.pattern, arg);
+            argument = BrigArgument.getArgument(this.pattern - 1, arg);
         }
 
-        brigCommand.addParam(arg, argument);
+        argument.setOptional(this.optional);
+        brigCommand.addArgument(arg, argument);
 
     }
 

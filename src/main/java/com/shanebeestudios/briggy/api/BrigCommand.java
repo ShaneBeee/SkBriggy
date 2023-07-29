@@ -1,11 +1,14 @@
 package com.shanebeestudios.briggy.api;
 
 import ch.njol.skript.lang.Trigger;
+import ch.njol.skript.variables.Variables;
 import com.shanebeestudios.briggy.api.event.BrigCommandRunEvent;
+import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import com.shanebeestudios.briggy.api.util.Utils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.Argument;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,7 +27,7 @@ public class BrigCommand {
         this.permission = permission;
     }
 
-    public void addParam(String name, Argument<?> arg) {
+    public void addArgument(String name, Argument<?> arg) {
         args.put(name, arg);
     }
 
@@ -38,9 +41,23 @@ public class BrigCommand {
             commandAPICommand.withPermission(this.permission);
         }
         commandAPICommand.withArguments(args.values().toArray(new Argument[0]));
-        commandAPICommand.executes((commandSender, objects) -> {
-            BrigCommandRunEvent brigCommandRunEvent = new BrigCommandRunEvent(this, commandSender, objects);
-            Trigger.walk(trigger, brigCommandRunEvent);
+        commandAPICommand.executes((commandSender, arguments) -> {
+            BrigCommandRunEvent brigCommandRunEvent = new BrigCommandRunEvent(this, commandSender, arguments.args());
+
+            // Register local variables for arg names
+            arguments.argsMap().forEach((argName, argObject) -> {
+                if (argObject instanceof ArrayList<?> arrayList) {
+                    for (int i = 0; i < arrayList.size(); i++) {
+                        Object convert = ObjectConverter.convert(arrayList.get(i));
+                        Variables.setVariable(argName + "::" + i, convert, brigCommandRunEvent, true);
+                    }
+                } else {
+                    Object convert = ObjectConverter.convert(argObject);
+                    Variables.setVariable(argName, convert, brigCommandRunEvent, true);
+                }
+            });
+
+            trigger.execute(brigCommandRunEvent);
         });
 
         commandAPICommand.register();
