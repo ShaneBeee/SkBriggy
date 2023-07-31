@@ -49,13 +49,13 @@ public class BrigArgument {
 
         // Minecraft
         register("biome", BiomeArgument.class);
-        register("block state", "block[[ ]state]", BlockStateArgument.class);
+        register("block state", "block[[ ](state|data)]", BlockStateArgument.class);
         register("enchantment", "enchant[ment]", EnchantmentArgument.class);
         register("itemstack", "item[stack]", ItemStackArgument.class);
         register("loottable", "loot[ ]table", LootTableArgument.class);
         register("objective", ObjectiveArgument.class);
         register("particle", ParticleArgument.class);
-        register("potioneffect", "potion effect[ type]", PotionEffectArgument.class);
+        register("potioneffect", "potion[ ]effect[ type]", PotionEffectArgument.class);
         register("recipe", RecipeArgument.class);
         register("sound", SoundArgument.class);
         register("team", TeamArgument.class);
@@ -70,9 +70,9 @@ public class BrigArgument {
         register("offlineplayer", "offline[ ]player", OfflinePlayerArgument.class);
 
         // Bukkit
-        register("location", LocationArgument.class);
-        register("location 2d", Location2DArgument.class);
-        register("namespaced key", NamespacedKeyArgument.class);
+        register("location", "loc[ation]", LocationArgument.class);
+        register("location 2d", "loc[ation][ ]2d", Location2DArgument.class);
+        register("namespaced key", "(namespacedkey|mckey)", NamespacedKeyArgument.class);
 
         // Other
         register("boolean", BooleanArgument.class);
