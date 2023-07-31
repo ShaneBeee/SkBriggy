@@ -4,6 +4,7 @@ import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.variables.Variables;
 import com.shanebeestudios.briggy.api.event.BrigCommandRunEvent;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
+import com.shanebeestudios.briggy.api.util.Utils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.Argument;
 
@@ -66,6 +67,7 @@ public class BrigCommand {
         });
 
         commandAPICommand.register();
+        Utils.reloadCommands();
     }
 
 }
