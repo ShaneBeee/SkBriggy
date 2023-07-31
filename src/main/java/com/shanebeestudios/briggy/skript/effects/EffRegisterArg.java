@@ -1,6 +1,8 @@
 package com.shanebeestudios.briggy.skript.effects;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
@@ -22,6 +24,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Name("Register Argument")
+@Description({"Register an argument for a brig command.",
+        "\nString arguments represent a single string with no spaces.",
+        "\nText arguments represent a string of text in quotes."})
+@Examples({"brig command /leban:",
+        "\targuments:",
+        "\t\tregister player arg \"player\"",
+        "\t\tregister int arg \"time\"",
+        "\t\tregister string arg \"span\" using \"minutes\", \"hours\" and \"days\"",
+        "\t\tregister text arg \"reason\"",
+        "\ttrigger:",
+        "\t\tset {_reason} to \"&c%{_reason}%\"",
+        "\t\tset {_timespan} to \"%{_time}% %{_span}%\" parsed as time span",
+        "\t\tban {_player} due to {_reason} for {_timespan}",
+        "\t\tkick {_player} due to {_reason}",
+        "\t\tsend \"You banned %{_player}% due to %{_reason}% for %{_timespan}%\""})
 @Since("INSERT VERSION")
 public class EffRegisterArg extends Effect {
 

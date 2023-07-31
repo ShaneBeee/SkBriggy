@@ -2,6 +2,7 @@ package com.shanebeestudios.briggy.skript.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
@@ -20,7 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Name("Brig Command Arg")
-@Description("Represents the arguments in a Brig Command.")
+@Description({"Represents the arguments in a Brig Command. These works the same way as Skript's `arg` and `arg-1`.",
+        "Since command args create local variables at runtime, these are virtually useless."})
+@Examples({"brig command /i <item> <int>:",
+        "\ttrigger:",
+        "\t\tgive brig-arg-2 of brig-arg-1 to player"})
 @Since("INSERT VERSION")
 public class ExprBrigArg extends SimpleExpression<Object> {
 
@@ -72,7 +77,7 @@ public class ExprBrigArg extends SimpleExpression<Object> {
 
     @Override
     public @NotNull String toString(Event e, boolean d) {
-        return "brig-arg-" + this.argNum.toString(e,d);
+        return "brig-arg-" + this.argNum.toString(e, d);
     }
 
 }

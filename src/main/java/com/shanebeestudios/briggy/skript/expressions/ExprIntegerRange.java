@@ -1,6 +1,7 @@
 package com.shanebeestudios.briggy.skript.expressions;
 
 import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
@@ -13,6 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Name("IntegerRange - Low/High")
 @Description("Get the low/high point of an integer range.")
+@Examples({"set {_low} to low range of {_intrange}",
+        "set {_high} to high range of {_intrange}",
+        "set {_ints::} to integers between {_low} and {_high}"})
 @Since("INSERT VERSION")
 public class ExprIntegerRange extends SimplePropertyExpression<IntegerRange, Number> {
 
