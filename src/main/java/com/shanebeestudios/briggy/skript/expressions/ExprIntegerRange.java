@@ -8,6 +8,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import dev.jorel.commandapi.wrappers.IntegerRange;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Name("IntegerRange - Low/High")
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public class ExprIntegerRange extends SimplePropertyExpression<IntegerRange, Number> {
 
     static {
-        register(ExprIntegerRange.class, Number.class, "(low|:high) range", "integer range");
+        register(ExprIntegerRange.class, Number.class, "(low|:high) range", "intrange");
     }
 
     private boolean high;
@@ -34,12 +35,12 @@ public class ExprIntegerRange extends SimplePropertyExpression<IntegerRange, Num
     }
 
     @Override
-    public Class<? extends Number> getReturnType() {
+    public @NotNull Class<? extends Number> getReturnType() {
         return Number.class;
     }
 
     @Override
-    protected String getPropertyName() {
+    protected @NotNull String getPropertyName() {
         return (this.high ? "high" : "low") + " range";
     }
 
