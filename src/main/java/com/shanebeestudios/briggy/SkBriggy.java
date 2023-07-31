@@ -24,6 +24,7 @@ public class SkBriggy extends JavaPlugin {
             SkriptAddon skriptAddon = Skript.registerAddon(this);
             try {
                 skriptAddon.loadClasses("com.shanebeestudios.briggy.skript");
+                skriptAddon.setLanguageFileDirectory("lang");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

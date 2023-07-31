@@ -21,7 +21,7 @@ public class Types {
         }, 0);
 
         // Classes
-        Classes.registerClass(new ClassInfo<>(IntegerRange.class, "int range")
+        Classes.registerClass(new ClassInfo<>(IntegerRange.class, "intrange")
                 .user("int[eger] ?ranges?")
                 .name("Integer Range"));
     }

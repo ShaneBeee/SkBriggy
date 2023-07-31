@@ -1,0 +1,4 @@
+version: ${project.version}
+
+types:
+    intrange: int range¦s @an
