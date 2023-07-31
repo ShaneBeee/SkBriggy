@@ -43,7 +43,7 @@ public class BrigArgument {
     static {
         // Numbers
         register("integer", "int[eger]", IntegerArgument.class);
-        register("integer range", "int[eger] range", IntegerRangeArgument.class);
+        register("integer range", "int[eger][ ]range", IntegerRangeArgument.class);
         register("float", FloatArgument.class);
         register("double", DoubleArgument.class);
 
