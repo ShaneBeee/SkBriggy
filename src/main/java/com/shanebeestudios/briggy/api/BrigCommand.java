@@ -36,6 +36,10 @@ public class BrigCommand {
         args.put(name, arg);
     }
 
+    public Map<String, Argument<?>> getArguments() {
+        return this.args;
+    }
+
     public void addExecution(Trigger trigger) {
         this.trigger = trigger;
     }
