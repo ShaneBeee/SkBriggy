@@ -53,6 +53,8 @@ public class ExprBrigArg extends SimpleExpression<Object> {
             Object arg = args[i - 1];
             if (arg instanceof List<?> list) {
                 objects.addAll(list);
+            } else {
+                objects.add(arg);
             }
         }
         return ObjectConverter.convert(objects);
