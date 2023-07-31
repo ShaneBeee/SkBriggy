@@ -34,7 +34,7 @@ public enum BrigArgument {
 
     // Numbers
     INT("int[eger]", IntegerArgument.class),
-    INT_RANGE("int[eger] range", IntegerRangeArgument.class), // TODO ClassInfo for this
+    INT_RANGE("int[eger] range", IntegerRangeArgument.class),
     FLOAT("float", FloatArgument.class),
     DOUBLE("double", DoubleArgument.class),
 
@@ -55,9 +55,9 @@ public enum BrigArgument {
 
     // Entity
     ENTITY("[single ]entity", EntitySelectorArgument.OneEntity.class),
-    ENTITY_M("multiple entit(y|ies)", EntitySelectorArgument.ManyEntities.class),
+    ENTITY_M("[multiple ]entities", EntitySelectorArgument.ManyEntities.class),
     PLAYER("[single ]player", EntitySelectorArgument.OnePlayer.class),
-    PLAYER_M("multiple player[s]", EntitySelectorArgument.ManyPlayers.class),
+    PLAYER_M("[multiple ]players", EntitySelectorArgument.ManyPlayers.class),
     OFFLINE_PLAYER("offline player", OfflinePlayerArgument.class),
 
     // Bukkit
