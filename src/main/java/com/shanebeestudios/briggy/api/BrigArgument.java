@@ -1,5 +1,8 @@
 package com.shanebeestudios.briggy.api;
 
+import ch.njol.skript.patterns.PatternCompiler;
+import ch.njol.skript.patterns.SkriptPattern;
+import ch.njol.util.StringUtils;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.BiomeArgument;
 import dev.jorel.commandapi.arguments.BlockStateArgument;
@@ -28,71 +31,103 @@ import dev.jorel.commandapi.arguments.WorldArgument;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public enum BrigArgument {
+public class BrigArgument {
 
-    // Numbers
-    INT("int[eger]", IntegerArgument.class),
-    INT_RANGE("int[eger] range", IntegerRangeArgument.class),
-    FLOAT("float", FloatArgument.class),
-    DOUBLE("double", DoubleArgument.class),
+    private static final Map<String, BrigArgument> MAP_BY_NAME = new HashMap<>();
 
-    // Minecraft
-    BIOME("biome", BiomeArgument.class),
-    BLOCK("block[[ ]state]", BlockStateArgument.class),
-    ENCHANT("enchant[ment]", EnchantmentArgument.class),
-    ITEM("item[stack]", ItemStackArgument.class),
-    LOOT("loot[ ]table", LootTableArgument.class),
-    OBJECTIVE("objective", ObjectiveArgument.class),
-    PARTICLE("particle", ParticleArgument.class),
-    POTION("potion effect[ type]", PotionEffectArgument.class),
-    RECIPE("recipe", RecipeArgument.class),
-    SOUND("sound", SoundArgument.class),
-    TEAM("team", TeamArgument.class),
-    TIME("time", TimeArgument.class),
-    WORLD("world", WorldArgument.class),
+    static {
+        // Numbers
+        register("integer", "int[eger]", IntegerArgument.class);
+        register("integer range", "int[eger] range", IntegerRangeArgument.class);
+        register("float", FloatArgument.class);
+        register("double", DoubleArgument.class);
 
-    // Entity
-    ENTITY("[single ]entity", EntitySelectorArgument.OneEntity.class),
-    ENTITY_M("[multiple ]entities", EntitySelectorArgument.ManyEntities.class),
-    PLAYER("[single ]player", EntitySelectorArgument.OnePlayer.class),
-    PLAYER_M("[multiple ]players", EntitySelectorArgument.ManyPlayers.class),
-    OFFLINE_PLAYER("offline player", OfflinePlayerArgument.class),
+        // Minecraft
+        register("biome", BiomeArgument.class);
+        register("block state", "block[[ ]state]", BlockStateArgument.class);
+        register("enchantment", "enchant[ment]", EnchantmentArgument.class);
+        register("itemstack", "item[stack]", ItemStackArgument.class);
+        register("loottable", "loot[ ]table", LootTableArgument.class);
+        register("objective", ObjectiveArgument.class);
+        register("particle", ParticleArgument.class);
+        register("potioneffect", "potion effect[ type]", PotionEffectArgument.class);
+        register("recipe", RecipeArgument.class);
+        register("sound", SoundArgument.class);
+        register("team", TeamArgument.class);
+        register("time", TimeArgument.class);
+        register("world", WorldArgument.class);
 
-    // Bukkit
-    LOCATION("location", LocationArgument.class),
-    LOCATION2D("location 2d", Location2DArgument.class),
-    NAMESPACEDKEY("namespaced key", NamespacedKeyArgument.class),
+        // Entity
+        register("entity", EntitySelectorArgument.OneEntity.class);
+        register("entities", EntitySelectorArgument.ManyEntities.class);
+        register("player", EntitySelectorArgument.OnePlayer.class);
+        register("players", EntitySelectorArgument.ManyPlayers.class);
+        register("offlineplayer", "offline[ ]player", OfflinePlayerArgument.class);
 
-    // Other
-    BOOLEAN("boolean", BooleanArgument.class),
-    TEXT("text", TextArgument.class);
+        // Bukkit
+        register("location", LocationArgument.class);
+        register("location 2d", Location2DArgument.class);
+        register("namespaced key", NamespacedKeyArgument.class);
 
-    private final String name;
-    private final Class<? extends Argument<?>> argClass;
-
-    BrigArgument(String name, Class<? extends Argument<?>> argClass) {
-        this.name = name;
-        this.argClass = argClass;
+        // Other
+        register("boolean", BooleanArgument.class);
+        register("text", TextArgument.class);
     }
 
-    public static Argument<?> getArgument(int spot, String name) {
-        BrigArgument value = values()[spot];
+    private static void register(String name, String pattern, Class<? extends Argument<?>> argClass) {
+        BrigArgument brigArgument = new BrigArgument(name, pattern, argClass);
+        MAP_BY_NAME.put(name, brigArgument);
+    }
+
+    private static void register(String name, Class<? extends Argument<?>> argClass) {
+        register(name, name, argClass);
+    }
+
+    private final String name;
+    private final String pattern;
+    private final SkriptPattern skriptPattern;
+    private final Class<? extends Argument<?>> argClass;
+
+    BrigArgument(String name, String pattern, Class<? extends Argument<?>> argClass) {
+        this.name = name;
+        this.pattern = pattern;
+        this.argClass = argClass;
+        this.skriptPattern = PatternCompiler.compile(pattern);
+    }
+
+    @Override
+    public String toString() {
+        return "BrigArg(name=" + this.name + ")";
+    }
+
+    public Argument<?> getArgument(String name) {
         try {
-            return value.argClass.getDeclaredConstructor(String.class).newInstance(name);
+            return this.argClass.getDeclaredConstructor(String.class).newInstance(name);
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static List<String> getNames() {
-        List<String> names = new ArrayList<>();
-        for (BrigArgument value : values()) {
-            names.add(value.name);
+    public static String getPatterns() {
+        List<String> patterns = new ArrayList<>();
+        for (BrigArgument value : MAP_BY_NAME.values()) {
+            patterns.add(value.pattern);
         }
-        return names;
+        Collections.sort(patterns);
+        return StringUtils.join(patterns, ", ");
+    }
+
+    public static BrigArgument parse(String string) {
+        for (BrigArgument brigArgument : MAP_BY_NAME.values()) {
+            if (brigArgument.skriptPattern.match(string) != null) return brigArgument;
+        }
+        return null;
     }
 
 }

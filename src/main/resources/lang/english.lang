@@ -2,3 +2,4 @@ version: ${project.version}
 
 types:
     intrange: int range¦s @an
+    brigarg: brig arg¦s

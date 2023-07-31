@@ -26,18 +26,14 @@ import java.util.List;
 public class EffRegisterArg extends Effect {
 
     static {
-        List<String> patterns = new ArrayList<>();
-        patterns.add("register [:optional] string arg[ument] %string% [using %-objects%]");
-        BrigArgument.getNames().forEach((s) -> {
-            String pattern = "register [:optional] " + s + " arg[ument] %string%";
-            patterns.add(pattern);
-        });
-        Skript.registerEffect(EffRegisterArg.class, patterns.toArray(new String[0]));
+        Skript.registerEffect(EffRegisterArg.class,
+                "register [:optional] string arg[ument] %string% [using %-objects%]",
+                "register [:optional] %brigarg% arg[ument] %string%");
     }
 
-    private Expression<String> brigArg;
+    private Expression<String> argument;
     private Expression<?> suggestions;
-    private int pattern;
+    private Expression<BrigArgument> brigArg;
     private boolean optional;
 
     @SuppressWarnings({"NullableProblems", "unchecked"})
@@ -47,11 +43,11 @@ public class EffRegisterArg extends Effect {
             Skript.error("A brig arg can only be registered in a brig command!", ErrorQuality.SEMANTIC_ERROR);
             return false;
         }
-        this.brigArg = (Expression<String>) exprs[0];
+        this.argument = (Expression<String>) exprs[matchedPattern];
         if (matchedPattern == 0) {
             this.suggestions = exprs[1];
         }
-        this.pattern = matchedPattern;
+        this.brigArg = matchedPattern == 1 ? (Expression<BrigArgument>) exprs[0] : null;
         this.optional = parseResult.hasTag("optional");
         return true;
     }
@@ -61,10 +57,10 @@ public class EffRegisterArg extends Effect {
     protected void execute(Event event) {
         BrigCommandCreateEvent brigCommandEvent = (BrigCommandCreateEvent) event;
         BrigCommand brigCommand = brigCommandEvent.getBrigCommand();
-        String arg = this.brigArg.getSingle(event);
+        String arg = this.argument.getSingle(event);
 
         Argument<?> argument;
-        if (this.pattern == 0) {
+        if (this.brigArg == null) {
             argument = new StringArgument(arg);
             List<String> stringSuggestions = new ArrayList<>();
             if (this.suggestions != null) {
@@ -76,7 +72,9 @@ public class EffRegisterArg extends Effect {
                     argument.includeSuggestions(ArgumentSuggestions.strings(stringSuggestions));
             }
         } else {
-            argument = BrigArgument.getArgument(this.pattern - 1, arg);
+            BrigArgument brigArg = this.brigArg.getSingle(event);
+            if (brigArg == null) return;
+            argument = brigArg.getArgument(arg);
         }
 
         argument.setOptional(this.optional);
@@ -86,7 +84,9 @@ public class EffRegisterArg extends Effect {
 
     @Override
     public @NotNull String toString(Event e, boolean d) {
-        return "register string arg " + this.brigArg.toString(e, d);
+        String type = this.brigArg == null ? "string" : this.brigArg.toString(e, d);
+        String suggestions = this.suggestions == null ? "" : (" using " + this.suggestions.toString(e, d));
+        return "register " + type + " arg " + this.argument.toString(e, d) + suggestions;
     }
 
 }
