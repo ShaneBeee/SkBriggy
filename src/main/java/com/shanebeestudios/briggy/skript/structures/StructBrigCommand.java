@@ -29,6 +29,7 @@ import org.skriptlang.skript.lang.structure.Structure;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Name("Brig Command")
 @Description({"Register a new Brigadier command.",
@@ -149,6 +150,20 @@ public class StructBrigCommand extends Structure {
             if (brigArgument == null) {
                 Skript.error("Invalid brig argument type '" + type + "'");
                 return false;
+            }
+
+            Map<String, Argument<?>> registeredArgs = brigCommand.getArguments();
+            // If the arg name already exists, let's append a number to it
+            if (registeredArgs.containsKey(name)) {
+                // Start at 2 so we get things like
+                // int, int2, int3, int4
+                for (int i = 2; i < 50; i++) {
+                    String testname = name + i;
+                    if (!registeredArgs.containsKey(testname)) {
+                        name = testname;
+                        break;
+                    }
+                }
             }
 
             Argument<?> argument = brigArgument.getArgument(name);
