@@ -10,6 +10,7 @@ import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.util.SimpleEvent;
+import ch.njol.skript.util.Utils;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandCreateEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandRunEvent;
@@ -30,6 +31,7 @@ public class StructBrigCommand extends Structure {
     static {
         EntryValidator entryValidator = EntryValidator.builder()
                 .addEntry("permission", null, true)
+                .addEntry("description", "SkBriggy Command", true)
                 .addSection("arguments", true)
                 .addSection("trigger", false)
                 .build();
@@ -59,6 +61,11 @@ public class StructBrigCommand extends Structure {
 
         String permission = entryContainer.getOptional("permission", String.class, false);
         brigCommand.setPermission(permission);
+
+        String description = entryContainer.getOptional("description", String.class, true);
+        assert description != null;
+        description = Utils.replaceEnglishChatStyles(description);
+        brigCommand.setDescription(description);
 
         // Run Command
         getParser().setCurrentEvent("brig command", BrigCommandRunEvent.class);

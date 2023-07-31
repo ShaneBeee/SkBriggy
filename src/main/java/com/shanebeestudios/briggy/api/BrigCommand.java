@@ -4,7 +4,6 @@ import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.variables.Variables;
 import com.shanebeestudios.briggy.api.event.BrigCommandRunEvent;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
-import com.shanebeestudios.briggy.api.util.Utils;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.Argument;
 
@@ -16,6 +15,7 @@ public class BrigCommand {
 
     private final String name;
     private String permission = null;
+    private String description = null;
     private final Map<String, Argument<?>> args = new LinkedHashMap<>();
     private Trigger trigger;
 
@@ -25,6 +25,10 @@ public class BrigCommand {
 
     public void setPermission(String permission) {
         this.permission = permission;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void addArgument(String name, Argument<?> arg) {
@@ -41,6 +45,7 @@ public class BrigCommand {
             commandAPICommand.withPermission(this.permission);
         }
         commandAPICommand.withArguments(args.values().toArray(new Argument[0]));
+        commandAPICommand.withShortDescription(this.description);
         commandAPICommand.executes((commandSender, arguments) -> {
             BrigCommandRunEvent brigCommandRunEvent = new BrigCommandRunEvent(this, commandSender, arguments.args());
 
@@ -61,7 +66,6 @@ public class BrigCommand {
         });
 
         commandAPICommand.register();
-        Utils.reloadCommands();
     }
 
 }
