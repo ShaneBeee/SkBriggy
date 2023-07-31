@@ -4,6 +4,7 @@ import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Literal;
@@ -30,7 +31,27 @@ import java.util.Arrays;
 import java.util.List;
 
 @Name("Brig Command")
-@Description("Register a new Brigadier command.")
+@Description({"Register a new Brigadier command.",
+        "\nNotes:",
+        "\nFormat: 'brig command /commandName <brigArgType> [<brigArgType(optional)>] <argName:brigArgType> [<argName:brigArgType(optional)>]:'",
+        "\n`commandName` = the name of your command, ex: '/mycommand'.",
+        "\n`brigArgType` = represents a brig argument type. While some may match Skript types, this doesn't actually support Skript types.",
+        "\n`argName` = The name of the arg, which will be used to create a local variable for the arg.",
+        "This will also show in some cases when typing out a command in game.",
+        "If this isn't set a local variable will be created using the type (see examples).",
+        "\nJust like Skript commands, wrapping your arg in `[]` makes it optional. Do note at this time there is no support for defaults."})
+@Examples({"brig command /move <player> <location>:",
+        "\ttrigger:",
+        "\t\tteleport {_player} to {_location}",
+        "",
+        "brig command /move <p1:player> <p2:player>:",
+        "\ttrigger:",
+        "\t\tteleport {_p1} to {_p2}",
+        "",
+        "brig command /i <item> [<amount:int>]:",
+        "\ttrigger:",
+        "\t\tset {_amount} to 1 if {_amount} isn't set",
+        "\t\tgive {_amount} of {_item} to player"})
 @Since("INSERT VERSION")
 public class StructBrigCommand extends Structure {
 
