@@ -17,10 +17,10 @@ public class SkBriggy extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        long start = System.currentTimeMillis();
         Utils.log("Starting up SkBriggy!!!");
 
         if (Skript.isAcceptRegistrations()) {
-            Utils.log("Skript IS accepting registrations!!!");
             SkriptAddon skriptAddon = Skript.registerAddon(this);
             try {
                 skriptAddon.loadClasses("com.shanebeestudios.briggy.skript");
@@ -32,6 +32,8 @@ public class SkBriggy extends JavaPlugin {
             Utils.log("&cSkript isn't accepting registrations?!?!?");
         }
         //CommandAPI.onEnable();
+        long finish = System.currentTimeMillis() - start;
+        Utils.log("Finished loading in &b" + finish + "ms");
     }
 
     @Override
