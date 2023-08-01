@@ -18,6 +18,7 @@ import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -175,6 +176,14 @@ public class StructBrigCommand extends Structure {
 
             Argument<?> argument = brigArgument.getArgument(name);
             argument.setOptional(optional);
+
+            // GreedyString args have to be last
+            Object[] argArray = brigCommand.getArguments().values().toArray();
+            if (argArray.length > 0 && argArray[argArray.length - 1] instanceof GreedyStringArgument) {
+                Skript.error("You cannot place another arg after a <greedystring> arg.");
+                return false;
+            }
+
             brigCommand.addArgument(name, argument);
 
         }

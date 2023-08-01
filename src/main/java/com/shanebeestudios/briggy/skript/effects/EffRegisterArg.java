@@ -16,6 +16,7 @@ import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,6 +79,13 @@ public class EffRegisterArg extends Effect {
 
         if (brigArg != null) argument = brigArg.getArgument(arg);
         if (argument == null) return;
+
+        // GreedyString args have to be last
+        Object[] argArray = brigCommand.getArguments().values().toArray();
+        if (argArray.length > 0 && argArray[argArray.length - 1] instanceof GreedyStringArgument) {
+            Skript.error("You cannot register another argument after a 'greedystring' arg.");
+            return;
+        }
 
         List<String> stringSuggestions = new ArrayList<>();
         if (this.suggestions != null) {

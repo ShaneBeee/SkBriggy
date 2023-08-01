@@ -12,6 +12,7 @@ import dev.jorel.commandapi.arguments.EnchantmentArgument;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.arguments.EntityTypeArgument;
 import dev.jorel.commandapi.arguments.FloatArgument;
+import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.IntegerRangeArgument;
 import dev.jorel.commandapi.arguments.ItemStackArgument;
@@ -81,6 +82,7 @@ public class BrigArgument {
         register("boolean", BooleanArgument.class);
         register("text", TextArgument.class);
         register("string", StringArgument.class);
+        register("greedystring","greedy[ ]string", GreedyStringArgument.class);
     }
 
     private static void register(String name, String pattern, Class<? extends Argument<?>> argClass) {
