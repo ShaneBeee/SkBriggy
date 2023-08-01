@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.BiomeArgument;
 import dev.jorel.commandapi.arguments.BlockStateArgument;
 import dev.jorel.commandapi.arguments.BooleanArgument;
+import dev.jorel.commandapi.arguments.CommandArgument;
 import dev.jorel.commandapi.arguments.DoubleArgument;
 import dev.jorel.commandapi.arguments.EnchantmentArgument;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
@@ -16,7 +17,6 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.IntegerRangeArgument;
 import dev.jorel.commandapi.arguments.ItemStackArgument;
-import dev.jorel.commandapi.arguments.Location2DArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LootTableArgument;
 import dev.jorel.commandapi.arguments.NamespacedKeyArgument;
@@ -64,6 +64,7 @@ public class BrigArgument {
         register("time", TimeArgument.class);
         register("world", CustomArg.WORLD);
         register("entitytype", EntityTypeArgument.class);
+        register("command", CommandArgument.class);
 
         // Entity
         register("entity", EntitySelectorArgument.OneEntity.class);
