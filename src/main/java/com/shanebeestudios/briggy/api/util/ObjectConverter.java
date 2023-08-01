@@ -1,13 +1,22 @@
 package com.shanebeestudios.briggy.api.util;
 
+import ch.njol.skript.registrations.Classes;
+import dev.jorel.commandapi.wrappers.ComplexRecipeImpl;
 import dev.jorel.commandapi.wrappers.Location2D;
+import org.bukkit.Keyed;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectConverter {
+
+    private static final boolean HAS_TEAMS = Classes.getExactClassInfo(Team.class) != null;
+    private static final boolean HAS_KEYS = Classes.getExactClassInfo(NamespacedKey.class) != null;
 
     public static Object[] convert(List<Object> objects) {
         List<Object> toReturn = new ArrayList<>();
@@ -22,6 +31,20 @@ public class ObjectConverter {
             return new Location(location2D.getWorld(), location2D.getX(), 0, location2D.getZ());
         } else if (object instanceof Sound sound) {
             return sound.getKey().toString();
+        } else if (object instanceof ComplexRecipeImpl complexRecipe) {
+            Recipe recipe = complexRecipe.recipe();
+            if (recipe instanceof Keyed keyed) {
+                NamespacedKey namespacedKey = keyed.getKey();
+                if (HAS_KEYS) return namespacedKey;
+                return namespacedKey.toString();
+            }
+            return recipe.toString();
+        } else if (object instanceof Team team) {
+            if (HAS_TEAMS) return team;
+            return team.getName();
+        } else if (object instanceof NamespacedKey key) {
+            if (HAS_KEYS) return key;
+            return key.toString();
         }
         return object;
     }
