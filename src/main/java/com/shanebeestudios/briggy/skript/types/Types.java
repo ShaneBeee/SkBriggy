@@ -47,7 +47,8 @@ public class Types {
                         "\n`blockstate` represents a BlockState in Minecraft but will return as a BlockData.",
                         "\n`time` represents time in a world. ex: `1d` is 1 ingame day (24000 ticks).",
                         "\n`sound` represents a sound string key.",
-                        "\n`location 2d` represents a location with a y coord (defaults to y=0).")
+                        "\n`location 2d` represents a location with a y coord (defaults to y=0).",
+                        "\n\nSee Wiki for more details <link>https://github.com/ShaneBeee/SkBriggy/wiki/Brig-Argument-Type</link>")
                 .usage(BrigArgument.getPatterns())
                 .since("INSERT VERSION")
                 .parser(new Parser<>() {
