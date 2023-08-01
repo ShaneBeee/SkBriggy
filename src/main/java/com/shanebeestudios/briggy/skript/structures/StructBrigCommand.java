@@ -160,7 +160,7 @@ public class StructBrigCommand extends Structure {
                 return false;
             }
 
-            Map<String, Argument<?>> registeredArgs = brigCommand.getArguments();
+            Map<String, Argument<?>> registeredArgs = brigCommand.getArgumentMap();
             // If the arg name already exists, let's append a number to it
             if (registeredArgs.containsKey(name)) {
                 // Start at 2 so we get things like
@@ -178,8 +178,8 @@ public class StructBrigCommand extends Structure {
             argument.setOptional(optional);
 
             // GreedyString args have to be last
-            Object[] argArray = brigCommand.getArguments().values().toArray();
-            if (argArray.length > 0 && argArray[argArray.length - 1] instanceof GreedyStringArgument) {
+            List<Argument<?>> brigArgs = brigCommand.getArguments();
+            if (brigArgs.size() > 0 && brigArgs.get(brigArgs.size() - 1) instanceof GreedyStringArgument) {
                 Skript.error("You cannot place another arg after a <greedystring> arg.");
                 return false;
             }

@@ -10,6 +10,7 @@ import dev.jorel.commandapi.arguments.Argument;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BrigCommand {
@@ -36,7 +37,11 @@ public class BrigCommand {
         args.put(name, arg);
     }
 
-    public Map<String, Argument<?>> getArguments() {
+    public List<Argument<?>> getArguments() {
+        return new ArrayList<>(this.args.values());
+    }
+
+    public Map<String, Argument<?>> getArgumentMap() {
         return this.args;
     }
 

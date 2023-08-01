@@ -81,8 +81,8 @@ public class EffRegisterArg extends Effect {
         if (argument == null) return;
 
         // GreedyString args have to be last
-        Object[] argArray = brigCommand.getArguments().values().toArray();
-        if (argArray.length > 0 && argArray[argArray.length - 1] instanceof GreedyStringArgument) {
+        List<Argument<?>> brigArgs = brigCommand.getArguments();
+        if (brigArgs.size() > 0 && brigArgs.get(brigArgs.size() - 1) instanceof GreedyStringArgument) {
             Skript.error("You cannot register another argument after a 'greedystring' arg.");
             return;
         }

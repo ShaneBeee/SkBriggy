@@ -80,8 +80,8 @@ public class ExprArgSuggestions extends SimpleExpression<Object> {
     public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
         if (!(event instanceof BrigCommandArgumentsEvent brigEvent)) return;
 
-        Map<String, Argument<?>> arguments = brigEvent.getBrigCommand().getArguments();
-        List<Argument<?>> argumentList = new ArrayList<>(arguments.values());
+        Map<String, Argument<?>> arguments = brigEvent.getBrigCommand().getArgumentMap();
+        List<Argument<?>> argumentList = brigEvent.getBrigCommand().getArguments();
 
         for (Object object : this.arg.getArray(event)) {
             Argument<?> argument = null;
