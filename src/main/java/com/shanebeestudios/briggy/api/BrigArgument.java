@@ -30,7 +30,6 @@ import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.arguments.TeamArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import dev.jorel.commandapi.arguments.TimeArgument;
-import dev.jorel.commandapi.arguments.WorldArgument;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class BrigArgument {
         register("sound", SoundArgument.class);
         register("team", TeamArgument.class);
         register("time", TimeArgument.class);
-        register("world", WorldArgument.class);
+        register("world", CustomArg.WORLD);
         register("entitytype", EntityTypeArgument.class);
 
         // Entity
@@ -75,14 +74,18 @@ public class BrigArgument {
 
         // Bukkit
         register("location", "loc[ation]", LocationArgument.class);
-        register("location 2d", "loc[ation][ ]2d", Location2DArgument.class);
+        register("location 2d", "loc[ation][ ]2d", CustomArg.LOCATION2D);
         register("namespaced key", "(namespacedkey|mckey)", NamespacedKeyArgument.class);
+
+        // Skript
+        register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
+        register("itemtype", "item[ ]type", CustomArg.ITEM_TYPE);
 
         // Other
         register("boolean", BooleanArgument.class);
         register("text", TextArgument.class);
         register("string", StringArgument.class);
-        register("greedystring","greedy[ ]string", GreedyStringArgument.class);
+        register("greedystring", "greedy[ ]string", GreedyStringArgument.class);
     }
 
     private static void register(String name, String pattern, Class<? extends Argument<?>> argClass) {
@@ -94,15 +97,33 @@ public class BrigArgument {
         register(name, name, argClass);
     }
 
+    private static void register(String name, String pattern, CustomArg customArg) {
+        BrigArgument brigArgument = new BrigArgument(name, pattern, customArg);
+        MAP_BY_NAME.put(name, brigArgument);
+    }
+
+    private static void register(String name, CustomArg customArg) {
+        register(name, name, customArg);
+    }
+
+
     private final String name;
     private final String pattern;
     private final SkriptPattern skriptPattern;
-    private final Class<? extends Argument<?>> argClass;
+    private Class<? extends Argument<?>> argClass;
+    private CustomArg customArg = null;
 
     BrigArgument(String name, String pattern, Class<? extends Argument<?>> argClass) {
         this.name = name;
         this.pattern = pattern;
         this.argClass = argClass;
+        this.skriptPattern = PatternCompiler.compile(pattern);
+    }
+
+    BrigArgument(String name, String pattern, CustomArg customArg) {
+        this.name = name;
+        this.pattern = pattern;
+        this.customArg = customArg;
         this.skriptPattern = PatternCompiler.compile(pattern);
     }
 
@@ -112,6 +133,7 @@ public class BrigArgument {
     }
 
     public Argument<?> getArgument(String name) {
+        if (this.customArg != null) return this.customArg.get(name);
         try {
             return this.argClass.getDeclaredConstructor(String.class).newInstance(name);
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |

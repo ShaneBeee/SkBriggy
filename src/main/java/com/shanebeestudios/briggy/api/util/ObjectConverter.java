@@ -29,9 +29,7 @@ public class ObjectConverter {
     }
 
     public static Object convert(Object object) {
-        if (object instanceof Location2D location2D) {
-            return new Location(location2D.getWorld(), location2D.getX(), 0, location2D.getZ());
-        } else if (object instanceof Sound sound) {
+        if (object instanceof Sound sound) {
             return sound.getKey().toString();
         } else if (object instanceof ComplexRecipeImpl complexRecipe) {
             Recipe recipe = complexRecipe.recipe();
