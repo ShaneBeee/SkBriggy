@@ -18,12 +18,8 @@ on tab complete of "/skriptban":
 	set tab completions for position 3 to "minutes", "hours" and "days"
 	set tab completions for position 4 to "<reason>"
 ```
-Visual:
-![](https://i.imgur.com/aTw6P3g.png)
-![](https://i.imgur.com/dgbjI4t.png)
-![](https://i.imgur.com/MB1cItQ.png)
-![](https://i.imgur.com/ZzHyLT9.png)
-![](https://i.imgur.com/hJRGLXc.png)
+Visual:      
+![Imgur](https://i.imgur.com/awbyIBi.gif)
 
 ### SkBriggy
 Code:
@@ -34,9 +30,5 @@ brig command /brigban <player> <time:int> <span:string> <reason:text>:
 	trigger:
 		# do stuff
 ```
-Visual:
-![](https://i.imgur.com/XgmywMq.png)
-![](https://i.imgur.com/56Ty53s.png)
-![](https://i.imgur.com/UciQAGM.png)
-![](https://i.imgur.com/SGkzV76.png)
-![](https://i.imgur.com/GptXjKE.png)
+Visual:      
+![](https://i.imgur.com/sRTyvp9.gif)
