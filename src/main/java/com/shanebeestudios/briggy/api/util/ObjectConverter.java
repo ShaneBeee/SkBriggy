@@ -1,5 +1,6 @@
 package com.shanebeestudios.briggy.api.util;
 
+import ch.njol.skript.bukkitutil.EntityUtils;
 import ch.njol.skript.registrations.Classes;
 import dev.jorel.commandapi.wrappers.ComplexRecipeImpl;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -7,6 +8,7 @@ import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.scoreboard.Team;
 
@@ -45,6 +47,8 @@ public class ObjectConverter {
         } else if (object instanceof NamespacedKey key) {
             if (HAS_KEYS) return key;
             return key.toString();
+        } else if (object instanceof EntityType entityType) {
+            return EntityUtils.toSkriptEntityData(entityType);
         }
         return object;
     }

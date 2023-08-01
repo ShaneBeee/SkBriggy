@@ -10,6 +10,7 @@ import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.DoubleArgument;
 import dev.jorel.commandapi.arguments.EnchantmentArgument;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
+import dev.jorel.commandapi.arguments.EntityTypeArgument;
 import dev.jorel.commandapi.arguments.FloatArgument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.IntegerRangeArgument;
@@ -24,6 +25,7 @@ import dev.jorel.commandapi.arguments.ParticleArgument;
 import dev.jorel.commandapi.arguments.PotionEffectArgument;
 import dev.jorel.commandapi.arguments.RecipeArgument;
 import dev.jorel.commandapi.arguments.SoundArgument;
+import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.arguments.TeamArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import dev.jorel.commandapi.arguments.TimeArgument;
@@ -61,6 +63,7 @@ public class BrigArgument {
         register("team", TeamArgument.class);
         register("time", TimeArgument.class);
         register("world", WorldArgument.class);
+        register("entitytype", EntityTypeArgument.class);
 
         // Entity
         register("entity", EntitySelectorArgument.OneEntity.class);
