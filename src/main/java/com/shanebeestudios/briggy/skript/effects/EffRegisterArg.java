@@ -16,7 +16,6 @@ import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
-import dev.jorel.commandapi.arguments.StringArgument;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +25,8 @@ import java.util.List;
 @Name("Register Argument")
 @Description({"Register an argument for a brig command.",
         "\nString arguments represent a single string with no spaces.",
-        "\nText arguments represent a string of text in quotes."})
+        "\nText arguments represent a string of text in quotes.",
+        "\nSee Brig Argument type for more info."})
 @Examples({"brig command /leban:",
         "\targuments:",
         "\t\tregister player arg \"player\"",
@@ -44,8 +44,7 @@ public class EffRegisterArg extends Effect {
 
     static {
         Skript.registerEffect(EffRegisterArg.class,
-                "register [:optional] string arg[ument] %string% [using %-objects%]",
-                "register [:optional] %brigarg% arg[ument] %string%");
+                "register [:optional] %brigarg% arg[ument] %string% [using %-objects%]");
     }
 
     private Expression<String> argument;
@@ -60,11 +59,9 @@ public class EffRegisterArg extends Effect {
             Skript.error("A brig arg can only be registered in a brig command 'arguments' section.", ErrorQuality.SEMANTIC_ERROR);
             return false;
         }
-        this.argument = (Expression<String>) exprs[matchedPattern];
-        if (matchedPattern == 0) {
-            this.suggestions = exprs[1];
-        }
-        this.brigArg = matchedPattern == 1 ? (Expression<BrigArgument>) exprs[0] : null;
+        this.brigArg = (Expression<BrigArgument>) exprs[0];
+        this.argument = (Expression<String>) exprs[1];
+        this.suggestions = exprs[2];
         this.optional = parseResult.hasTag("optional");
         return true;
     }
@@ -76,22 +73,20 @@ public class EffRegisterArg extends Effect {
         BrigCommand brigCommand = brigCommandEvent.getBrigCommand();
         String arg = this.argument.getSingle(event);
 
-        Argument<?> argument;
-        if (this.brigArg == null) {
-            argument = new StringArgument(arg);
-            List<String> stringSuggestions = new ArrayList<>();
-            if (this.suggestions != null) {
-                for (Object object : this.suggestions.getArray(event)) {
-                    if (object instanceof String string) stringSuggestions.add(string);
-                    else stringSuggestions.add(Classes.toString(object));
-                }
-                if (stringSuggestions.size() > 0)
-                    argument.includeSuggestions(ArgumentSuggestions.strings(stringSuggestions));
+        Argument<?> argument = null;
+        BrigArgument brigArg = this.brigArg.getSingle(event);
+
+        if (brigArg != null) argument = brigArg.getArgument(arg);
+        if (argument == null) return;
+
+        List<String> stringSuggestions = new ArrayList<>();
+        if (this.suggestions != null) {
+            for (Object object : this.suggestions.getArray(event)) {
+                if (object instanceof String string) stringSuggestions.add(string);
+                else stringSuggestions.add(Classes.toString(object));
             }
-        } else {
-            BrigArgument brigArg = this.brigArg.getSingle(event);
-            if (brigArg == null) return;
-            argument = brigArg.getArgument(arg);
+            if (stringSuggestions.size() > 0)
+                argument.includeSuggestions(ArgumentSuggestions.strings(stringSuggestions));
         }
 
         argument.setOptional(this.optional);
@@ -101,9 +96,9 @@ public class EffRegisterArg extends Effect {
 
     @Override
     public @NotNull String toString(Event e, boolean d) {
-        String type = this.brigArg == null ? "string" : this.brigArg.toString(e, d);
-        String suggestions = this.suggestions == null ? "" : (" using " + this.suggestions.toString(e, d));
-        return "register " + type + " arg " + this.argument.toString(e, d) + suggestions;
+        String type = this.brigArg.toString(e, d);
+        String suggestions = this.suggestions.toString(e, d);
+        return "register " + type + " arg " + this.argument.toString(e, d) + " using " + suggestions;
     }
 
 }

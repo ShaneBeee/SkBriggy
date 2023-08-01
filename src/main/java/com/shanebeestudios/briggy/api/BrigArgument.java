@@ -80,6 +80,7 @@ public class BrigArgument {
         // Other
         register("boolean", BooleanArgument.class);
         register("text", TextArgument.class);
+        register("string", StringArgument.class);
     }
 
     private static void register(String name, String pattern, Class<? extends Argument<?>> argClass) {

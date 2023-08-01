@@ -35,20 +35,9 @@ public class Types {
                 .user("brig? args?")
                 .name("Brig Argument Type")
                 .description("Represents a type of argument for a Brig Command.",
-                        "Most argument types will accept vanilla values and return a Bukkit value (usablable by Skript).",
-                        "\nNote, special types:",
-                        "\nString is a special type only currently available in the registration effect which",
-                        "represents a single string with no spaces. ex: `blah_blah`. Also has the ability to add suggestions.",
-                        "\n`text` represents a string of text in quotes. ex: `\"oh hello there\"`",
-                        "\n`int range` represents 2 numbers with 2 dots between. ex: `1..10`.",
-                        "This will return as an IntRange object, use the expression to get the high/low numbers.",
-                        "\n`player/entity` represents a single player/entity.",
-                        "\n`players/entities` represents a list of players/entities.",
-                        "\n`blockstate` represents a BlockState in Minecraft but will return as a BlockData.",
-                        "\n`time` represents time in a world. ex: `1d` is 1 ingame day (24000 ticks).",
-                        "\n`sound` represents a sound string key.",
-                        "\n`location 2d` represents a location with a y coord (defaults to y=0).",
-                        "\n\nSee Wiki for more details <link>https://github.com/ShaneBeee/SkBriggy/wiki/Brig-Argument-Type</link>")
+                        "\nAll the types here represent object types in Minecraft, with built in conversions to return",
+                        "Bukkit/Skript types to be able to fully use in Skript.",
+                        "\nSee Wiki for more details <link>https://github.com/ShaneBeee/SkBriggy/wiki/Brig-Argument-Type</link>")
                 .usage(BrigArgument.getPatterns())
                 .since("INSERT VERSION")
                 .parser(new Parser<>() {
