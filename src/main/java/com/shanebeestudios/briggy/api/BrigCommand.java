@@ -2,7 +2,7 @@ package com.shanebeestudios.briggy.api;
 
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.variables.Variables;
-import com.shanebeestudios.briggy.api.event.BrigCommandRunEvent;
+import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import com.shanebeestudios.briggy.api.util.Utils;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -52,7 +52,7 @@ public class BrigCommand {
         commandAPICommand.withArguments(args.values().toArray(new Argument[0]));
         commandAPICommand.withShortDescription(this.description);
         commandAPICommand.executes((commandSender, arguments) -> {
-            BrigCommandRunEvent brigCommandRunEvent = new BrigCommandRunEvent(this, commandSender, arguments.args());
+            BrigCommandTriggerEvent brigCommandRunEvent = new BrigCommandTriggerEvent(this, commandSender, arguments.args());
 
             // Register local variables for arg names
             arguments.argsMap().forEach((argName, argObject) -> {

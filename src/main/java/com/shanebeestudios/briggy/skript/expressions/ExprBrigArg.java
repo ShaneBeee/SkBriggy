@@ -12,7 +12,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.util.Kleenean;
-import com.shanebeestudios.briggy.api.event.BrigCommandRunEvent;
+import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class ExprBrigArg extends SimpleExpression<Object> {
     @SuppressWarnings({"NullableProblems", "unchecked"})
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-        if (!getParser().isCurrentEvent(BrigCommandRunEvent.class)) {
+        if (!getParser().isCurrentEvent(BrigCommandTriggerEvent.class)) {
             Skript.error("'brig-arg' can only be used in a brig command 'trigger' section.", ErrorQuality.SEMANTIC_ERROR);
             return false;
         }
@@ -50,7 +50,7 @@ public class ExprBrigArg extends SimpleExpression<Object> {
     @SuppressWarnings("NullableProblems")
     @Override
     protected Object[] get(Event event) {
-        BrigCommandRunEvent brigCommandRunEvent = (BrigCommandRunEvent) event;
+        BrigCommandTriggerEvent brigCommandRunEvent = (BrigCommandTriggerEvent) event;
         Object[] args = brigCommandRunEvent.getArgs();
         List<Object> objects = new ArrayList<>();
         int i = this.argNum.getSingle().intValue();

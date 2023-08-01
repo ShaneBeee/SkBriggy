@@ -14,8 +14,8 @@ import ch.njol.skript.lang.util.SimpleEvent;
 import ch.njol.skript.util.Utils;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
-import com.shanebeestudios.briggy.api.event.BrigCommandCreateEvent;
-import com.shanebeestudios.briggy.api.event.BrigCommandRunEvent;
+import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
+import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.arguments.Argument;
 import org.bukkit.event.Event;
@@ -89,7 +89,7 @@ public class StructBrigCommand extends Structure {
     public boolean load() {
         // Create Command
         Script currentScript = getParser().getCurrentScript();
-        getParser().setCurrentEvent("brig command", BrigCommandCreateEvent.class);
+        getParser().setCurrentEvent("brig command", BrigCommandArgumentsEvent.class);
         EntryContainer entryContainer = getEntryContainer();
         BrigCommand brigCommand = new BrigCommand(this.command);
 
@@ -102,7 +102,7 @@ public class StructBrigCommand extends Structure {
         SectionNode argNode = entryContainer.getOptional("arguments", SectionNode.class, false);
         if (argNode != null) {
             Trigger argTrigger = new Trigger(currentScript, "briggy command /" + this.command, new SimpleEvent(), ScriptLoader.loadItems(argNode));
-            Trigger.walk(argTrigger, new BrigCommandCreateEvent(brigCommand));
+            Trigger.walk(argTrigger, new BrigCommandArgumentsEvent(brigCommand));
         }
 
         // Register command permission
@@ -116,7 +116,7 @@ public class StructBrigCommand extends Structure {
         brigCommand.setDescription(description);
 
         // Register command trigger
-        getParser().setCurrentEvent("brig command", BrigCommandRunEvent.class);
+        getParser().setCurrentEvent("brig command", BrigCommandTriggerEvent.class);
         SectionNode triggerNode = entryContainer.get("trigger", SectionNode.class, false);
         Trigger trigger = new Trigger(currentScript, "briggy command /" + this.command, new SimpleEvent(), ScriptLoader.loadItems(triggerNode));
         trigger.setLineNumber(triggerNode.getLine());

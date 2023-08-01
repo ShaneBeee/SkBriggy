@@ -13,7 +13,7 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
-import com.shanebeestudios.briggy.api.event.BrigCommandCreateEvent;
+import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.StringArgument;
@@ -56,8 +56,8 @@ public class EffRegisterArg extends Effect {
     @SuppressWarnings({"NullableProblems", "unchecked"})
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-        if (!getParser().isCurrentEvent(BrigCommandCreateEvent.class)) {
-            Skript.error("A brig arg can only be registered in a brig command!", ErrorQuality.SEMANTIC_ERROR);
+        if (!getParser().isCurrentEvent(BrigCommandArgumentsEvent.class)) {
+            Skript.error("A brig arg can only be registered in a brig command 'arguments' section.", ErrorQuality.SEMANTIC_ERROR);
             return false;
         }
         this.argument = (Expression<String>) exprs[matchedPattern];
@@ -72,7 +72,7 @@ public class EffRegisterArg extends Effect {
     @SuppressWarnings("NullableProblems")
     @Override
     protected void execute(Event event) {
-        BrigCommandCreateEvent brigCommandEvent = (BrigCommandCreateEvent) event;
+        BrigCommandArgumentsEvent brigCommandEvent = (BrigCommandArgumentsEvent) event;
         BrigCommand brigCommand = brigCommandEvent.getBrigCommand();
         String arg = this.argument.getSingle(event);
 
