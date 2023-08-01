@@ -29,10 +29,12 @@ public class Types {
         Classes.registerClass(new ClassInfo<>(IntegerRange.class, "intrange")
                 .user("int[eger] ?ranges?")
                 .name("Integer Range")
+                .description("Represents a range between 2 integers.",
+                        "Use the IntegerRange expression to get the high/low value.")
                 .since("INSERT VERSION"));
 
         Classes.registerClass(new ClassInfo<>(BrigArgument.class, "brigarg")
-                .user("brig? args?")
+                .user("brig ?args?")
                 .name("Brig Argument Type")
                 .description("Represents a type of argument for a Brig Command.",
                         "\nAll the types here represent object types in Minecraft, with built in conversions to return",
