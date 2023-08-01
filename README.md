@@ -36,7 +36,7 @@ brig command /brigban <player> <time:int> <span:string> <reason:text>:
 ```
 Visual:
 ![](https://i.imgur.com/XgmywMq.png)
-[](https://i.imgur.com/56Ty53s.png)
-[](https://i.imgur.com/UciQAGM.png)
-[](https://i.imgur.com/SGkzV76.png)
-[](https://i.imgur.com/GptXjKE.png)
+![](https://i.imgur.com/56Ty53s.png)
+![](https://i.imgur.com/UciQAGM.png)
+![](https://i.imgur.com/SGkzV76.png)
+![](https://i.imgur.com/GptXjKE.png)
