@@ -7,7 +7,7 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.EventValues;
 import ch.njol.skript.util.Getter;
 import com.shanebeestudios.briggy.api.BrigArgument;
-import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
+import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -18,9 +18,9 @@ public class Types {
 
     static {
         // Event Values
-        EventValues.registerEventValue(BrigCommandTriggerEvent.class, CommandSender.class, new Getter<>() {
+        EventValues.registerEventValue(BrigCommandEvent.class, CommandSender.class, new Getter<>() {
             @Override
-            public @Nullable CommandSender get(BrigCommandTriggerEvent event) {
+            public @Nullable CommandSender get(BrigCommandEvent event) {
                 return event.getSender();
             }
         }, 0);
