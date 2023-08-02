@@ -87,19 +87,26 @@ public class EffRegisterArg extends Effect {
             return;
         }
 
-        List<String> stringSuggestions = new ArrayList<>();
         if (this.suggestions != null) {
-            for (Object object : this.suggestions.getArray(event)) {
-                if (object instanceof String string) stringSuggestions.add(string);
-                else stringSuggestions.add(Classes.toString(object));
-            }
-            if (stringSuggestions.size() > 0)
-                argument.includeSuggestions(ArgumentSuggestions.strings(stringSuggestions));
+            argument.includeSuggestions(ArgumentSuggestions.strings(info -> {
+                brigCommandEvent.setSender(info.sender());
+
+                List<String> stringSuggestions = new ArrayList<>();
+                for (Object object : this.suggestions.getArray(brigCommandEvent)) {
+                    if (object instanceof String string) stringSuggestions.add(string);
+                    else stringSuggestions.add(Classes.toString(object));
+                }
+                if (stringSuggestions.size() > 0) {
+                    return stringSuggestions.toArray(new String[0]);
+                } else {
+                    // Fallback when empty
+                    return new String[]{"<" + arg + ">"};
+                }
+            }));
         }
 
         argument.setOptional(this.optional);
         brigCommand.addArgument(arg, argument);
-
     }
 
     @Override
