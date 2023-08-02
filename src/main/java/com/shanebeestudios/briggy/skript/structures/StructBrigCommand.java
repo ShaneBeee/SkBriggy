@@ -90,7 +90,7 @@ public class StructBrigCommand extends Structure {
     public boolean load() {
         // Create Command
         Script currentScript = getParser().getCurrentScript();
-        getParser().setCurrentEvent("brig command", BrigCommandArgumentsEvent.class);
+        getParser().setCurrentEvent("BrigCommandArguments", BrigCommandArgumentsEvent.class);
         EntryContainer entryContainer = getEntryContainer();
         BrigCommand brigCommand = new BrigCommand(this.command);
 
@@ -117,7 +117,7 @@ public class StructBrigCommand extends Structure {
         brigCommand.setDescription(description);
 
         // Register command trigger
-        getParser().setCurrentEvent("brig command", BrigCommandTriggerEvent.class);
+        getParser().setCurrentEvent("BrigCommandTrigger", BrigCommandTriggerEvent.class);
         SectionNode triggerNode = entryContainer.get("trigger", SectionNode.class, false);
         Trigger trigger = new Trigger(currentScript, "briggy command /" + this.command, new SimpleEvent(), ScriptLoader.loadItems(triggerNode));
         trigger.setLineNumber(triggerNode.getLine());
