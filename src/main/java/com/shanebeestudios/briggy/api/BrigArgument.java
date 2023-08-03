@@ -57,7 +57,7 @@ public class BrigArgument {
         register("loottable", "loot[ ]table", LootTableArgument.class);
         register("objective", ObjectiveArgument.class);
         register("particle", ParticleArgument.class);
-        register("potioneffect", "potion[ ]effect[ type]", PotionEffectArgument.class);
+        register("potioneffect", "potion[ ]effect[[ ]type]", PotionEffectArgument.class);
         register("recipe", RecipeArgument.class);
         register("sound", SoundArgument.class);
         register("team", TeamArgument.class);
