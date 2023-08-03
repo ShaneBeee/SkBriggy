@@ -18,6 +18,7 @@ public class BrigCommand {
     private final String name;
     private String permission = null;
     private String description = null;
+    private String usage = null;
     private List<String> aliases = null;
     private final Map<String, Argument<?>> args = new LinkedHashMap<>();
     private Trigger trigger;
@@ -32,6 +33,10 @@ public class BrigCommand {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setUsage(String usage) {
+        this.usage = usage;
     }
 
     public void setAliases(List<String> aliases) {
@@ -58,6 +63,10 @@ public class BrigCommand {
         CommandAPICommand commandAPICommand = new CommandAPICommand(this.name);
         if (this.permission != null) commandAPICommand.withPermission(this.permission);
         if (this.aliases != null) commandAPICommand.setAliases(this.aliases.toArray(new String[0]));
+        if (this.usage != null) {
+            if (this.usage.contains(",")) commandAPICommand.withUsage(this.usage.split(","));
+            else commandAPICommand.withUsage(this.usage);
+        }
 
         commandAPICommand.withArguments(args.values().toArray(new Argument[0]));
         commandAPICommand.withShortDescription(this.description);

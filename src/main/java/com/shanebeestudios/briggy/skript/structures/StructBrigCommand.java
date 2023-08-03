@@ -10,11 +10,13 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
+import ch.njol.skript.lang.VariableString;
 import ch.njol.skript.lang.util.SimpleEvent;
 import ch.njol.skript.util.Utils;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
+import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.arguments.Argument;
@@ -25,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.entry.EntryContainer;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.entry.KeyValueEntryData;
+import org.skriptlang.skript.lang.entry.util.VariableStringEntryData;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 
@@ -72,6 +75,7 @@ public class StructBrigCommand extends Structure {
         EntryValidator entryValidator = EntryValidator.builder()
                 .addEntry("permission", null, true)
                 .addEntry("description", "SkBriggy Command", true)
+                .addEntryData(new VariableStringEntryData("usage", null, true, BrigCommandEvent.class))
                 .addEntryData(new KeyValueEntryData<List<String>>("aliases", new ArrayList<>(), true) {
                     @SuppressWarnings("NullableProblems")
                     @Override
@@ -130,6 +134,13 @@ public class StructBrigCommand extends Structure {
         assert description != null;
         description = Utils.replaceEnglishChatStyles(description);
         brigCommand.setDescription(description);
+
+        // Regiseter command usage
+        VariableString usage = entryContainer.getOptional("usage", VariableString.class, false);
+        if (usage != null && usage.isSimple()) {
+            String string = usage.toString(null);
+            brigCommand.setUsage(string);
+        }
 
         // Register command aliases
         List<String> aliases = (List<String>) entryContainer.get("aliases", true);
