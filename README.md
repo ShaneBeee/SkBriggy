@@ -24,11 +24,11 @@ Visual:
 ### SkBriggy
 Code:
 ```hs
-brig command /brigban <player> <time:int> <span:string> <reason:text>:
+brig command /brigban <player> <time:int> <span:string> <reason:greedystring>:
 	arguments:
 		set suggestions of "span" arg to "minutes", "hours" and "days"
 	trigger:
 		# do stuff
 ```
 Visual:      
-![](https://i.imgur.com/sRTyvp9.gif)
+![](https://i.imgur.com/tIQToCc.gif)
