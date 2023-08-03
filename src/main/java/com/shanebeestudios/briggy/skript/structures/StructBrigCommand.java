@@ -13,6 +13,7 @@ import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.VariableString;
 import ch.njol.skript.lang.util.SimpleEvent;
 import ch.njol.skript.util.Utils;
+import ch.njol.util.StringUtils;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Name("Brig Command")
@@ -42,7 +44,7 @@ import java.util.regex.Pattern;
         "\nNotes:",
         "\nFormat: 'brig command /commandName <brigArgType> [<brigArgType(optional)>] <argName:brigArgType> [<argName:brigArgType(optional)>]:'",
         "\n`commandName` = Represents the command itself, ex: '/mycommand'.",
-        "\n`brigArgType` = Represents a brig argument type. Does not support spaces.",
+        "\n`brigArgType` = Represents a brig argument type.",
         "While some may match Skript types, this doesn't actually support Skript types.",
         "\n`argName` = The name of the arg, which will be used to create a local variable for the arg.",
         "In some cases this will show when typing out a command in game.",
@@ -70,6 +72,7 @@ import java.util.regex.Pattern;
 public class StructBrigCommand extends Structure {
 
     private static final Pattern ALIASES_PATTERN = Pattern.compile("\\s*,\\s*");
+    private static final Pattern ARGUMENT_PATTERN = Pattern.compile("\\[?<.*?>]?");
 
     static {
         EntryValidator entryValidator = EntryValidator.builder()
@@ -93,14 +96,14 @@ public class StructBrigCommand extends Structure {
     }
 
     private String command;
-    private List<String> args;
+    private String argString;
 
     @SuppressWarnings("NullableProblems")
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
-        String[] split = parseResult.regexes.get(0).group().split(" ");
+        String[] split = parseResult.regexes.get(0).group().split(" ", 2);
         this.command = split[0];
-        this.args = new ArrayList<>(Arrays.asList(split).subList(1, split.length));
+        this.argString = split.length > 1 ? split[1] : null;
         return true;
     }
 
@@ -161,18 +164,38 @@ public class StructBrigCommand extends Structure {
     }
 
     private boolean parseArgs(BrigCommand brigCommand) {
-        boolean optional = false;
-        for (String arg : this.args) {
+        if (this.argString == null) return true;
+
+        int argLength = this.argString.length();
+        // Verify correct placement of optional brackets around arguments
+        int opt1 = StringUtils.count(this.argString, '[', 0, argLength);
+        int opt2 = StringUtils.count(this.argString, ']', 0, argLength);
+        if (opt1 != opt2) {
+            Skript.error("Invalid placement of [] around arguments.");
+            return false;
+        }
+
+        // Verify correct placement of <> around arguments
+        int arg1 = StringUtils.count(this.argString, '<', 0, argLength);
+        int arg2 = StringUtils.count(this.argString, '>', 0, argLength);
+        if (arg1 != arg2) {
+            Skript.error("Invalid placement of <> around arguments.");
+            return false;
+        }
+
+        List<String> args = new ArrayList<>();
+        Matcher matcher = ARGUMENT_PATTERN.matcher(this.argString);
+        while (matcher.find()) {
+            args.add(matcher.group());
+        }
+
+        for (String arg : args) {
+            boolean optional = false;
             if (arg.startsWith("[") && arg.endsWith("]")) {
                 optional = true;
                 arg = arg.replace("[", "").replace("]", "");
             }
-            if (arg.startsWith("<") && arg.endsWith(">")) {
-                arg = arg.replace("<", "").replace(">", "");
-            } else {
-                Skript.error("Invalid placement of <> and/or [] in brig arg '" + arg + "'");
-                return false;
-            }
+            arg = arg.replace("<", "").replace(">", "");
 
             String name;
             String type;
