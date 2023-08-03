@@ -30,6 +30,7 @@ import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.arguments.TeamArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import dev.jorel.commandapi.arguments.TimeArgument;
+import dev.jorel.commandapi.arguments.WorldArgument;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -44,17 +45,23 @@ public class BrigArgument {
 
     static {
         // Numbers
+        register("double", DoubleArgument.class);
+        register("float", FloatArgument.class);
         register("integer", "int[eger]", IntegerArgument.class);
         register("integer range", "int[eger][ ]range", IntegerRangeArgument.class);
-        register("float", FloatArgument.class);
-        register("double", DoubleArgument.class);
 
         // Minecraft
         register("biome", BiomeArgument.class);
         register("block state", "block[[ ](state|data)]", BlockStateArgument.class);
+        register("command", CommandArgument.class);
+        register("component", CustomArg.COMPONENT);
+        register("dimension", WorldArgument.class);
         register("enchantment", "enchant[ment]", EnchantmentArgument.class);
+        register("entitytype", EntityTypeArgument.class);
         register("itemstack", "item[stack]", ItemStackArgument.class);
         register("loottable", "loot[ ]table", LootTableArgument.class);
+        register("message", CustomArg.MESSAGE);
+        register("nbt", CustomArg.NBT);
         register("objective", ObjectiveArgument.class);
         register("particle", ParticleArgument.class);
         register("potioneffect", "potion[ ]effect[[ ]type]", PotionEffectArgument.class);
@@ -63,10 +70,6 @@ public class BrigArgument {
         register("team", TeamArgument.class);
         register("time", TimeArgument.class);
         register("world", CustomArg.WORLD);
-        register("entitytype", EntityTypeArgument.class);
-        register("command", CommandArgument.class);
-        register("chat", CustomArg.CHAT);
-        register("nbt", CustomArg.NBT);
 
         // Entity
         register("entity", EntitySelectorArgument.OneEntity.class);
@@ -86,9 +89,9 @@ public class BrigArgument {
 
         // Other
         register("boolean", BooleanArgument.class);
+        register("greedystring", "greedy[ ]string", GreedyStringArgument.class);
         register("text", TextArgument.class);
         register("string", StringArgument.class);
-        register("greedystring", "greedy[ ]string", GreedyStringArgument.class);
     }
 
     private static void register(String name, String pattern, Class<? extends Argument<?>> argClass) {

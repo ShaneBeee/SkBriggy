@@ -5,16 +5,16 @@ import ch.njol.skript.util.SkriptColor;
 import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.skbee.api.nbt.NBTApi;
 import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
+import dev.jorel.commandapi.arguments.AdventureChatArgument;
+import dev.jorel.commandapi.arguments.AdventureChatComponentArgument;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
-import dev.jorel.commandapi.arguments.ChatArgument;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.Location2DArgument;
 import dev.jorel.commandapi.arguments.NBTCompoundArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.wrappers.Location2D;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,13 +29,24 @@ public abstract class CustomArg {
 
     private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).map(mat -> mat.getKey().getKey()).toList();
 
-    static final CustomArg CHAT = new CustomArg() {
+    static final CustomArg MESSAGE = new CustomArg() {
         @Override
         Argument<?> get(String name) {
-            return new CustomArgument<>(new ChatArgument(name), info -> {
-                Component deserialize = BungeeComponentSerializer.get().deserialize(info.currentInput());
-                if (SkBriggy.HAS_SKBEE_COMPONENT) return ComponentWrapper.fromComponent(deserialize);
-                return LegacyComponentSerializer.legacySection().serialize(deserialize);
+            return new CustomArgument<>(new AdventureChatArgument(name), info -> {
+                Component component = info.currentInput();
+                if (SkBriggy.HAS_SKBEE_COMPONENT) return ComponentWrapper.fromComponent(component);
+                return LegacyComponentSerializer.legacySection().serialize(component);
+            });
+        }
+    };
+
+    static final CustomArg COMPONENT = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new AdventureChatComponentArgument(name), info -> {
+                Component component = info.currentInput();
+                if (SkBriggy.HAS_SKBEE_COMPONENT) return ComponentWrapper.fromComponent(component);
+                return LegacyComponentSerializer.legacySection().serialize(component);
             });
         }
     };
