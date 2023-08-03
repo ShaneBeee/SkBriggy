@@ -3,9 +3,16 @@ package com.shanebeestudios.briggy;
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import com.shanebeestudios.briggy.api.util.Utils;
+import com.shanebeestudios.skbee.SkBee;
+import com.shanebeestudios.skbee.api.nbt.NBTApi;
+import com.shanebeestudios.skbee.config.Config;
+import dev.jorel.commandapi.CommandAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Logger;
 
 public class SkBriggy extends JavaPlugin {
 
@@ -15,11 +22,38 @@ public class SkBriggy extends JavaPlugin {
 //    }
     // temporarily removing shading (using plugin instead for testing)
 
+    public static boolean HAS_SKBEE_COMPONENT;
+    public static boolean HAS_SKBEE_NBT;
+
     @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
         Utils.log("Starting up SkBriggy!!!");
+
+        if (Bukkit.getPluginManager().getPlugin("SkBee") instanceof SkBee skbee) {
+            Config skBeeConfig = skbee.getPluginConfig();
+            if (skBeeConfig.ELEMENTS_TEXT_COMPONENT) {
+                HAS_SKBEE_COMPONENT = true;
+                Utils.log("&5SkBee Text Components &asuccessfully hooked");
+            }
+            if (skBeeConfig.ELEMENTS_NBT && NBTApi.isEnabled()) {
+                HAS_SKBEE_NBT = true;
+                Utils.log("&5SkBee NBT &asuccessfully hooked");
+
+                // Hide the NBTAPI logger warnings // TODO remove after shading
+                Logger.getLogger("NBTAPI").setFilter(record -> !record.getMessage().contains("[NBTAPI]"));
+                Class<?> nbtClass = CommandAPI.getConfiguration().getNBTContainerClass();
+                try {
+                    // Initialize internal NBT API // TODO remove after shading
+                    // Prevents it randomly popped up messages later
+                    nbtClass.getDeclaredConstructor(String.class).newInstance("{test:1}");
+                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                         InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
 
         if (Skript.isAcceptRegistrations()) {
             SkriptAddon skriptAddon = Skript.registerAddon(this);

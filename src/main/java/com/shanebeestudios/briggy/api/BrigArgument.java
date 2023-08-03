@@ -65,6 +65,8 @@ public class BrigArgument {
         register("world", CustomArg.WORLD);
         register("entitytype", EntityTypeArgument.class);
         register("command", CommandArgument.class);
+        register("chat", CustomArg.CHAT);
+        register("nbt", CustomArg.NBT);
 
         // Entity
         register("entity", EntitySelectorArgument.OneEntity.class);

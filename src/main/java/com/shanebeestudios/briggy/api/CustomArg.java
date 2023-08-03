@@ -2,14 +2,20 @@ package com.shanebeestudios.briggy.api;
 
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.util.SkriptColor;
+import com.shanebeestudios.briggy.SkBriggy;
+import com.shanebeestudios.skbee.api.nbt.NBTApi;
+import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.arguments.ChatArgument;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.Location2DArgument;
-import dev.jorel.commandapi.arguments.SoundArgument;
+import dev.jorel.commandapi.arguments.NBTCompoundArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import dev.jorel.commandapi.arguments.SuggestionProviders;
 import dev.jorel.commandapi.wrappers.Location2D;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,6 +28,17 @@ import java.util.Locale;
 public abstract class CustomArg {
 
     private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).map(mat -> mat.getKey().getKey()).toList();
+
+    static final CustomArg CHAT = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new ChatArgument(name), info -> {
+                Component deserialize = BungeeComponentSerializer.get().deserialize(info.currentInput());
+                if (SkBriggy.HAS_SKBEE_COMPONENT) return ComponentWrapper.fromComponent(deserialize);
+                return LegacyComponentSerializer.legacySection().serialize(deserialize);
+            });
+        }
+    };
 
     static final CustomArg ITEM_TYPE = new CustomArg() {
         @Override
@@ -40,6 +57,17 @@ public abstract class CustomArg {
             return new CustomArgument<>(new Location2DArgument(name), info -> {
                 Location2D loc2d = info.currentInput();
                 return new Location(loc2d.getWorld(), loc2d.getX(), 0, loc2d.getZ());
+            });
+        }
+    };
+
+    static final CustomArg NBT = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new NBTCompoundArgument<>(name), info -> {
+                String nbtString = info.input();
+                if (SkBriggy.HAS_SKBEE_NBT) return NBTApi.validateNBT(nbtString);
+                return nbtString;
             });
         }
     };
