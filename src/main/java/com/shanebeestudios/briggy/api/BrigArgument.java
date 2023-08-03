@@ -18,6 +18,7 @@ import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.IntegerRangeArgument;
 import dev.jorel.commandapi.arguments.ItemStackArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
+import dev.jorel.commandapi.arguments.LongArgument;
 import dev.jorel.commandapi.arguments.LootTableArgument;
 import dev.jorel.commandapi.arguments.NamespacedKeyArgument;
 import dev.jorel.commandapi.arguments.ObjectiveArgument;
@@ -43,6 +44,7 @@ public class BrigArgument {
 
     private static final Map<String, BrigArgument> MAP_BY_NAME = new HashMap<>();
     private static final Number[] INT_MIN_MAX = new Number[]{Integer.MIN_VALUE, Integer.MAX_VALUE};
+    private static final Number[] LONG_MIN_MAX = new Number[]{Long.MIN_VALUE, Long.MAX_VALUE};
     private static final Number[] FLOAT_MIN_MAX = new Number[]{Float.MIN_VALUE, Float.MAX_VALUE};
     private static final Number[] DOUBLE_MIN_MAX = new Number[]{Double.MIN_VALUE, Double.MAX_VALUE};
 
@@ -52,6 +54,7 @@ public class BrigArgument {
         register("float", FloatArgument.class);
         register("integer", "int[eger]", IntegerArgument.class);
         register("integer range", "int[eger][ ]range", IntegerRangeArgument.class);
+        register("long", LongArgument.class);
 
         // Minecraft
         register("biome", BiomeArgument.class);
@@ -143,6 +146,7 @@ public class BrigArgument {
 
     public Number[] getMinMax() {
         if (this.argClass == IntegerArgument.class) return INT_MIN_MAX;
+        else if (this.argClass == LongArgument.class) return LONG_MIN_MAX;
         else if (this.argClass == FloatArgument.class) return FLOAT_MIN_MAX;
         else if (this.argClass == DoubleArgument.class) return DOUBLE_MIN_MAX;
         return null;
@@ -162,6 +166,8 @@ public class BrigArgument {
         if (this.customArg != null) return this.customArg.get(name);
         if (this.argClass == IntegerArgument.class) {
             return new IntegerArgument(name, min.intValue(), max.intValue());
+        } else if (this.argClass == LongArgument.class) {
+            return new LongArgument(name, min.longValue(), max.longValue());
         } else if (this.argClass == FloatArgument.class) {
             return new FloatArgument(name, min.floatValue(), max.floatValue());
         } else if (this.argClass == DoubleArgument.class) {
