@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.entry.EntryContainer;
 import org.skriptlang.skript.lang.entry.EntryValidator;
+import org.skriptlang.skript.lang.entry.KeyValueEntryData;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Name("Brig Command")
 @Description({"Register a new Brigadier command.",
@@ -64,10 +66,22 @@ import java.util.Map;
 @Since("INSERT VERSION")
 public class StructBrigCommand extends Structure {
 
+    private static final Pattern ALIASES_PATTERN = Pattern.compile("\\s*,\\s*");
+
     static {
         EntryValidator entryValidator = EntryValidator.builder()
                 .addEntry("permission", null, true)
                 .addEntry("description", "SkBriggy Command", true)
+                .addEntryData(new KeyValueEntryData<List<String>>("aliases", new ArrayList<>(), true) {
+                    @SuppressWarnings("NullableProblems")
+                    @Override
+                    protected List<String> getValue(String value) {
+                        value = value.replace("/", "");
+                        List<String> aliases = new ArrayList<>(Arrays.asList(ALIASES_PATTERN.split(value)));
+                        if (aliases.get(0).isEmpty()) return null;
+                        return aliases;
+                    }
+                })
                 .addSection("arguments", true)
                 .addSection("trigger", false)
                 .build();
@@ -86,6 +100,7 @@ public class StructBrigCommand extends Structure {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean load() {
         // Create Command
@@ -115,6 +130,10 @@ public class StructBrigCommand extends Structure {
         assert description != null;
         description = Utils.replaceEnglishChatStyles(description);
         brigCommand.setDescription(description);
+
+        // Register command aliases
+        List<String> aliases = (List<String>) entryContainer.get("aliases", true);
+        brigCommand.setAliases(aliases);
 
         // Register command trigger
         getParser().setCurrentEvent("BrigCommandTrigger", BrigCommandTriggerEvent.class);
