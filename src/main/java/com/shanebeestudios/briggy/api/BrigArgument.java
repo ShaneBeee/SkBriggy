@@ -42,6 +42,9 @@ import java.util.Map;
 public class BrigArgument {
 
     private static final Map<String, BrigArgument> MAP_BY_NAME = new HashMap<>();
+    private static final Number[] INT_MIN_MAX = new Number[]{Integer.MIN_VALUE, Integer.MAX_VALUE};
+    private static final Number[] FLOAT_MIN_MAX = new Number[]{Float.MIN_VALUE, Float.MAX_VALUE};
+    private static final Number[] DOUBLE_MIN_MAX = new Number[]{Double.MIN_VALUE, Double.MAX_VALUE};
 
     static {
         // Numbers
@@ -58,7 +61,7 @@ public class BrigArgument {
         register("dimension", WorldArgument.class);
         register("enchantment", "enchant[ment]", EnchantmentArgument.class);
         register("entitytype", EntityTypeArgument.class);
-        register("itemstack", "item[stack]", ItemStackArgument.class);
+        register("itemstack", "item[[ ]stack]", ItemStackArgument.class);
         register("loottable", "loot[ ]table", LootTableArgument.class);
         register("message", CustomArg.MESSAGE);
         register("nbt", CustomArg.NBT);
@@ -81,7 +84,7 @@ public class BrigArgument {
         // Bukkit
         register("location", "loc[ation]", LocationArgument.class);
         register("location 2d", "loc[ation][ ]2d", CustomArg.LOCATION2D);
-        register("namespaced key", "(namespacedkey|mckey)", NamespacedKeyArgument.class);
+        register("namespaced key", "(namespaced[ ]key|mc[ ]key)", NamespacedKeyArgument.class);
 
         // Skript
         register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
@@ -138,6 +141,13 @@ public class BrigArgument {
         return "BrigArg(name=" + this.name + ")";
     }
 
+    public Number[] getMinMax() {
+        if (this.argClass == IntegerArgument.class) return INT_MIN_MAX;
+        else if (this.argClass == FloatArgument.class) return FLOAT_MIN_MAX;
+        else if (this.argClass == DoubleArgument.class) return DOUBLE_MIN_MAX;
+        return null;
+    }
+
     public Argument<?> getArgument(String name) {
         if (this.customArg != null) return this.customArg.get(name);
         try {
@@ -146,6 +156,18 @@ public class BrigArgument {
                  IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Argument<?> getIntArgument(String name, Number min, Number max) {
+        if (this.customArg != null) return this.customArg.get(name);
+        if (this.argClass == IntegerArgument.class) {
+            return new IntegerArgument(name, min.intValue(), max.intValue());
+        } else if (this.argClass == FloatArgument.class) {
+            return new FloatArgument(name, min.floatValue(), max.floatValue());
+        } else if (this.argClass == DoubleArgument.class) {
+            return new DoubleArgument(name, min.doubleValue(), max.doubleValue());
+        }
+        return getArgument(name);
     }
 
     public static String getPatterns() {

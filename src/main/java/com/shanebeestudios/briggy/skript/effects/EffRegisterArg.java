@@ -10,6 +10,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.skript.registrations.Classes;
+import ch.njol.skript.util.LiteralUtils;
 import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
@@ -77,7 +78,21 @@ public class EffRegisterArg extends Effect {
         Argument<?> argument = null;
         BrigArgument brigArg = this.brigArg.getSingle(event);
 
-        if (brigArg != null) argument = brigArg.getArgument(arg);
+        if (brigArg != null) {
+            Number[] minMax = brigArg.getMinMax();
+            if (minMax != null && this.suggestions != null) {
+                Expression<Object> objectExpression = LiteralUtils.defendExpression(this.suggestions);
+                Object[] array = objectExpression.getArray(event);
+                Number min = (array.length > 0 && array[0] instanceof Number number) ? number : minMax[0];
+                Number max = (array.length > 1 && array[1] instanceof Number number) ? number : minMax[1];
+                argument = brigArg.getIntArgument(arg, min, max);
+
+                // reset so they're not used for suggestions
+                this.suggestions = null;
+            } else {
+                argument = brigArg.getArgument(arg);
+            }
+        }
         if (argument == null) return;
 
         // GreedyString args have to be last
