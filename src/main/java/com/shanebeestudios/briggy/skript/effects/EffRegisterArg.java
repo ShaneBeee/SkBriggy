@@ -65,7 +65,10 @@ public class EffRegisterArg extends Effect {
         this.argument = (Expression<String>) exprs[1];
         this.suggestions = exprs[2];
         this.optional = parseResult.hasTag("optional");
-        return this.suggestions == null || LiteralUtils.canInitSafely(this.suggestions);
+        if (this.suggestions != null && !LiteralUtils.canInitSafely(this.suggestions)) {
+            return LiteralUtils.canInitSafely(LiteralUtils.defendExpression(this.suggestions));
+        }
+        return true;
     }
 
     @SuppressWarnings("NullableProblems")
