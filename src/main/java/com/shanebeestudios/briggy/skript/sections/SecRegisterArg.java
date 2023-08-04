@@ -181,8 +181,14 @@ public class SecRegisterArg extends EffectSection {
     }
 
     @Override
-    public @NotNull String toString(@Nullable Event e, boolean debug) {
-        return "null";
+    public @NotNull String toString(@Nullable Event e, boolean d) {
+        String optional = this.optional ? "optional " : "";
+        String start = "register " + optional + this.brigArg.toString(e,d) + " named " + this.argument.toString(e,d);
+        return start + switch (this.pattern) {
+            case 1 -> " with suggestions " + this.suggestions.toString(e,d);
+            case 2 -> " with min " + this.min.toString(e,d) + " and max " + this.max.toString(e,d);
+            default -> "";
+        };
     }
 
 }
