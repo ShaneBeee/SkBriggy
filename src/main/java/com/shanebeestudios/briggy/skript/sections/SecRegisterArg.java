@@ -96,8 +96,8 @@ public class SecRegisterArg extends EffectSection {
         }
         if (sectionNode != null) {
             AtomicBoolean delayed = new AtomicBoolean(false);
-            //Runnable afterLoading = () -> delayed.set(!getParser().getHasDelayBefore().isFalse()); // Skript was using this, maybe in the future?!?!
-            trigger = loadCode(sectionNode, "argument registration", BrigCommandSuggestEvent.class);
+            Runnable afterLoading = () -> delayed.set(!getParser().getHasDelayBefore().isFalse());
+            trigger = loadCode(sectionNode, "argument registration", afterLoading, BrigCommandSuggestEvent.class);
             if (delayed.get()) {
                 Skript.error("Delays can't be within an Argument Registration section.");
                 return false;
@@ -183,10 +183,10 @@ public class SecRegisterArg extends EffectSection {
     @Override
     public @NotNull String toString(@Nullable Event e, boolean d) {
         String optional = this.optional ? "optional " : "";
-        String start = "register " + optional + this.brigArg.toString(e,d) + " named " + this.argument.toString(e,d);
+        String start = "register " + optional + this.brigArg.toString(e, d) + " named " + this.argument.toString(e, d);
         return start + switch (this.pattern) {
-            case 1 -> " with suggestions " + this.suggestions.toString(e,d);
-            case 2 -> " with min " + this.min.toString(e,d) + " and max " + this.max.toString(e,d);
+            case 1 -> " with suggestions " + this.suggestions.toString(e, d);
+            case 2 -> " with min " + this.min.toString(e, d) + " and max " + this.max.toString(e, d);
             default -> "";
         };
     }
