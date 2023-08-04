@@ -58,6 +58,7 @@ public class BrigArgument {
 
         // Minecraft
         register("biome", BiomeArgument.class);
+        register("biomekey", "biome[ ]key", BiomeArgument.NamespacedKey.class);
         register("block state", "block[[ ](state|data)]", BlockStateArgument.class);
         register("command", CommandArgument.class);
         register("component", CustomArg.COMPONENT);
