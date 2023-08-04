@@ -11,7 +11,9 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.log.ErrorQuality;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Kleenean;
+import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
+import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
 import dev.jorel.commandapi.BukkitStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import org.bukkit.event.Event;
@@ -36,15 +38,18 @@ import org.jetbrains.annotations.Nullable;
 @Since("INSERT VERSION")
 public class EffApplySuggestion extends Effect {
 
+    private static final boolean HAS_COMP = SkBriggy.HAS_SKBEE_COMPONENT;
+
     static {
         Skript.registerEffect(EffApplySuggestion.class,
-                "apply suggestion %string% with tooltip %string%", "apply suggestion[s] %objects%");
+                "apply suggestion %string% with tooltip %~object%",
+                "apply suggestion[s] %~objects%");
     }
 
     private int pattern;
     private Expression<String> suggestion;
-    private Expression<String> tooltip;
-    private Expression<?> objects;
+    private Expression<Object> tooltip;
+    private Expression<Object> objects;
 
     @SuppressWarnings({"NullableProblems", "unchecked"})
     @Override
@@ -56,9 +61,9 @@ public class EffApplySuggestion extends Effect {
         this.pattern = matchedPattern;
         if (matchedPattern == 0) {
             this.suggestion = (Expression<String>) exprs[0];
-            this.tooltip = (Expression<String>) exprs[1];
+            this.tooltip = (Expression<Object>) exprs[1];
         } else {
-            this.objects = exprs[0];
+            this.objects = (Expression<Object>) exprs[0];
         }
         return true;
     }
@@ -70,11 +75,18 @@ public class EffApplySuggestion extends Effect {
 
         if (this.pattern == 0) {
             String suggestion = this.suggestion.getSingle(suggestEvent);
-            String tooltip = this.tooltip.getSingle(suggestEvent);
+            Object tooltip = this.tooltip.getSingle(suggestEvent);
 
             if (suggestion == null || tooltip == null) return;
 
-            StringTooltip stringTooltip = BukkitStringTooltip.ofString(suggestion, tooltip);
+            StringTooltip stringTooltip;
+            if (HAS_COMP && tooltip instanceof ComponentWrapper component) {
+                stringTooltip = BukkitStringTooltip.ofAdventureComponent(suggestion, component.getComponent());
+            } else if (tooltip instanceof String string) {
+                stringTooltip = BukkitStringTooltip.ofString(suggestion, string);
+            } else {
+                stringTooltip = BukkitStringTooltip.ofString(suggestion, Classes.toString(tooltip));
+            }
             suggestEvent.addTooltip(stringTooltip);
         } else {
             for (Object object : this.objects.getArray(suggestEvent)) {
