@@ -1,6 +1,10 @@
 package com.shanebeestudios.briggy.skript.effects;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -14,12 +18,27 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class EffRegisterSuggestion extends Effect {
+@Name("Apply Suggestion")
+@Description({"Apply a suggestion with tooltip or list of suggestions to an argument.",
+        "This is used only in an argument registration section."})
+@Examples({"register string arg \"world\":",
+        "\tapply suggestion all worlds",
+        "register string arg \"homes\" using:",
+        "\tapply suggestions indexes of {homes::%uuid of player%::*}",
+        "register string arg \"homes\" using:",
+        "\tloop {homes::%uuid of player%::*}:",
+        "\t\tapply suggestion loop-index with tooltip loop-value",
+        "register string arg \"gamemode\":",
+        "\tapply suggestion \"0\" with tooltip \"survival\"",
+        "\tapply suggestion \"1\" with tooltip \"creative\"",
+        "\tapply suggestion \"2\" with tooltip \"adventure\"",
+        "\tapply suggestion \"3\" with tooltip \"spectator\""})
+@Since("INSERT VERSION")
+public class EffApplySuggestion extends Effect {
 
     static {
-        Skript.registerEffect(EffRegisterSuggestion.class,
-                "apply suggestion %string% with tooltip %string%",
-                "apply suggestion[s] %objects%");
+        Skript.registerEffect(EffApplySuggestion.class,
+                "apply suggestion %string% with tooltip %string%", "apply suggestion[s] %objects%");
     }
 
     private int pattern;
@@ -70,7 +89,10 @@ public class EffRegisterSuggestion extends Effect {
 
     @Override
     public @NotNull String toString(@Nullable Event e, boolean d) {
-        return "null";
+        if (this.pattern == 0) {
+            return "apply suggestion " + this.suggestion.toString(e, d) + " with tooltip " + this.tooltip.toString(e, d);
+        }
+        return "apply suggestions " + this.objects.toString(e, d);
     }
 
 }
