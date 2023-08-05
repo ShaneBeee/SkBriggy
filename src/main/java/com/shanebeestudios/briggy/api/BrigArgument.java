@@ -20,6 +20,7 @@ import dev.jorel.commandapi.arguments.ItemStackArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LongArgument;
 import dev.jorel.commandapi.arguments.LootTableArgument;
+import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.arguments.NamespacedKeyArgument;
 import dev.jorel.commandapi.arguments.ObjectiveArgument;
 import dev.jorel.commandapi.arguments.OfflinePlayerArgument;
@@ -32,9 +33,11 @@ import dev.jorel.commandapi.arguments.TeamArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import dev.jorel.commandapi.arguments.TimeArgument;
 import dev.jorel.commandapi.arguments.WorldArgument;
+import org.checkerframework.checker.units.qual.A;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +100,7 @@ public class BrigArgument {
         // Other
         register("boolean", BooleanArgument.class);
         register("greedystring", "greedy[ ]string", GreedyStringArgument.class);
+        register("literal", "lit[eral]", MultiLiteralArgument.class);
         register("text", TextArgument.class);
         register("string", StringArgument.class);
     }
@@ -155,6 +159,9 @@ public class BrigArgument {
 
     public Argument<?> getArgument(String name) {
         if (this.customArg != null) return this.customArg.get(name);
+        if (this.argClass == MultiLiteralArgument.class) {
+            return new MultiLiteralArgument(name, Collections.singletonList(name));
+        }
         try {
             return this.argClass.getDeclaredConstructor(String.class).newInstance(name);
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
@@ -175,6 +182,15 @@ public class BrigArgument {
             return new DoubleArgument(name, min.doubleValue(), max.doubleValue());
         }
         return getArgument(name);
+    }
+
+    public Argument<?> getMultiLit(String name, List<String> literals) {
+        if (argClass != MultiLiteralArgument.class) return null;
+        return new MultiLiteralArgument(name, literals);
+    }
+
+    public Class<? extends Argument<?>> getArgClass() {
+        return argClass;
     }
 
     public static String getPatterns() {

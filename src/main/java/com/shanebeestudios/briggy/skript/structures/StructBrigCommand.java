@@ -22,6 +22,7 @@ import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
+import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -210,6 +211,11 @@ public class StructBrigCommand extends Structure {
             BrigArgument brigArgument = BrigArgument.parse(type);
             if (brigArgument == null) {
                 Skript.error("Invalid brig argument type '" + type + "'");
+                return false;
+            }
+            if (brigArgument.getArgClass() == MultiLiteralArgument.class) {
+                Skript.error("<" + arg + "> arguments cannot be used in a command. " +
+                        "You can use them in the arguments section instead.");
                 return false;
             }
 

@@ -25,6 +25,7 @@ import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
+import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -129,7 +130,21 @@ public class SecRegisterArg extends EffectSection {
                     argument = brigArg.getIntArgument(arg, min, max);
                 }
             } else {
-                argument = brigArg.getArgument(arg);
+                if (brigArg.getArgClass() == MultiLiteralArgument.class) {
+                    List<String> literals = new ArrayList<>();
+                    if (this.pattern == 1 && this.suggestions != null) {
+                        for (Object object : this.suggestions.getArray(event)) {
+                            if (object instanceof String string) literals.add(string);
+                            else literals.add(Classes.toString(object));
+                        }
+
+                    } else {
+                        literals.add(arg);
+                    }
+                    argument = brigArg.getMultiLit(arg, literals);
+                } else {
+                    argument = brigArg.getArgument(arg);
+                }
             }
         }
         if (argument == null) return super.walk(event, false);
