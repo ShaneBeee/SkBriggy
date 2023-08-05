@@ -8,6 +8,7 @@ import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.TriggerItem;
@@ -61,15 +62,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SecRegisterArg extends EffectSection {
 
     static {
+        String base = "register [:optional] %*brigarg% arg[ument] [(named|with name)] %string%";
         Skript.registerSection(SecRegisterArg.class,
-                "register [:optional] %brigarg% arg[ument] [(named|with name)] %string%",
-                "register [:optional] %brigarg% arg[ument] [(named|with name)] %string% (with suggestions|using) %objects%",
-                "register [:optional] %brigarg% arg[ument] [(named|with name)] %string% with min %number% [and] [with] max %number%");
+                base,
+                base + " (with suggestions|using) %objects%",
+                base + " with min %number% [and] [with] max %number%");
     }
 
     private int pattern;
     private boolean optional;
-    private Expression<BrigArgument> brigArg;
+    private Literal<BrigArgument> brigArg;
     private Expression<String> argument;
     private Trigger trigger;
     private Expression<?> suggestions;
@@ -87,7 +89,7 @@ public class SecRegisterArg extends EffectSection {
         this.pattern = matchedPattern;
 
         this.optional = parseResult.hasTag("optional");
-        this.brigArg = (Expression<BrigArgument>) exprs[0];
+        this.brigArg = (Literal<BrigArgument>) exprs[0];
         this.argument = (Expression<String>) exprs[1];
         if (matchedPattern == 1) {
             this.suggestions = exprs[2];
@@ -96,6 +98,10 @@ public class SecRegisterArg extends EffectSection {
             this.max = (Expression<Number>) exprs[3];
         }
         if (sectionNode != null) {
+            if (this.brigArg.getSingle().getArgClass() == MultiLiteralArgument.class) {
+                Skript.error("Literal arguments do not support using a section. Just use this as an effect!");
+                return false;
+            }
             AtomicBoolean delayed = new AtomicBoolean(false);
             Runnable afterLoading = () -> delayed.set(!getParser().getHasDelayBefore().isFalse());
             trigger = loadCode(sectionNode, "argument registration", afterLoading, BrigCommandSuggestEvent.class);
