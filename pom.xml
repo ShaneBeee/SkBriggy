@@ -95,7 +95,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.3.0</version>
                         <configuration>
                             <!-- Put here wherever you would like the plugin to build -->
                             <outputDirectory>/Users/ShaneBee/Desktop/Server/Skript/2.7/plugins</outputDirectory>
@@ -124,7 +124,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>shade</id>
@@ -161,7 +161,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
                 <configuration>
                     <excludePackageNames>com.shanebeestudios.skbee.elements.*;com.shanebeestudios.skbee.config;com.shanebeestudios.skbee.metrics;com.shanebeestudios.skbee.api.listener</excludePackageNames>
                     <links>
