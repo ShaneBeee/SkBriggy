@@ -6,7 +6,7 @@
 
     <groupId>com.shanebeestudios</groupId>
     <artifactId>SkBriggy</artifactId>
-    <version>1.0.0-beta2</version>
+    <version>1.0.0-beta3</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
