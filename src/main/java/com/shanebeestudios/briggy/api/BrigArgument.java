@@ -33,11 +33,9 @@ import dev.jorel.commandapi.arguments.TeamArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import dev.jorel.commandapi.arguments.TimeArgument;
 import dev.jorel.commandapi.arguments.WorldArgument;
-import org.checkerframework.checker.units.qual.A;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -160,7 +158,7 @@ public class BrigArgument {
     public Argument<?> getArgument(String name) {
         if (this.customArg != null) return this.customArg.get(name);
         if (this.argClass == MultiLiteralArgument.class) {
-            return new MultiLiteralArgument(name, Collections.singletonList(name));
+            return new MultiLiteralArgument(name, name);
         }
         try {
             return this.argClass.getDeclaredConstructor(String.class).newInstance(name);
@@ -186,7 +184,7 @@ public class BrigArgument {
 
     public Argument<?> getMultiLit(String name, List<String> literals) {
         if (argClass != MultiLiteralArgument.class) return null;
-        return new MultiLiteralArgument(name, literals);
+        return new MultiLiteralArgument(name, literals.toArray(new String[0]));
     }
 
     public Class<? extends Argument<?>> getArgClass() {
