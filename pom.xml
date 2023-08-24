@@ -39,9 +39,9 @@
         </dependency>
         <dependency>
             <groupId>dev.jorel</groupId>
-            <artifactId>commandapi-bukkit-core</artifactId>
-            <version>9.0.3</version>
-            <scope>provided</scope>
+            <artifactId>commandapi-bukkit-shade</artifactId>
+            <version>9.1.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.SkriptLang</groupId>
@@ -147,15 +147,13 @@
                             </excludes>
                         </filter>
                     </filters>
-                    <!--
                     <relocations>
                         <relocation>
                             <pattern>dev.jorel.commandapi</pattern>
-
-                            <shadedPattern>com.shanebeestudios.briggy.api</shadedPattern>
+                            <shadedPattern>com.shanebeestudios.briggy.api.commandapi</shadedPattern>
                         </relocation>
                     </relocations>
-                    -->
+
                 </configuration>
             </plugin>
             <plugin>

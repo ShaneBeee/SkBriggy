@@ -5,22 +5,27 @@ import ch.njol.skript.SkriptAddon;
 import com.shanebeestudios.briggy.api.util.Utils;
 import com.shanebeestudios.skbee.SkBee;
 import com.shanebeestudios.skbee.api.nbt.NBTApi;
+import com.shanebeestudios.skbee.api.nbt.NBTContainer;
+import com.shanebeestudios.skbee.api.nbt.utils.MinecraftVersion;
 import com.shanebeestudios.skbee.config.Config;
 import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Logger;
 
 public class SkBriggy extends JavaPlugin {
 
-//    @Override
-//    public void onLoad() {
-//        CommandAPI.onLoad(new CommandAPIBukkitConfig(this).verboseOutput(true));
-//    }
-    // temporarily removing shading (using plugin instead for testing)
+    @Override
+    public void onLoad() {
+        CommandAPIBukkitConfig commandAPIBukkitConfig = new CommandAPIBukkitConfig(this);
+        if (Bukkit.getPluginManager().getPlugin("SkBee") != null && MinecraftVersion.getVersion() != MinecraftVersion.UNKNOWN) {
+            commandAPIBukkitConfig.initializeNBTAPI(NBTContainer.class, NBTContainer::new);
+        }
+        CommandAPI.onLoad(commandAPIBukkitConfig.verboseOutput(false));
+
+    }
 
     public static boolean HAS_SKBEE_COMPONENT;
     public static boolean HAS_SKBEE_NBT;
@@ -40,18 +45,6 @@ public class SkBriggy extends JavaPlugin {
             if (skBeeConfig.ELEMENTS_NBT && NBTApi.isEnabled()) {
                 HAS_SKBEE_NBT = true;
                 Utils.log("&5SkBee NBT &asuccessfully hooked");
-
-                // Hide the NBTAPI logger warnings // TODO remove after shading
-                Logger.getLogger("NBTAPI").setFilter(record -> !record.getMessage().contains("[NBTAPI]"));
-                Class<?> nbtClass = CommandAPI.getConfiguration().getNBTContainerClass();
-                try {
-                    // Initialize internal NBT API // TODO remove after shading
-                    // Prevents it randomly popped up messages later
-                    nbtClass.getDeclaredConstructor(String.class).newInstance("{test:1}");
-                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                         InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
             }
         }
 
@@ -74,14 +67,14 @@ public class SkBriggy extends JavaPlugin {
             Utils.log("&ehttps://github.com/ShaneBeee/SkBriggy/issues");
         }
 
-        //CommandAPI.onEnable();
+        CommandAPI.onEnable();
         long finish = System.currentTimeMillis() - start;
         Utils.log("Finished loading in &b" + finish + "ms");
     }
 
     @Override
     public void onDisable() {
-        //CommandAPI.onDisable();
+        CommandAPI.onDisable();
     }
 
 }
