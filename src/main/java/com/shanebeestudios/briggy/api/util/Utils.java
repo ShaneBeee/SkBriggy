@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 
 public class Utils {
 
+    @SuppressWarnings("deprecation")
     public static void log(String message) {
         String m = ChatColor.translateAlternateColorCodes('&', "&7[&bSk&3Briggy&7] &7" + message);
         Bukkit.getConsoleSender().sendMessage(m);
