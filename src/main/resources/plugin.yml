@@ -1,6 +1,6 @@
 name: SkBriggy
 main: com.shanebeestudios.briggy.SkBriggy
-version: '${project.version}'
+version: @version@
 api-version: 1.13
 depend:
   - Skript

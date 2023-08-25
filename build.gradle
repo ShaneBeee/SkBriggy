@@ -1,0 +1,63 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group 'com.shanebeestudios'
+version '1.0.0-beta3'
+
+compileJava   {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+
+    // Paper
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+
+    // Skript
+    maven { url 'https://repo.skriptlang.org/releases' }
+
+    // JitPack
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    // Paper
+    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+
+    // Skript
+    implementation(group: 'com.github.SkriptLang', name: 'Skript', version: '2.7.0-beta3') {
+        transitive = false
+    }
+
+    // Command Api
+    implementation "dev.jorel:commandapi-bukkit-shade:9.1.0"
+
+    // SkBee
+    implementation 'com.github.ShaneBeee:SkBee:2.17.0'
+}
+
+processResources {
+    filter ReplaceTokens, tokens: ["version": project.property("version")]
+    from ("lang/") {
+        include '*.lang'
+        into 'lang/'
+    }
+}
+
+shadowJar {
+    archiveClassifier = null
+    dependencies {
+        include(dependency("dev.jorel:commandapi-bukkit-shade:9.1.0"))
+    }
+
+    relocate("dev.jorel.commandapi", "com.shanebeestudios.briggy.api.commandapi")
+}
+
+tasks.build.dependsOn(tasks.shadowJar)
