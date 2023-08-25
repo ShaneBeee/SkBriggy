@@ -6,7 +6,6 @@ plugins {
 }
 
 group 'com.shanebeestudios'
-version '1.0.0-beta3'
 
 compileJava   {
     sourceCompatibility = '17'
