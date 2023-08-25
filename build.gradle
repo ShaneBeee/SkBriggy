@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group 'com.shanebeestudios'
@@ -31,15 +31,25 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
 
     // Skript
-    implementation(group: 'com.github.SkriptLang', name: 'Skript', version: '2.7.0-beta3') {
+    compileOnly(group: 'com.github.SkriptLang', name: 'Skript', version: '2.7.0-beta3') {
         transitive = false
     }
 
     // Command Api
-    implementation "dev.jorel:commandapi-bukkit-shade:9.1.0"
+    implementation("dev.jorel:commandapi-bukkit-shade:9.1.0")
 
     // SkBee
-    implementation 'com.github.ShaneBeee:SkBee:2.17.0'
+    compileOnly("com.github.ShaneBeee:SkBee:2.17.0")
+}
+
+build {
+    dependsOn(shadowJar)
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.compilerArgs.add("-Xlint:unchecked")
+            options.compilerArgs.add("-Xlint:deprecation")
+        }
+    }
 }
 
 processResources {
@@ -52,11 +62,12 @@ processResources {
 
 shadowJar {
     archiveClassifier = null
-    dependencies {
-        include(dependency("dev.jorel:commandapi-bukkit-shade:9.1.0"))
-    }
-
     relocate("dev.jorel.commandapi", "com.shanebeestudios.briggy.api.commandapi")
 }
 
-tasks.build.dependsOn(tasks.shadowJar)
+// Run task to build jar to another spot
+tasks.register('server', Copy) {
+    from shadowJar
+    // Change this to wherever you want your jar to build
+    into '/Users/ShaneBee/Desktop/Server/Skript/2.7/plugins'
+}
