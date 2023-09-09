@@ -17,7 +17,6 @@ import ch.njol.util.StringUtils;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
-import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.arguments.Argument;
@@ -79,7 +78,7 @@ public class StructBrigCommand extends Structure {
         EntryValidator entryValidator = EntryValidator.builder()
                 .addEntry("permission", null, true)
                 .addEntry("description", "SkBriggy Command", true)
-                .addEntryData(new VariableStringEntryData("usage", null, true, BrigCommandEvent.class))
+                .addEntryData(new VariableStringEntryData("usage", null, true))
                 .addEntryData(new KeyValueEntryData<List<String>>("aliases", new ArrayList<>(), true) {
                     @SuppressWarnings("NullableProblems")
                     @Override

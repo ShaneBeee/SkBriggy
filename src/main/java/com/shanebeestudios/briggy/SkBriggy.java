@@ -2,6 +2,7 @@ package com.shanebeestudios.briggy;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
+import ch.njol.skript.util.Version;
 import com.shanebeestudios.briggy.api.util.Utils;
 import com.shanebeestudios.skbee.SkBee;
 import com.shanebeestudios.skbee.api.nbt.NBTApi;
@@ -46,6 +47,11 @@ public class SkBriggy extends JavaPlugin {
                 HAS_SKBEE_NBT = true;
                 Utils.log("&5SkBee NBT &asuccessfully hooked");
             }
+        }
+
+        if (Skript.getVersion().isSmallerThan(new Version(2,7))) {
+            Utils.log("&cOutdated Skript Version: &e" + Skript.getVersion());
+            Utils.log("&eSkript 2.7+ is required for SkBriggy to run.");
         }
 
         if (Skript.isAcceptRegistrations()) {
