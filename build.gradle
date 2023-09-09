@@ -13,6 +13,9 @@ compileJava   {
     options.encoding = 'UTF-8'
 }
 
+// SkBriggy version
+version = '1.0.0-beta4'
+
 repositories {
     mavenCentral()
 
@@ -53,11 +56,7 @@ build {
 }
 
 processResources {
-    filter ReplaceTokens, tokens: ["version": project.property("version")]
-    from ("lang/") {
-        include '*.lang'
-        into 'lang/'
-    }
+    filter ReplaceTokens, tokens: ["version": version]
 }
 
 shadowJar {
