@@ -31,7 +31,7 @@ public class Types {
                 .name("Integer Range")
                 .description("Represents a range between 2 integers.",
                         "Use the IntegerRange expression to get the high/low value.")
-                .since("INSERT VERSION"));
+                .since("1.0.0"));
 
         Classes.registerClass(new ClassInfo<>(BrigArgument.class, "brigarg")
                 .user("brig ?args?")
@@ -41,7 +41,7 @@ public class Types {
                         "Bukkit/Skript types to be able to fully use in Skript.",
                         "\nSee Wiki for more details <link>https://github.com/ShaneBeee/SkBriggy/wiki/Brig-Argument-Type</link>")
                 .usage(BrigArgument.getPatterns())
-                .since("INSERT VERSION")
+                .since("1.0.0")
                 .parser(new Parser<>() {
 
                     @SuppressWarnings("NullableProblems")

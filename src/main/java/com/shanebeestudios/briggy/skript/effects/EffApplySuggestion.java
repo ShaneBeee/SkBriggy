@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
         "\tapply suggestion \"1\" with tooltip \"creative\"",
         "\tapply suggestion \"2\" with tooltip \"adventure\"",
         "\tapply suggestion \"3\" with tooltip \"spectator\""})
-@Since("INSERT VERSION")
+@Since("1.0.0")
 public class EffApplySuggestion extends Effect {
 
     private static final boolean HAS_COMP = SkBriggy.HAS_SKBEE_COMPONENT;

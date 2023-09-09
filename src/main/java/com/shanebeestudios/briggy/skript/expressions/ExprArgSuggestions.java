@@ -40,7 +40,7 @@ import java.util.Map;
         "\t\tset suggestions of \"name\" argument to \"<put your nick here>\"",
         "\ttrigger:",
         "\t\tset display name of player to {_name}"})
-@Since("INSERT VERSION")
+@Since("1.0.0")
 public class ExprArgSuggestions extends SimpleExpression<Object> {
 
     static {

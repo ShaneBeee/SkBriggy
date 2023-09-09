@@ -68,7 +68,7 @@ import java.util.regex.Pattern;
         "\ttrigger:",
         "\t\tset {_amount} to 1 if {_amount} isn't set",
         "\t\tgive {_amount} of {_item} to player"})
-@Since("INSERT VERSION")
+@Since("1.0.0")
 public class StructBrigCommand extends Structure {
 
     private static final Pattern ALIASES_PATTERN = Pattern.compile("\\s*,\\s*");

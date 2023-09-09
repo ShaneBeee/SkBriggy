@@ -26,7 +26,7 @@ import java.util.List;
 @Examples({"brig command /i <item> <int>:",
         "\ttrigger:",
         "\t\tgive brig-arg-2 of brig-arg-1 to player"})
-@Since("INSERT VERSION")
+@Since("1.0.0")
 public class ExprBrigArg extends SimpleExpression<Object> {
 
     static {

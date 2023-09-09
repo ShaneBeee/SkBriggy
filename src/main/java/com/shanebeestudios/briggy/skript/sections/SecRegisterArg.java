@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
         "\tapply suggestion \"1\" with tooltip \"creative\"",
         "\tapply suggestion \"2\" with tooltip \"adventure\"",
         "\tapply suggestion \"3\" with tooltip \"spectator\""})
-@Since("INSERT VERSION")
+@Since("1.0.0")
 public class SecRegisterArg extends EffectSection {
 
     static {

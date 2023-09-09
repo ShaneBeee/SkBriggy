@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 @Examples({"set {_low} to low range of {_intrange}",
         "set {_high} to high range of {_intrange}",
         "set {_ints::} to integers between {_low} and {_high}"})
-@Since("INSERT VERSION")
+@Since("1.0.0")
 public class ExprIntegerRange extends SimplePropertyExpression<IntegerRange, Number> {
 
     static {
