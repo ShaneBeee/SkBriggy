@@ -57,7 +57,7 @@ public class SkBriggy extends JavaPlugin {
             }
             if (skBeeConfig.ELEMENTS_NBT && NBTApi.isEnabled()) {
                 HAS_SKBEE_NBT = true;
-                Utils.log("&5SkBee NBT &asuccessfully hooked");
+                Utils.log("&5SkBee NBT Compounds &asuccessfully hooked");
             }
         }
 
