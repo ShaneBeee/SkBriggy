@@ -12,6 +12,7 @@ import com.shanebeestudios.skbee.config.Config;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -37,7 +38,18 @@ public class SkBriggy extends JavaPlugin {
         long start = System.currentTimeMillis();
         Utils.log("Starting up SkBriggy!!!");
 
-        if (Bukkit.getPluginManager().getPlugin("SkBee") instanceof SkBee skbee) {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        // Skript version check
+        if (Skript.getVersion().isSmallerThan(new Version(2,7))) {
+            Utils.log("&cOutdated Skript Version: &e" + Skript.getVersion() + " &cplugin will disable.");
+            Utils.log("&eSkript 2.7+ is required for SkBriggy to run.");
+            pluginManager.disablePlugin(this);
+            return;
+        }
+
+        // Hook into SkBee (text components and NBT)
+        if (pluginManager.getPlugin("SkBee") instanceof SkBee skbee) {
             Config skBeeConfig = skbee.getPluginConfig();
             if (skBeeConfig.ELEMENTS_TEXT_COMPONENT) {
                 HAS_SKBEE_COMPONENT = true;
@@ -49,11 +61,7 @@ public class SkBriggy extends JavaPlugin {
             }
         }
 
-        if (Skript.getVersion().isSmallerThan(new Version(2,7))) {
-            Utils.log("&cOutdated Skript Version: &e" + Skript.getVersion());
-            Utils.log("&eSkript 2.7+ is required for SkBriggy to run.");
-        }
-
+        // Register Skript addon
         if (Skript.isAcceptRegistrations()) {
             SkriptAddon skriptAddon = Skript.registerAddon(this);
             try {
