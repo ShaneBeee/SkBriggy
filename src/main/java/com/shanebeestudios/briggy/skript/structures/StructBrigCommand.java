@@ -101,9 +101,15 @@ public class StructBrigCommand extends Structure {
     @SuppressWarnings("NullableProblems")
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
-        String[] split = parseResult.regexes.get(0).group().split(" ", 2);
-        this.command = split[0];
-        this.argString = split.length > 1 ? split[1] : null;
+        // Replace all whitespace with a single space and also strip leading and trailing whitespace
+        // This allows for users to input "/     cmd  arg    <string>   " and still handle it properly
+        String cmd = parseResult.regexes.get(0).group().replaceAll("\\s+", " ").strip();
+        int argumentIndex = firstIndexOf(cmd, "[<");
+
+        argString = argumentIndex != -1 ? cmd.substring(argumentIndex) : null;
+        cmd = argumentIndex != -1 ? cmd.substring(0, argumentIndex) : cmd;
+        int commandIndex = cmd.indexOf(" ");
+        command = cmd.substring(0, commandIndex != -1 ? commandIndex : argumentIndex); // Ignore sub-commands for now
         return true;
     }
 
@@ -258,4 +264,13 @@ public class StructBrigCommand extends Structure {
         return "briggy command";
     }
 
+    private static int firstIndexOf(CharSequence input, String characters) {
+        for (int i = 0; i < input.length(); i++) {
+            char ch = input.charAt(i);
+            if (characters.indexOf(ch) != -1) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
