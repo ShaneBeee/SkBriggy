@@ -32,7 +32,8 @@ public class Types {
                 .name("Integer Range")
                 .description("Represents a range between 2 integers.",
                         "Use the IntegerRange expression to get the high/low value.")
-                .since("1.0.0"));
+                .since("1.0.0")
+                .parser(getDefaultParser()));
 
         Classes.registerClass(new ClassInfo<>(BrigArgument.class, "brigarg")
                 .user("brig ?args?")
