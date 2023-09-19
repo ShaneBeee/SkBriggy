@@ -9,6 +9,7 @@ import ch.njol.skript.util.Getter;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import dev.jorel.commandapi.wrappers.IntegerRange;
+import dev.jorel.commandapi.wrappers.ParticleData;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,6 +61,51 @@ public class Types {
                         return toString(brigArgument, 0);
                     }
                 }));
+
+        Classes.registerClass(new ClassInfo<>(ParticleData.class, "particledata")
+                .user("particle ?datas?")
+                .name("Particle Data")
+                .description("Represents a particle along with its provided data.",
+                        "This is retrieved when using the `particle` argument.",
+                        "You can get the particle/data from this type using the appropriate expressions.")
+                .examples("brig command /leparticle <p:particle> <loc:location>:",
+                        "\ttrigger:",
+                        "\t\tset {_particle} to particle type of {_p}",
+                        "\t\tset {_data} to data type of {_p}",
+                        "\t\tif {_data} is set:",
+                        "\t\t\tmake 1 of {_particle} using {_data} at {_loc} with extra 0",
+                        "\t\telse:",
+                        "\t\t\tmake 1 of {_particle} at {_loc} with extra 0")
+                .since("INSERT VERSION")
+                .parser(getDefaultParser()));
+    }
+
+    /**
+     * Get a default instance of a Parser for ClassInfos
+     *
+     * @param <T> ClassType
+     * @return New instance of default parser
+     */
+    public static <T> Parser<T> getDefaultParser() {
+        return new Parser<>() {
+            @SuppressWarnings("NullableProblems")
+            @Override
+            public boolean canParse(ParseContext context) {
+                return false;
+            }
+
+            @SuppressWarnings("NullableProblems")
+            @Override
+            public String toString(T o, int flags) {
+                return o.toString();
+            }
+
+            @SuppressWarnings("NullableProblems")
+            @Override
+            public String toVariableNameString(T o) {
+                return o.toString();
+            }
+        };
     }
 
 }
