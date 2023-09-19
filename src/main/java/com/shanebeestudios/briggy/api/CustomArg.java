@@ -11,6 +11,8 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.Location2DArgument;
+import dev.jorel.commandapi.arguments.LocationArgument;
+import dev.jorel.commandapi.arguments.LocationType;
 import dev.jorel.commandapi.arguments.NBTCompoundArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -37,6 +39,13 @@ public abstract class CustomArg {
                 if (SkBriggy.HAS_SKBEE_COMPONENT) return ComponentWrapper.fromComponent(component);
                 return LegacyComponentSerializer.legacySection().serialize(component);
             });
+        }
+    };
+
+    static final CustomArg BLOCK_POS = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new LocationArgument(name, LocationType.BLOCK_POSITION);
         }
     };
 
