@@ -11,6 +11,7 @@ import com.shanebeestudios.skbee.api.nbt.utils.MinecraftVersion;
 import com.shanebeestudios.skbee.config.Config;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import dev.jorel.commandapi.exceptions.UnsupportedVersionException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,14 +20,20 @@ import java.io.IOException;
 
 public class SkBriggy extends JavaPlugin {
 
+    private static boolean commandApiCanLoad;
+
     @Override
     public void onLoad() {
-        CommandAPIBukkitConfig commandAPIBukkitConfig = new CommandAPIBukkitConfig(this);
-        if (Bukkit.getPluginManager().getPlugin("SkBee") != null && MinecraftVersion.getVersion() != MinecraftVersion.UNKNOWN) {
-            commandAPIBukkitConfig.initializeNBTAPI(NBTContainer.class, NBTContainer::new);
+        try {
+            CommandAPIBukkitConfig commandAPIBukkitConfig = new CommandAPIBukkitConfig(this);
+            if (Bukkit.getPluginManager().getPlugin("SkBee") != null && MinecraftVersion.getVersion() != MinecraftVersion.UNKNOWN) {
+                commandAPIBukkitConfig.initializeNBTAPI(NBTContainer.class, NBTContainer::new);
+            }
+            CommandAPI.onLoad(commandAPIBukkitConfig.verboseOutput(false));
+            commandApiCanLoad = true;
+        } catch (UnsupportedVersionException ignore) {
+            commandApiCanLoad = false;
         }
-        CommandAPI.onLoad(commandAPIBukkitConfig.verboseOutput(false));
-
     }
 
     public static boolean HAS_SKBEE_COMPONENT;
@@ -35,13 +42,20 @@ public class SkBriggy extends JavaPlugin {
     @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        if (!commandApiCanLoad) {
+            Utils.log("&eIt appears the CommandAPI is not available on your server version.");
+            Utils.log("&eThis is not a bug.");
+            Utils.log("&eThis addon will be updated when CommandAPI supports your server version.");
+            Utils.log("&ePlugin will disable!");
+            pluginManager.disablePlugin(this);
+            return;
+        }
         long start = System.currentTimeMillis();
         Utils.log("Starting up SkBriggy!!!");
 
-        PluginManager pluginManager = Bukkit.getPluginManager();
-
         // Skript version check
-        if (Skript.getVersion().isSmallerThan(new Version(2,7))) {
+        if (Skript.getVersion().isSmallerThan(new Version(2, 7))) {
             Utils.log("&cOutdated Skript Version: &e" + Skript.getVersion() + " &cplugin will disable.");
             Utils.log("&eSkript 2.7+ is required for SkBriggy to run.");
             pluginManager.disablePlugin(this);
