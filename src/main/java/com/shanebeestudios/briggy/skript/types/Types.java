@@ -77,7 +77,7 @@ public class Types {
                         "\t\t\tmake 1 of {_particle} using {_data} at {_loc} with extra 0",
                         "\t\telse:",
                         "\t\t\tmake 1 of {_particle} at {_loc} with extra 0")
-                .since("INSERT VERSION")
+                .since("1.1.0")
                 .parser(getDefaultParser()));
     }
 

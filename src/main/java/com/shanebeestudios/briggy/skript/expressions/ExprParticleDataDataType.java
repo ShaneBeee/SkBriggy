@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
         "\t\t\tmake 1 of {_particle} using {_data} at {_loc} with extra 0",
         "\t\telse:",
         "\t\t\tmake 1 of {_particle} at {_loc} with extra 0"})
-@Since("INSERT VERSION")
+@Since("1.1.0")
 public class ExprParticleDataDataType extends SimplePropertyExpression<ParticleData<?>,Object> {
 
     static {
