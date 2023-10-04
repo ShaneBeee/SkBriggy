@@ -106,10 +106,10 @@ public class StructBrigCommand extends Structure {
         String cmd = parseResult.regexes.get(0).group().replaceAll("\\s+", " ").strip();
         int argumentIndex = firstIndexOf(cmd, "[<");
 
-        argString = argumentIndex != -1 ? cmd.substring(argumentIndex) : null;
+        this.argString = argumentIndex != -1 ? cmd.substring(argumentIndex) : null;
         cmd = argumentIndex != -1 ? cmd.substring(0, argumentIndex) : cmd;
         int commandIndex = cmd.indexOf(" ");
-        command = cmd.substring(0, commandIndex != -1 ? commandIndex : argumentIndex); // Ignore sub-commands for now
+        this.command = cmd.substring(0, commandIndex != -1 ? commandIndex : argumentIndex); // Ignore sub-commands for now
         return true;
     }
 
