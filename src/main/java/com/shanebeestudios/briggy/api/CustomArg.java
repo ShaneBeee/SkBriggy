@@ -14,8 +14,10 @@ import dev.jorel.commandapi.arguments.Location2DArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
 import dev.jorel.commandapi.arguments.NBTCompoundArgument;
+import dev.jorel.commandapi.arguments.RotationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.wrappers.Location2D;
+import dev.jorel.commandapi.wrappers.Rotation;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
@@ -30,6 +32,7 @@ import java.util.Locale;
 public abstract class CustomArg {
 
     private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).map(mat -> mat.getKey().getKey()).toList();
+    private static final World MAIN_WORLD = Bukkit.getWorlds().get(0);
 
     static final CustomArg MESSAGE = new CustomArg() {
         @Override
@@ -88,6 +91,16 @@ public abstract class CustomArg {
                 String nbtString = info.input();
                 if (SkBriggy.HAS_SKBEE_NBT) return NBTApi.validateNBT(nbtString);
                 return nbtString;
+            });
+        }
+    };
+
+    static final CustomArg ROTATION = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new RotationArgument(name), info -> {
+                Rotation rotation = info.currentInput();
+                return new Location(MAIN_WORLD, 0,0,0, rotation.getNormalizedYaw(), rotation.getNormalizedPitch());
             });
         }
     };

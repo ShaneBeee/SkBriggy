@@ -3,6 +3,7 @@ package com.shanebeestudios.briggy.api;
 import ch.njol.skript.patterns.PatternCompiler;
 import ch.njol.skript.patterns.SkriptPattern;
 import ch.njol.util.StringUtils;
+import dev.jorel.commandapi.arguments.AngleArgument;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.BiomeArgument;
 import dev.jorel.commandapi.arguments.BlockStateArgument;
@@ -27,6 +28,7 @@ import dev.jorel.commandapi.arguments.OfflinePlayerArgument;
 import dev.jorel.commandapi.arguments.ParticleArgument;
 import dev.jorel.commandapi.arguments.PotionEffectArgument;
 import dev.jorel.commandapi.arguments.RecipeArgument;
+import dev.jorel.commandapi.arguments.RotationArgument;
 import dev.jorel.commandapi.arguments.SoundArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.arguments.TeamArgument;
@@ -58,6 +60,7 @@ public class BrigArgument {
         register("long", LongArgument.class);
 
         // Minecraft
+        register("angle", AngleArgument.class);
         register("biome", BiomeArgument.class);
         register("biomekey", "biome[ ]key", BiomeArgument.NamespacedKey.class);
         register("block state", "block[[ ](state|data)]", BlockStateArgument.class);
@@ -75,6 +78,7 @@ public class BrigArgument {
         register("particle", ParticleArgument.class);
         register("potioneffect", "potion[ ]effect[[ ]type]", PotionEffectArgument.class);
         register("recipe", RecipeArgument.class);
+        register("rotation", CustomArg.ROTATION);
         register("sound", SoundArgument.class);
         register("team", TeamArgument.class);
         register("time", TimeArgument.class);
