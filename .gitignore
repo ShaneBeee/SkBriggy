@@ -1,4 +1,17 @@
 # Project exclude paths
-/target/
-/build/
+/dependency-reduced-pom.xml
 /.idea/
+/SkBriggy.iml
+
+# Compiled class file
+*.class
+
+/.gradle/
+/.settings/
+.project
+.classpath
+/build/
+/bin/
+/target/
+src/.DS_Store
+*.DS_Store
