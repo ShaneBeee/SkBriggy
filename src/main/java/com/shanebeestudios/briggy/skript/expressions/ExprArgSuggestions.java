@@ -28,7 +28,8 @@ import java.util.Map;
 @Name("Argument Suggestions")
 @Description({"Set the suggestions for an argument.",
         "Will accept any object, but strings are the best way to go.",
-        "For args you can use a number (the position of the argument) or a string (name of the argument), see examples."})
+        "For args you can use a number (the position of the argument) or a string (name of the argument), see examples.",
+        "NOTE: This expression is not dynamic, meaning if variables/expressions are used, they wont update."})
 @Examples({"brig command /spawn <string>:",
         "\targuments:",
         "\t\tset suggestions of arg 1 to all worlds",
