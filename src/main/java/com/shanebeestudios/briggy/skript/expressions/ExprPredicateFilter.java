@@ -38,10 +38,10 @@ import java.util.function.Predicate;
         "\t\tloop {_players::*}:",
         "\t\t\tremove ((items in loop-value's inventory) that match item predicate {_i}) from inventory of loop-value"})
 @Since("INSERT VERSION")
-public class ExprPredicateMatch extends SimpleExpression<Object> {
+public class ExprPredicateFilter extends SimpleExpression<Object> {
 
     static {
-        Skript.registerExpression(ExprPredicateMatch.class, Object.class, ExpressionType.COMBINED,
+        Skript.registerExpression(ExprPredicateFilter.class, Object.class, ExpressionType.COMBINED,
                 "%itemstacks% (that|which) match item[[ ]stack] predicate %predicate%",
                 "%blocks% (that|which) match block predicate %predicate%");
     }
