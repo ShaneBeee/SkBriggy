@@ -14,6 +14,8 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Predicate;
+
 @SuppressWarnings("unused")
 public class Types {
 
@@ -79,6 +81,15 @@ public class Types {
                         "\t\t\tmake 1 of {_particle} at {_loc} with extra 0")
                 .since("1.1.0")
                 .parser(getDefaultParser()));
+
+        if (Classes.getExactClassInfo(Predicate.class) == null) {
+            Classes.registerClass(new ClassInfo<>(Predicate.class, "predicate")
+                    .user("predicates?")
+                    .name("Predicate")
+                    .description("Represents a predicate which can be used for filtering.")
+                    .since("INSERT VERSION")
+                    .parser(getDefaultParser()));
+        }
     }
 
     /**
