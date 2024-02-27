@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 
 @Name("Brig Command")
 @Description({"Register a new Brigadier command.",
+        "See wiki for more details on registering: <link>https://github.com/ShaneBeee/SkBriggy/wiki/Registering-New-Command</link>",
         "\nNotes:",
         "\nFormat: 'brig command /commandName <brigArgType> [<brigArgType(optional)>] <argName:brigArgType> [<argName:brigArgType(optional)>]:'",
         "\n`commandName` = Represents the command itself, ex: '/mycommand'.",
@@ -92,7 +93,7 @@ public class StructBrigCommand extends Structure {
                 .addSection("arguments", true)
                 .addSection("trigger", false)
                 .build();
-        Skript.registerStructure(StructBrigCommand.class, entryValidator, "brig[gy] command /<.+>");
+        Skript.registerStructure(StructBrigCommand.class, entryValidator, "brig[(gy|adier)] command /<.+>");
     }
 
     private String command;
@@ -237,7 +238,7 @@ public class StructBrigCommand extends Structure {
 
             // GreedyString args have to be last
             List<Argument<?>> brigArgs = brigCommand.getArguments();
-            if (brigArgs.size() > 0 && brigArgs.get(brigArgs.size() - 1) instanceof GreedyStringArgument) {
+            if (!brigArgs.isEmpty() && brigArgs.get(brigArgs.size() - 1) instanceof GreedyStringArgument) {
                 Skript.error("You cannot place another arg after a <greedystring> arg.");
                 return false;
             }
