@@ -32,6 +32,7 @@ import org.bukkit.World;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class CustomArg {
 
@@ -140,8 +141,9 @@ public abstract class CustomArg {
         Argument<World> get(String name) {
             return new CustomArgument<>(new StringArgument(name), info ->
                     Bukkit.getWorld(info.input()))
-                    .replaceSuggestions(ArgumentSuggestions.strings(
-                            Bukkit.getWorlds().stream().map(World::getName).toArray(String[]::new)));
+                    .includeSuggestions(ArgumentSuggestions.stringCollectionAsync(commandSenderSuggestionInfo ->
+                            CompletableFuture.supplyAsync(() -> Bukkit.getWorlds().stream().map(World::getName).toList())));
+
         }
     };
 
