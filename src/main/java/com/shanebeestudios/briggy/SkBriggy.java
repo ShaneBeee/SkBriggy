@@ -26,7 +26,7 @@ public class SkBriggy extends JavaPlugin {
     @Override
     public void onLoad() {
         try {
-            CommandAPIBukkitConfig commandAPIBukkitConfig = new CommandAPIBukkitConfig(this);
+            CommandAPIBukkitConfig commandAPIBukkitConfig = new CommandAPIBukkitConfig(this).silentLogs(true);
             if (Bukkit.getPluginManager().getPlugin("SkBee") != null && MinecraftVersion.getVersion() != MinecraftVersion.UNKNOWN) {
                 commandAPIBukkitConfig.initializeNBTAPI(NBTContainer.class, NBTContainer::new);
             }
