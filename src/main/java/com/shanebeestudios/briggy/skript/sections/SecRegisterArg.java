@@ -21,6 +21,7 @@ import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
+import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import dev.jorel.commandapi.BukkitStringTooltip;
 import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.arguments.Argument;
@@ -40,10 +41,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
         "\nWithin this section you can apply suggestions with tooltips.",
         "The section itself will run when a player types a command, thus variables CAN be used and the [event-]player",
         "will be the player typing the command.",
-        "\n`brigarg` represents the type of argument. See Brig Argument Type for more details.",
-        "\n`string` represents the name of the argument. (Used for local variables and how it shows in game)",
-        "\n`%objects`% represents suggestions for this argument. (If object is not a string, Skript will stringify it)",
-        "\n`min/max` represents the min/max range of a number (long/int/float/double) argument."})
+        "Local variables will be created for the previously typed args, and can be used in this section. See examples.",
+        "\n`brigarg` = Type of argument. See Brig Argument Type for more details.",
+        "\n`string` = Name of the argument. (Used for local variables and how it shows in game)",
+        "\n`%objects`% = Suggestions for this argument. (If object is not a string, Skript will stringify it)",
+        "\n`min/max` = The min/max range of a number (long/int/float/double) argument."})
 @Examples({"register string arg \"world\" using all worlds",
         "register string arg \"world\":",
         "\tapply suggestion all worlds",
@@ -57,7 +59,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
         "\tapply suggestion \"0\" with tooltip \"survival\"",
         "\tapply suggestion \"1\" with tooltip \"creative\"",
         "\tapply suggestion \"2\" with tooltip \"adventure\"",
-        "\tapply suggestion \"3\" with tooltip \"spectator\""})
+        "\tapply suggestion \"3\" with tooltip \"spectator\"",
+        "",
+        "brig command /breaky:",
+        "\targuments:",
+        "\t\tregister string arg named \"type\" using \"bacon\", \"eggs\" and \"toast\"",
+        "\t\tregister string arg named \"style\":",
+        "\t\t\tif brig-arg-1 = \"bacon\": # Brig-Args can be used here",
+        "\t\t\t\tapply suggestion \"crispy\" with tooltip \"nice and crispy\"",
+        "\t\t\t\tapply suggestion \"soft\" with tooltip \"ewww\"",
+        "\t\t\telse if {_type} = \"eggs\": # Local variables of the previous arg are also created",
+        "\t\t\t\tapply suggestion \"sunny_side_up\" with tooltip \"facing the sun\"",
+        "\t\t\t\tapply suggestion \"scrambled\" with tooltip \"all mixed up\"",
+        "\t\t\t\tapply suggestion \"soft_boiled\" with tooltip \"swimmin for a short time\"",
+        "\t\t\t\tapply suggestion \"hard_boiled\" with tooltip \"eww, thats nasty bitch\"",
+        "\t\t\telse if {_type} = \"toast\":",
+        "\t\t\t\tapply suggestion \"light\" with tooltip \"just a touch of heat\"",
+        "\t\t\t\tapply suggestion \"medium\" with tooltip \"well that sounds perfect\"",
+        "\t\t\t\tapply suggestion \"dark\" with tooltip \"nice and crisy\"",
+        "\t\t\t\tapply suggestion \"burnt\" with tooltip \"now ya done an fucked er up\""})
 @Since("1.0.0")
 public class SecRegisterArg extends EffectSection {
 
@@ -124,49 +144,56 @@ public class SecRegisterArg extends EffectSection {
         BrigCommand brigCommand = brigCommandEvent.getBrigCommand();
         String arg = this.argument.getSingle(event);
 
-        BrigArgument brigArg = this.brigArg.getSingle(event);
+        BrigArgument brigArg = this.brigArg.getSingle();
         Argument<?> argument = null;
 
-        if (brigArg != null) {
-            if (this.pattern > 1) {
-                Number[] minMax = brigArg.getMinMax();
-                if (minMax != null) {
-                    Number min = (this.min != null && this.min.getSingle(event) != null) ? this.min.getSingle(event) : minMax[0];
-                    Number max = (this.max != null && this.max.getSingle(event) != null) ? this.max.getSingle(event) : minMax[1];
-                    argument = brigArg.getIntArgument(arg, min, max);
-                }
-            } else {
-                if (brigArg.getArgClass() == MultiLiteralArgument.class) {
-                    List<String> literals = new ArrayList<>();
-                    if (this.pattern == 1 && this.suggestions != null) {
-                        for (Object object : this.suggestions.getArray(event)) {
-                            if (object instanceof String string) literals.add(string);
-                            else literals.add(Classes.toString(object));
-                        }
-
-                    } else {
-                        literals.add(arg);
+        // Create the argument
+        if (this.pattern > 1) {
+            Number[] minMax = brigArg.getMinMax();
+            if (minMax != null) {
+                Number min = (this.min != null && this.min.getSingle(event) != null) ? this.min.getSingle(event) : minMax[0];
+                Number max = (this.max != null && this.max.getSingle(event) != null) ? this.max.getSingle(event) : minMax[1];
+                argument = brigArg.getIntArgument(arg, min, max);
+            }
+        } else {
+            if (brigArg.getArgClass() == MultiLiteralArgument.class) {
+                List<String> literals = new ArrayList<>();
+                if (this.pattern == 1 && this.suggestions != null) {
+                    for (Object object : this.suggestions.getArray(event)) {
+                        if (object instanceof String string) literals.add(string);
+                        else literals.add(Classes.toString(object));
                     }
-                    argument = brigArg.getMultiLit(arg, literals);
                 } else {
-                    argument = brigArg.getArgument(arg);
+                    literals.add(arg);
                 }
+                argument = brigArg.getMultiLit(arg, literals);
+            } else {
+                argument = brigArg.getArgument(arg);
             }
         }
         if (argument == null) return super.walk(event, false);
 
         // GreedyString args have to be last
         List<Argument<?>> brigArgs = brigCommand.getArguments();
-        if (brigArgs.size() > 0 && brigArgs.get(brigArgs.size() - 1) instanceof GreedyStringArgument) {
+        if (!brigArgs.isEmpty() && brigArgs.get(brigArgs.size() - 1) instanceof GreedyStringArgument) {
             Skript.error("You cannot register another argument after a 'greedystring' arg.");
             return super.walk(event, false);
         }
 
+        // Apply runtime suggestions
         if (trigger != null) {
             // Section so we apply stuff from section effects
             argument.includeSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
                 BrigCommandSuggestEvent suggestEvent = new BrigCommandSuggestEvent(brigCommand, info.sender());
                 Variables.setLocalVariables(suggestEvent, localVars);
+
+                // Create local variables and brig-args from the previous args
+                List<Object> args = new ArrayList<>();
+                info.previousArgs().argsMap().forEach((string, object) -> {
+                    args.add(object);
+                    Variables.setVariable(string, ObjectConverter.convert(object), suggestEvent, true);
+                });
+                suggestEvent.setArgs(args.toArray());
 
                 brigCommandEvent.setSender(info.sender());
                 if (this.suggestions != null) {
@@ -184,15 +211,15 @@ public class SecRegisterArg extends EffectSection {
         } else if (this.pattern == 1 && this.suggestions != null) {
             // No section so we apply stuff if anything to apply
             argument.includeSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
-                List<IStringTooltip> tooltips = new ArrayList<>();
+                List<IStringTooltip> suggestions = new ArrayList<>();
 
                 brigCommandEvent.setSender(info.sender());
-                for (Object object : this.suggestions.getArray(brigCommandEvent)) {
-                    String string = (object instanceof String s) ? s : Classes.toString(object);
-                    tooltips.add(BukkitStringTooltip.none(string));
+                for (Object suggestion : this.suggestions.getArray(brigCommandEvent)) {
+                    String string = (suggestion instanceof String s) ? s : Classes.toString(suggestion);
+                    suggestions.add(BukkitStringTooltip.none(string));
                 }
 
-                return tooltips.toArray(new IStringTooltip[0]);
+                return suggestions.toArray(new IStringTooltip[0]);
             }));
         }
 

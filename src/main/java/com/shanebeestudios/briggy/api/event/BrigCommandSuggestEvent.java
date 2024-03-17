@@ -13,9 +13,18 @@ import java.util.List;
 public class BrigCommandSuggestEvent extends BrigCommandEvent {
 
     private final List<IStringTooltip> tooltips = new ArrayList<>();
+    private Object[] args;
 
     public BrigCommandSuggestEvent(@NotNull BrigCommand brigCommand, @Nullable CommandSender sender) {
         super(brigCommand, sender);
+    }
+
+    public Object[] getArgs() {
+        return args;
+    }
+
+    public void setArgs(Object[] args) {
+        this.args = args;
     }
 
     public List<IStringTooltip> getTooltips() {
