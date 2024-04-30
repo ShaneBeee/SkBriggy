@@ -28,7 +28,6 @@ import dev.jorel.commandapi.arguments.OfflinePlayerArgument;
 import dev.jorel.commandapi.arguments.ParticleArgument;
 import dev.jorel.commandapi.arguments.PotionEffectArgument;
 import dev.jorel.commandapi.arguments.RecipeArgument;
-import dev.jorel.commandapi.arguments.RotationArgument;
 import dev.jorel.commandapi.arguments.SoundArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.arguments.TeamArgument;
@@ -64,6 +63,7 @@ public class BrigArgument {
         register("biome", BiomeArgument.class);
         register("biomekey", "biome[ ]key", BiomeArgument.NamespacedKey.class);
         register("block state", "block[[ ](state|data)]", BlockStateArgument.class);
+        register("blockpredicate", "block[ ]predicate", CustomArg.BLOCK_PREDICATE);
         register("blockpos", "block[ ]pos", CustomArg.BLOCK_POS);
         register("command", CommandArgument.class);
         register("component", CustomArg.COMPONENT);
@@ -71,6 +71,7 @@ public class BrigArgument {
         register("enchantment", "enchant[ment]", EnchantmentArgument.class);
         register("entitytype", EntityTypeArgument.class);
         register("itemstack", "item[[ ]stack]", ItemStackArgument.class);
+        register("itempredicate", "item[[ ]stack][ ]predicate", CustomArg.ITEM_STACK_PREDICATE);
         register("loottable", "loot[ ]table", LootTableArgument.class);
         register("message", CustomArg.MESSAGE);
         register("nbt", CustomArg.NBT);

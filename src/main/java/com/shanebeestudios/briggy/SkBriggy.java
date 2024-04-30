@@ -20,12 +20,13 @@ import java.io.IOException;
 
 public class SkBriggy extends JavaPlugin {
 
+    private static SkBriggy INSTANCE;
     private static boolean commandApiCanLoad;
 
     @Override
     public void onLoad() {
         try {
-            CommandAPIBukkitConfig commandAPIBukkitConfig = new CommandAPIBukkitConfig(this);
+            CommandAPIBukkitConfig commandAPIBukkitConfig = new CommandAPIBukkitConfig(this).silentLogs(true);
             if (Bukkit.getPluginManager().getPlugin("SkBee") != null && MinecraftVersion.getVersion() != MinecraftVersion.UNKNOWN) {
                 commandAPIBukkitConfig.initializeNBTAPI(NBTContainer.class, NBTContainer::new);
             }
@@ -42,6 +43,7 @@ public class SkBriggy extends JavaPlugin {
     @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
+        INSTANCE = this;
         PluginManager pluginManager = Bukkit.getPluginManager();
         if (!commandApiCanLoad) {
             Utils.log("&eIt appears the CommandAPI is not available on your server version.");
@@ -103,6 +105,11 @@ public class SkBriggy extends JavaPlugin {
     @Override
     public void onDisable() {
         CommandAPI.onDisable();
+        INSTANCE = null;
+    }
+
+    public static SkBriggy getInstance() {
+        return INSTANCE;
     }
 
 }

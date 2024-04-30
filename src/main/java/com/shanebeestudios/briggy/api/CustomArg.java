@@ -3,13 +3,17 @@ package com.shanebeestudios.briggy.api;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.util.SkriptColor;
 import com.shanebeestudios.briggy.SkBriggy;
+import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
+import com.shanebeestudios.briggy.api.wrapper.ItemStackPredicate;
 import com.shanebeestudios.skbee.api.nbt.NBTApi;
 import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
 import dev.jorel.commandapi.arguments.AdventureChatArgument;
 import dev.jorel.commandapi.arguments.AdventureChatComponentArgument;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.arguments.BlockPredicateArgument;
 import dev.jorel.commandapi.arguments.CustomArgument;
+import dev.jorel.commandapi.arguments.ItemStackPredicateArgument;
 import dev.jorel.commandapi.arguments.Location2DArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
@@ -28,6 +32,7 @@ import org.bukkit.World;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class CustomArg {
 
@@ -52,6 +57,14 @@ public abstract class CustomArg {
         }
     };
 
+    static final CustomArg BLOCK_PREDICATE = new CustomArg() {
+        @SuppressWarnings("unchecked")
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new BlockPredicateArgument(name), info -> new BlockPredicate(info.currentInput()));
+        }
+    };
+
     static final CustomArg COMPONENT = new CustomArg() {
         @Override
         Argument<?> get(String name) {
@@ -60,6 +73,14 @@ public abstract class CustomArg {
                 if (SkBriggy.HAS_SKBEE_COMPONENT) return ComponentWrapper.fromComponent(component);
                 return LegacyComponentSerializer.legacySection().serialize(component);
             });
+        }
+    };
+
+    static final CustomArg ITEM_STACK_PREDICATE = new CustomArg() {
+        @SuppressWarnings({"unused", "unchecked"})
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new ItemStackPredicateArgument(name), info -> new ItemStackPredicate(info.currentInput()));
         }
     };
 
@@ -100,7 +121,7 @@ public abstract class CustomArg {
         Argument<?> get(String name) {
             return new CustomArgument<>(new RotationArgument(name), info -> {
                 Rotation rotation = info.currentInput();
-                return new Location(MAIN_WORLD, 0,0,0, rotation.getNormalizedYaw(), rotation.getNormalizedPitch());
+                return new Location(MAIN_WORLD, 0, 0, 0, rotation.getNormalizedYaw(), rotation.getNormalizedPitch());
             });
         }
     };
@@ -120,8 +141,9 @@ public abstract class CustomArg {
         Argument<World> get(String name) {
             return new CustomArgument<>(new StringArgument(name), info ->
                     Bukkit.getWorld(info.input()))
-                    .replaceSuggestions(ArgumentSuggestions.strings(
-                            Bukkit.getWorlds().stream().map(World::getName).toArray(String[]::new)));
+                    .includeSuggestions(ArgumentSuggestions.stringCollectionAsync(commandSenderSuggestionInfo ->
+                            CompletableFuture.supplyAsync(() -> Bukkit.getWorlds().stream().map(World::getName).toList())));
+
         }
     };
 
