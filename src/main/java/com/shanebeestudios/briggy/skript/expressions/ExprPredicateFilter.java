@@ -37,7 +37,7 @@ import java.util.function.Predicate;
         "\ttrigger:",
         "\t\tloop {_players::*}:",
         "\t\t\tremove ((items in loop-value's inventory) that match item predicate {_i}) from inventory of loop-value"})
-@Since("INSERT VERSION")
+@Since("1.3.0")
 public class ExprPredicateFilter extends SimpleExpression<Object> {
 
     static {

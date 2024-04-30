@@ -87,7 +87,7 @@ public class Types {
                     .user("predicates?")
                     .name("Predicate")
                     .description("Represents a predicate which can be used for filtering.")
-                    .since("INSERT VERSION")
+                    .since("1.3.0")
                     .parser(getDefaultParser()));
         }
     }

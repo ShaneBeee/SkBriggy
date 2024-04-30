@@ -41,7 +41,7 @@ import java.util.function.Predicate;
         "\t\tloop blocks in radius {_rad} around target block of player:",
         "\t\t\tif loop-block matches block predicate {_b}:",
         "\t\t\t\tset loop-block to {_block}"})
-@Since("INSERT VERSION")
+@Since("1.3.0")
 public class CondPredicateMatch extends Condition {
 
     static {
