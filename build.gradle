@@ -39,7 +39,7 @@ dependencies {
     }
 
     // Command Api
-    implementation("dev.jorel:commandapi-bukkit-shade:9.4.0")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.4.1")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.4.3")
@@ -61,9 +61,6 @@ processResources {
 
 shadowJar {
     archiveClassifier = null
-    dependencies {
-        include dependency("dev.jorel:commandapi-bukkit-shade:9.4.0")
-    }
     relocate("dev.jorel.commandapi", "com.shanebeestudios.briggy.api.commandapi")
 }
 
