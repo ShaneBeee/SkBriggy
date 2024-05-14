@@ -27,6 +27,9 @@ repositories {
 
     // JitPack
     maven { url 'https://jitpack.io' }
+
+    // Command API Snapshots
+    maven { url = "https://s01.oss.sonatype.org/content/repositories/snapshots" }
 }
 
 dependencies {
@@ -39,7 +42,7 @@ dependencies {
     }
 
     // Command Api
-    implementation("dev.jorel:commandapi-bukkit-shade:9.4.1")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.5.0-SNAPSHOT")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.4.3")
