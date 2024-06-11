@@ -42,7 +42,7 @@ dependencies {
     }
 
     // Command Api
-    implementation("dev.jorel:commandapi-bukkit-shade:9.5.0-SNAPSHOT")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.4.2")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.4.3")
