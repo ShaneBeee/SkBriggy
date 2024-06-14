@@ -42,7 +42,7 @@ dependencies {
     }
 
     // Command Api
-    implementation("dev.jorel:commandapi-bukkit-shade:9.4.2")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.5.0")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.4.3")
@@ -71,5 +71,5 @@ shadowJar {
 tasks.register('server', Copy) {
     from shadowJar
     // Change this to wherever you want your jar to build
-    into '/Users/ShaneBee/Desktop/Server/Skript/1-20-6/plugins'
+    into '/Users/ShaneBee/Desktop/Server/Skript/1-21/plugins'
 }
