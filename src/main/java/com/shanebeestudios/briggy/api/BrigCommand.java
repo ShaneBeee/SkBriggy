@@ -6,6 +6,9 @@ import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.executors.CommandArguments;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -69,8 +72,11 @@ public class BrigCommand {
 
         commandAPICommand.withArguments(args.values().toArray(new Argument[0]));
         commandAPICommand.withShortDescription(this.description);
-        commandAPICommand.executes((commandSender, arguments) -> {
-            BrigCommandTriggerEvent brigCommandRunEvent = new BrigCommandTriggerEvent(this, commandSender, arguments.args());
+        commandAPICommand.executesNative(info -> {
+            CommandArguments arguments = info.args();
+            CommandSender sender = info.sender().getCallee();
+            World world = info.sender().getWorld();
+            BrigCommandTriggerEvent brigCommandRunEvent = new BrigCommandTriggerEvent(this, sender, arguments.args(), world);
 
             // Register local variables for arg names
             arguments.argsMap().forEach((argName, argObject) -> {
