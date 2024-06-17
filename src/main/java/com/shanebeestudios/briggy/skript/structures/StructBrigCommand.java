@@ -46,7 +46,8 @@ import java.util.regex.Pattern;
     "See wiki for more details on registering: [**SkBriggy Wiki**](https://github.com/ShaneBeee/SkBriggy/wiki/Registering-New-Command)",
     "",
     "Command Format:",
-    "`brig command /commandName <brigArgType> [<brigArgType>] <argName:brigArgType> [<argName:brigArgType>]:`",
+    "`brig command /namespace:commandName <brigArgType> [<brigArgType>] <argName:brigArgType> [<argName:brigArgType>]:`",
+    "`namespace` = The namespace of a command. (Optional, defaults to \"minecraft:\")",
     "`commandName` = Represents the command itself, ex: '/mycommand'.",
     "`brigArgType` = Represents a brig argument type.",
     "- While some may match Skript types, this doesn't actually support Skript types.",
@@ -76,7 +77,12 @@ import java.util.regex.Pattern;
     "brig command /i <item> [<amount:int>]:",
     "\ttrigger:",
     "\t\tset {_amount} to 1 if {_amount} isn't set",
-    "\t\tgive {_amount} of {_item} to player"})
+    "\t\tgive {_amount} of {_item} to player",
+    "",
+    "brig command /coolserver:party:",
+    "\tpermission: coolserver.party",
+    "\ttrigger:",
+    "\t\tteleport all players to spawn of world \"world_party\""})
 @Since("1.0.0")
 public class StructBrigCommand extends Structure {
 

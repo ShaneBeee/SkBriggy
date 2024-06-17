@@ -17,6 +17,7 @@ import java.util.Map;
 
 public class BrigCommand {
 
+    private final String namespace;
     private final String name;
     private String permission = null;
     private String description = null;
@@ -26,7 +27,14 @@ public class BrigCommand {
     private Trigger trigger;
 
     public BrigCommand(String name) {
-        this.name = name;
+        if (name.contains(":")) {
+            String[] split = name.split(":");
+            this.namespace = split[0];
+            this.name = split[1];
+        } else {
+            this.namespace = "minecraft";
+            this.name = name;
+        }
     }
 
     public void setPermission(String permission) {
@@ -94,7 +102,7 @@ public class BrigCommand {
             trigger.execute(brigCommandRunEvent);
         });
 
-        commandAPICommand.register();
+        commandAPICommand.register(this.namespace);
     }
 
 }
