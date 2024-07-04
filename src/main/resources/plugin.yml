@@ -2,6 +2,9 @@ name: SkBriggy
 main: com.shanebeestudios.briggy.SkBriggy
 version: @version@
 api-version: 1.13
+description: A Skript addon for Brigadier commands
+website: https://github.com/ShaneBeee/SkBriggy
+author: ShaneBee
 depend:
   - Skript
 softdepend:
