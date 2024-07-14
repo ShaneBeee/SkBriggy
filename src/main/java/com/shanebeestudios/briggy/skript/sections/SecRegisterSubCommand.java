@@ -87,6 +87,20 @@ public class SecRegisterSubCommand extends Section {
         this.trigger = trigger != null ? loadCode(trigger, "trigger", BrigTreeTriggerEvent.class) : null;
 
         this.optional = parseResult.hasTag("optional");
+
+        // Manage subcommand optional status
+        if (this.optional && !this.sections.isEmpty()) {
+            boolean subIsRequired = false;
+            for (Section section : this.sections) {
+                if (section instanceof SecRegisterSubCommand sub) {
+                    if (!sub.optional) subIsRequired = true;
+                }
+            }
+            if (subIsRequired) {
+                Skript.error("An optional subcommand cannot contain a required subcommand.");
+                return false;
+            }
+        }
         this.brigArg = (Literal<BrigArgument>) exprs[0];
         this.commandName = (Literal<String>) exprs[1];
         return true;
