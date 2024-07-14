@@ -8,6 +8,7 @@ import ch.njol.skript.registrations.EventValues;
 import ch.njol.skript.util.Getter;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
+import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import org.bukkit.World;
@@ -33,6 +34,13 @@ public class Types {
             @Override
             public World get(BrigCommandEvent event) {
                 return event.getWorld();
+            }
+        }, 0);
+
+        EventValues.registerEventValue(BrigTreeTriggerEvent.class, CommandSender.class, new Getter<>() {
+            @Override
+            public @Nullable CommandSender get(BrigTreeTriggerEvent event) {
+                return event.getSender();
             }
         }, 0);
 
