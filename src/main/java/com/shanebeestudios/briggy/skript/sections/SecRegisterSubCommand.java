@@ -102,6 +102,13 @@ public class SecRegisterSubCommand extends Section {
             }
         }
         this.brigArg = (Literal<BrigArgument>) exprs[0];
+
+        // Manage greedy strings
+        if (this.brigArg.getSingle().getName().equalsIgnoreCase("greedystring") && !this.sections.isEmpty()) {
+            Skript.error("A greedy string cannot have other subcommands after it.");
+            return false;
+        }
+
         this.commandName = (Literal<String>) exprs[1];
         return true;
     }
