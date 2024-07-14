@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Name("CommandTree - SubCommand")
-public class SecTreeArg extends Section {
+public class SecRegisterSubCommand extends Section {
 
     private static final EntryValidator.EntryValidatorBuilder VALIDATOR = EntryValidator.builder();
 
@@ -48,7 +48,7 @@ public class SecTreeArg extends Section {
                 }
                 return true;
             }).build();
-        Skript.registerSection(SecTreeArg.class, "register [:optional] %*brigarg% sub[ ]command [(named|with name)] %*string%");
+        Skript.registerSection(SecRegisterSubCommand.class, "register [:optional] %*brigarg% sub[ ]command [(named|with name)] %*string%");
     }
 
     private boolean optional;
