@@ -55,7 +55,7 @@ public class EffApplySuggestion extends Effect {
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
         if (!getParser().isCurrentEvent(BrigCommandSuggestEvent.class)) {
-            Skript.error("A suggestion can only be applied in a 'register argument' section.", ErrorQuality.SEMANTIC_ERROR);
+            Skript.error("A suggestion can only be applied in a 'register argument' or 'suggestions' section.", ErrorQuality.SEMANTIC_ERROR);
             return false;
         }
         this.pattern = matchedPattern;

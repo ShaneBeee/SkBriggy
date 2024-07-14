@@ -13,11 +13,14 @@ import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.api.BrigArgument;
+import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeSubCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import dev.jorel.commandapi.CommandTree;
+import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +39,7 @@ public class SecTreeArg extends Section {
         //noinspection DataFlowIssue
         VALIDATOR
             .addEntry("permission", null, true)
+            .addSection("suggestions", true)
             .addSection("trigger", true)
             .unexpectedNodeTester(node -> {
                 if (node instanceof SectionNode sectionNode) {
@@ -52,6 +56,7 @@ public class SecTreeArg extends Section {
     private Literal<BrigArgument> brigArg;
     private Literal<String> commandName;
     private final List<Section> sections = new ArrayList<>();
+    private Trigger suggestions;
     private Trigger trigger;
 
     @SuppressWarnings({"NullableProblems", "unchecked", "DataFlowIssue"})
@@ -74,6 +79,9 @@ public class SecTreeArg extends Section {
             }
         }
         this.permission = container.getOptional("permission", String.class, false);
+
+        SectionNode suggestions = container.getOptional("suggestions", SectionNode.class, false);
+        this.suggestions = suggestions != null ? loadCode(suggestions, "suggestions", BrigCommandSuggestEvent.class) : null;
 
         SectionNode trigger = container.getOptional("trigger", SectionNode.class, false);
         this.trigger = trigger != null ? loadCode(trigger, "trigger", BrigTreeTriggerEvent.class) : null;
@@ -98,6 +106,13 @@ public class SecTreeArg extends Section {
         // Register permission
         if (this.permission != null) {
             command.withPermission(this.permission);
+        }
+
+        // Register suggestions
+        if (this.suggestions != null) {
+            BrigCommandSuggestEvent suggestEvent = new BrigCommandSuggestEvent();
+            this.suggestions.execute(suggestEvent);
+            command.includeSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> suggestEvent.getTooltips().toArray(new IStringTooltip[0])));
         }
 
         // Register subcommands
