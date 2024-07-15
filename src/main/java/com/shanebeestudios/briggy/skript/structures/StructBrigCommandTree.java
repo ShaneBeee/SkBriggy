@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 @Name("CommandTree - Command")
 @Description({"Command trees are similar to regular commands with the difference being the arguments are in a tree.",
     "By having a tree, each argument can have sub args as well as their own triggers.",
+    "See [**SkBriggy Wiki**](https://github.com/ShaneBeee/SkBriggy/wiki/Command-Tree) for more detailed info.",
     "",
     "**Entries/Sections**:",
     "`permission` = Just like Skript, the permission the player will require for this command.",

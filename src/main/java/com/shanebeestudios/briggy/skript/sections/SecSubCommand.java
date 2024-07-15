@@ -39,6 +39,7 @@ import java.util.List;
 @Name("CommandTree - SubCommand")
 @Description({"Register a sub command in a command tree.",
     "A sub command is just an argument that can have its own sub commands and triggers.",
+    "See [**SkBriggy Wiki**](https://github.com/ShaneBeee/SkBriggy/wiki/Command-Tree) for more detailed info.",
     "**Notes**:",
     "- A `greedy string` arg always has to be last, you cannot register another subcommand within it.",
     "- Optionals are a little funny, you cannot have a required subcommand within an optional subcommand.",
