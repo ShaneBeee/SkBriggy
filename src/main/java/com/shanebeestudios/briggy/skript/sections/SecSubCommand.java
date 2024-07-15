@@ -3,13 +3,18 @@ package com.shanebeestudios.briggy.skript.sections;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.TriggerItem;
+import ch.njol.skript.registrations.Classes;
+import ch.njol.skript.util.LiteralUtils;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.api.BrigArgument;
@@ -21,6 +26,7 @@ import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +37,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Name("CommandTree - SubCommand")
-public class SecRegisterSubCommand extends Section {
+@Description({"Register a sub command in a command tree.",
+    "A sub command is just an argument that can have its own sub commands and triggers.",
+    "**Notes**:",
+    "- A `greedy string` arg always has to be last, you cannot register another subcommand within it.",
+    "- Optionals are a little funny, you cannot have a required subcommand within an optional subcommand.",
+    "- Min/Max can only be used on number subcommands.",
+    "- The name/id you choose for your subcommand will automatically be made into a local variable.",
+    "- List arg types (ie: players/entities) will create list variables. DO NOT repeat names. See examples.",
+    "",
+    "**Entries/Sections**:",
+    "`permission` = Each subcommand can have its own permission.",
+    "`suggestions` = You can apply suggestions (with tooltips) to a subcommand. See `apply suggestion` effect, and examples.",
+    "`register arg` = Register another subcommand within this one. Supports multiple.",
+    "`trigger` = Like any other command, this is what will execute when the command is run."})
+@Examples("")
+@Since("INSERT VERSION")
+public class SecSubCommand extends Section {
 
     private static final EntryValidator.EntryValidatorBuilder VALIDATOR = EntryValidator.builder();
 
@@ -40,23 +62,41 @@ public class SecRegisterSubCommand extends Section {
         VALIDATOR
             .addEntry("permission", null, true)
             .addSection("suggestions", true)
+            .addSection("register arg section", true) // Dummy for docs
             .addSection("trigger", true)
             .unexpectedNodeTester(node -> {
                 if (node instanceof SectionNode sectionNode) {
                     String key = sectionNode.getKey();
-                    return key == null || !key.contains("register") || !key.contains("sub") || !key.contains("command");
+                    // TODO proper parsing
+                    if (key != null && key.contains("arg") && key.contains("\"")) {
+                        return false;
+                    }
                 }
                 return true;
             }).build();
-        Skript.registerSection(SecRegisterSubCommand.class, "register [:optional] %*brigarg% sub[ ]command [(named|with name)] %*string%");
+
+        String base = "[:optional] %*brigarg% arg[ument] [(named|with (name|id))] %*string%";
+        Skript.registerSection(SecSubCommand.class,
+            base,
+            base + " (with suggestions|using) %objects%",
+            base + " with min %number% [and] [with] max %number%");
     }
 
+    // Section Pattern
+    private int pattern;
     private boolean optional;
-    private String permission;
     private Literal<BrigArgument> brigArg;
     private Literal<String> commandName;
+    private Expression<?> suggestions;
+    private Expression<Number> min;
+    private Expression<Number> max;
+
+    // Entries
+    private String permission;
+
+    // Sections
     private final List<Section> sections = new ArrayList<>();
-    private Trigger suggestions;
+    private Trigger suggestionsTrigger;
     private Trigger trigger;
 
     @SuppressWarnings({"NullableProblems", "unchecked", "DataFlowIssue"})
@@ -68,6 +108,7 @@ public class SecRegisterSubCommand extends Section {
         if (container == null) {
             return false;
         }
+        this.pattern = matchedPattern;
 
         for (Node node : container.getUnhandledNodes()) {
             if (node instanceof SectionNode sectionNode1) {
@@ -81,7 +122,7 @@ public class SecRegisterSubCommand extends Section {
         this.permission = container.getOptional("permission", String.class, false);
 
         SectionNode suggestions = container.getOptional("suggestions", SectionNode.class, false);
-        this.suggestions = suggestions != null ? loadCode(suggestions, "suggestions", BrigCommandSuggestEvent.class) : null;
+        this.suggestionsTrigger = suggestions != null ? loadCode(suggestions, "suggestions", BrigCommandSuggestEvent.class) : null;
 
         SectionNode trigger = container.getOptional("trigger", SectionNode.class, false);
         this.trigger = trigger != null ? loadCode(trigger, "trigger", BrigTreeTriggerEvent.class) : null;
@@ -92,7 +133,7 @@ public class SecRegisterSubCommand extends Section {
         if (this.optional && !this.sections.isEmpty()) {
             boolean subIsRequired = false;
             for (Section section : this.sections) {
-                if (section instanceof SecRegisterSubCommand sub) {
+                if (section instanceof SecSubCommand sub) {
                     if (!sub.optional) subIsRequired = true;
                 }
             }
@@ -110,18 +151,62 @@ public class SecRegisterSubCommand extends Section {
         }
 
         this.commandName = (Literal<String>) exprs[1];
+
+        if (matchedPattern == 1) {
+            this.suggestions = LiteralUtils.defendExpression(exprs[2]);
+            //this.suggestions = exprs[2];
+        } else if (matchedPattern == 2) {
+            this.min = (Expression<Number>) exprs[2];
+            this.max = (Expression<Number>) exprs[3];
+            if (this.brigArg.getSingle().getMinMax() == null) {
+                Skript.error("Min/Max can only be used on number subcommands.");
+                return false;
+            }
+        }
         return true;
     }
 
     @SuppressWarnings("NullableProblems")
     @Override
     protected @Nullable TriggerItem walk(Event event) {
-        TriggerItem next = getNext();
         if (!(event instanceof BrigTreeSubCommandEvent subCommandEvent)) return null;
 
         BrigArgument brigArg = this.brigArg.getSingle();
         String commandName = this.commandName.getSingle();
-        Argument<?> command = brigArg.getArgument(commandName);
+        Argument<?> command = null;
+
+        // Create the command
+        if (this.pattern > 1) {
+            // Apply min/max numbers
+            Number[] minMax = brigArg.getMinMax();
+            if (minMax != null) {
+                Number min = (this.min != null && this.min.getSingle(event) != null) ? this.min.getSingle(event) : minMax[0];
+                Number max = (this.max != null && this.max.getSingle(event) != null) ? this.max.getSingle(event) : minMax[1];
+                command = brigArg.getIntArgument(commandName, min, max);
+            }
+        } else {
+            // Apply suggestions
+            List<String> literals = new ArrayList<>();
+            if (this.pattern == 1 && this.suggestions != null) {
+                for (Object object : this.suggestions.getArray(event)) {
+                    if (object instanceof String string) literals.add(string);
+                    else literals.add(Classes.toString(object));
+                }
+            }
+
+            if (brigArg.getArgClass() == MultiLiteralArgument.class) {
+                // Literal arg requires at least one string
+                if (literals.isEmpty()) literals.add(commandName);
+                command = brigArg.getMultiLit(commandName, literals);
+            } else {
+                command = brigArg.getArgument(commandName);
+                if (!literals.isEmpty()) {
+                    command.includeSuggestions(ArgumentSuggestions.strings(literals));
+                }
+            }
+        }
+        if (command == null) return super.walk(event, false);
+
         command.setOptional(this.optional);
 
         // Register permission
@@ -130,9 +215,9 @@ public class SecRegisterSubCommand extends Section {
         }
 
         // Register suggestions
-        if (this.suggestions != null) {
+        if (this.suggestionsTrigger != null) {
             BrigCommandSuggestEvent suggestEvent = new BrigCommandSuggestEvent();
-            this.suggestions.execute(suggestEvent);
+            this.suggestionsTrigger.execute(suggestEvent);
             command.includeSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> suggestEvent.getTooltips().toArray(new IStringTooltip[0])));
         }
 
@@ -175,13 +260,15 @@ public class SecRegisterSubCommand extends Section {
         if (commandTree != null) commandTree.then(command);
         else if (argument != null) argument.then(command);
 
-        return next;
+        return super.walk(event, false);
     }
 
     @Override
     public @NotNull String toString(Event e, boolean d) {
         String opt = this.optional ? "optional " : "";
-        return "register " + opt + this.brigArg.toString(e, d) + " subcommand " + this.commandName.toString(e, d);
+        String suggestions = this.pattern == 1 ? (" with suggestions " + this.suggestions.toString(e, d)) : "";
+        String minmax = this.pattern == 2 ? (" with min " + this.min.toString(e, d) + " and max " + this.max.toString(e, d)) : "";
+        return opt + this.brigArg.toString(e, d) + " arg " + this.commandName.toString(e, d) + suggestions + minmax;
     }
 
 }
