@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
     "`description` = Just like Skript, this is a string that will be used in the help command.",
     "`usages` = This is the usage which is shown in the specific `/help <command>` page. Separate multiple usages by comma.",
     "`aliases` = Aliases for this command.",
-    "`suggestions` = You can apply suggestions (with tooltips) to a subcommand. See `apply suggestion` effect, and examples.",
     "`register arg` = Register another subcommand within this one. Supports multiple.",
     "`trigger` = Like any other command, this is what will execute when the command is run."})
 @Examples("")
