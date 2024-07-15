@@ -18,23 +18,22 @@ import dev.jorel.commandapi.BukkitStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @Name("Apply Suggestion")
 @Description({"Apply a suggestion with tooltip or list of suggestions to an argument.",
-        "This is used only in an argument registration section."})
+    "This is used only in the argument registration section of a brig command and the suggestions section of a big command tree."})
 @Examples({"register string arg \"world\":",
-        "\tapply suggestion all worlds",
-        "register string arg \"homes\" using:",
-        "\tapply suggestions indexes of {homes::%uuid of player%::*}",
-        "register string arg \"homes\" using:",
-        "\tloop {homes::%uuid of player%::*}:",
-        "\t\tapply suggestion loop-index with tooltip loop-value",
-        "register string arg \"gamemode\":",
-        "\tapply suggestion \"0\" with tooltip \"survival\"",
-        "\tapply suggestion \"1\" with tooltip \"creative\"",
-        "\tapply suggestion \"2\" with tooltip \"adventure\"",
-        "\tapply suggestion \"3\" with tooltip \"spectator\""})
+    "\tapply suggestion all worlds",
+    "register string arg \"homes\" using:",
+    "\tapply suggestions indexes of {homes::%uuid of player%::*}",
+    "register string arg \"homes\" using:",
+    "\tloop {homes::%uuid of player%::*}:",
+    "\t\tapply suggestion loop-index with tooltip loop-value",
+    "register string arg \"gamemode\":",
+    "\tapply suggestion \"0\" with tooltip \"survival\"",
+    "\tapply suggestion \"1\" with tooltip \"creative\"",
+    "\tapply suggestion \"2\" with tooltip \"adventure\"",
+    "\tapply suggestion \"3\" with tooltip \"spectator\""})
 @Since("1.0.0")
 public class EffApplySuggestion extends Effect {
 
@@ -42,8 +41,8 @@ public class EffApplySuggestion extends Effect {
 
     static {
         Skript.registerEffect(EffApplySuggestion.class,
-                "apply suggestion %string% with tooltip %~object%",
-                "apply suggestion[s] %~objects%");
+            "apply suggestion %string% with tooltip %~object%",
+            "apply suggestion[s] %~objects%");
     }
 
     private int pattern;
@@ -100,7 +99,7 @@ public class EffApplySuggestion extends Effect {
     }
 
     @Override
-    public @NotNull String toString(@Nullable Event e, boolean d) {
+    public @NotNull String toString(Event e, boolean d) {
         if (this.pattern == 0) {
             return "apply suggestion " + this.suggestion.toString(e, d) + " with tooltip " + this.tooltip.toString(e, d);
         }
