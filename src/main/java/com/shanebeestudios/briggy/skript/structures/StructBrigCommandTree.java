@@ -134,9 +134,9 @@ public class StructBrigCommandTree extends Structure {
         description = Utils.replaceEnglishChatStyles(description);
         commandTree.withShortDescription(description);
 
-        // Regiseter command usage
+        // Register command usage
         List<String> usages = (List<String>) entryContainer.get("usages", true);
-        commandTree.withUsage(usages.toArray(new String[0]));
+        if (!usages.isEmpty()) commandTree.withUsage(usages.toArray(new String[0]));
 
         // Register command aliases
         List<String> aliases = (List<String>) entryContainer.get("aliases", true);
