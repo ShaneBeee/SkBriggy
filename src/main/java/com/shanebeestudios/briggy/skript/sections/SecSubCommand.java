@@ -217,9 +217,12 @@ public class SecSubCommand extends Section {
 
         // Register suggestions
         if (this.suggestionsTrigger != null) {
-            BrigCommandSuggestEvent suggestEvent = new BrigCommandSuggestEvent();
-            this.suggestionsTrigger.execute(suggestEvent);
-            command.includeSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> suggestEvent.getTooltips().toArray(new IStringTooltip[0])));
+            // Execute trigger when suggestions are reguested (allows for dynmaic suggestions)
+            command.includeSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
+                BrigCommandSuggestEvent suggestEvent = new BrigCommandSuggestEvent();
+                this.suggestionsTrigger.execute(suggestEvent);
+                return suggestEvent.getTooltips().toArray(new IStringTooltip[0]);
+            }));
         }
 
         // Register subcommands
