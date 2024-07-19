@@ -41,6 +41,9 @@ import java.util.regex.Pattern;
     "By having a tree, each argument can have sub args as well as their own triggers.",
     "See [**SkBriggy Wiki**](https://github.com/ShaneBeee/SkBriggy/wiki/Command-Tree) for more detailed info.",
     "",
+    "Command names can include namespaces, ex: `brig command tree /mycommands:somecommand`.",
+    "Defaults to `minecraft` when excluded.",
+    "",
     "**Entries/Sections**:",
     "`permission` = Just like Skript, the permission the player will require for this command.",
     "`description` = Just like Skript, this is a string that will be used in the help command.",
@@ -95,12 +98,20 @@ public class StructBrigCommandTree extends Structure {
         Skript.registerStructure(StructBrigCommandTree.class, entryValidator, "brig[(gy|adier)] command[ ]tree /<.+>");
     }
 
+    private String namespace = "minecraft";
     private String command;
 
     @SuppressWarnings("NullableProblems")
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
-        this.command = parseResult.regexes.get(0).group();
+        String command = parseResult.regexes.get(0).group();
+        if (command.contains(":")) {
+            String[] split = command.split(":");
+            this.namespace = split[0];
+            this.command = split[1];
+        } else {
+            this.command = command;
+        }
         return true;
     }
 
@@ -156,7 +167,7 @@ public class StructBrigCommandTree extends Structure {
             Skript.error("Command tree must have at least a subcommand or a trigger.");
             return false;
         }
-        Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> commandTree.register(), 1);
+        Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> commandTree.register(this.namespace), 1);
         return true;
     }
 
@@ -167,7 +178,7 @@ public class StructBrigCommandTree extends Structure {
 
     @Override
     public @NotNull String toString(@Nullable Event e, boolean d) {
-        return "brig command tree /" + this.command;
+        return "brig command tree /" + this.namespace + ":" + this.command;
     }
 
 }
