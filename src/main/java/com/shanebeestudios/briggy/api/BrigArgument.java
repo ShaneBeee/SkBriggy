@@ -213,4 +213,8 @@ public class BrigArgument {
         return null;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
 }

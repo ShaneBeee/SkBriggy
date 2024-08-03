@@ -184,7 +184,7 @@ public class SecRegisterArg extends EffectSection {
         if (trigger != null) {
             // Section so we apply stuff from section effects
             argument.includeSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
-                BrigCommandSuggestEvent suggestEvent = new BrigCommandSuggestEvent(brigCommand, info.sender());
+                BrigCommandSuggestEvent suggestEvent = new BrigCommandSuggestEvent();
                 Variables.setLocalVariables(suggestEvent, localVars);
 
                 // Create local variables and brig-args from the previous args

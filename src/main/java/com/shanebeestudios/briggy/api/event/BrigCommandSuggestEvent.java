@@ -1,22 +1,20 @@
 package com.shanebeestudios.briggy.api.event;
 
-import com.shanebeestudios.briggy.api.BrigCommand;
 import dev.jorel.commandapi.BukkitStringTooltip;
 import dev.jorel.commandapi.IStringTooltip;
-import org.bukkit.command.CommandSender;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BrigCommandSuggestEvent extends BrigCommandEvent {
+public class BrigCommandSuggestEvent extends Event {
 
     private final List<IStringTooltip> tooltips = new ArrayList<>();
     private Object[] args;
 
-    public BrigCommandSuggestEvent(@NotNull BrigCommand brigCommand, @Nullable CommandSender sender) {
-        super(brigCommand, sender);
+    public BrigCommandSuggestEvent() {
     }
 
     public Object[] getArgs() {
@@ -38,4 +36,10 @@ public class BrigCommandSuggestEvent extends BrigCommandEvent {
     public void addTooltip(String string) {
         this.tooltips.add(BukkitStringTooltip.none(string));
     }
+
+    @Override
+    public @NotNull HandlerList getHandlers() {
+        throw new IllegalStateException("BrigCommandSuggestEvent should not be called");
+    }
+
 }

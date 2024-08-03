@@ -45,7 +45,7 @@ dependencies {
     implementation("dev.jorel:commandapi-bukkit-shade:9.5.1")
 
     // SkBee
-    compileOnly("com.github.ShaneBeee:SkBee:3.4.3")
+    compileOnly("com.github.ShaneBeee:SkBee:3.5.8")
 }
 
 build {
