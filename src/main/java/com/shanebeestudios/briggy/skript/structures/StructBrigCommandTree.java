@@ -167,7 +167,7 @@ public class StructBrigCommandTree extends Structure {
             Skript.error("Command tree must have at least a subcommand or a trigger.");
             return false;
         }
-        Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> commandTree.register(this.namespace), 1);
+        Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> commandTree.register(this.namespace), 2);
         return true;
     }
 
