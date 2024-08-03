@@ -98,7 +98,7 @@ import java.util.List;
     "\t\t\t\t\t\tset {_reason} to {_reason} ? \"Unknown Reason\"",
     "\t\t\t\t\t\tban {_players::*} due to \"&c\" + {_reason} for {_timespan}",
     "\t\t\t\t\t\tkick {_players::*} due to \"&c\" + {_reason}"})
-@Since("INSERT VERSION")
+@Since("1.4.0")
 public class SecSubCommand extends Section {
 
     private static final EntryValidator.EntryValidatorBuilder VALIDATOR = EntryValidator.builder();

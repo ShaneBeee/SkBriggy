@@ -97,7 +97,7 @@ import java.util.regex.Pattern;
     "\t\t\t\t\t\tset {_reason} to {_reason} ? \"Unknown Reason\"",
     "\t\t\t\t\t\tban {_players::*} due to \"&c\" + {_reason} for {_timespan}",
     "\t\t\t\t\t\tkick {_players::*} due to \"&c\" + {_reason}"})
-@Since("INSERT VERSION")
+@Since("1.4.0")
 public class StructBrigCommandTree extends Structure {
 
     private static final Pattern COMMA_PATTERN = Pattern.compile("\\s*,\\s*");
