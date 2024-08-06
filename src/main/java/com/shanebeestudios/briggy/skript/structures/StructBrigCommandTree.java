@@ -157,6 +157,10 @@ public class StructBrigCommandTree extends Structure {
         } else {
             this.command = command;
         }
+        if (this.command.contains(" ")) {
+            Skript.error("Commands cannot contain spaces: '" + this.command + "'");
+            return false;
+        }
         return true;
     }
 
