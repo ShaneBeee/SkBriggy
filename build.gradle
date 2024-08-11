@@ -14,7 +14,7 @@ compileJava {
 }
 
 // SkBriggy version
-version = '1.4.0'
+version = '1.4.1'
 
 repositories {
     mavenCentral()
@@ -42,7 +42,7 @@ dependencies {
     }
 
     // Command Api
-    implementation("dev.jorel:commandapi-bukkit-shade:9.5.1")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.5.3")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.5.8")
@@ -71,5 +71,5 @@ shadowJar {
 tasks.register('server', Copy) {
     from shadowJar
     // Change this to wherever you want your jar to build
-    into '/Users/ShaneBee/Desktop/Server/Skript/1-21/plugins'
+    into '/Users/ShaneBee/Desktop/Server/Skript/1-21-1/plugins'
 }
