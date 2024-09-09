@@ -8,6 +8,7 @@ import ch.njol.skript.registrations.EventValues;
 import ch.njol.skript.util.Getter;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
+import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.ParticleData;
@@ -41,6 +42,13 @@ public class Types {
             @Override
             public @Nullable CommandSender get(BrigTreeTriggerEvent event) {
                 return event.getSender();
+            }
+        }, 0);
+
+        EventValues.registerEventValue(BrigCommandSuggestEvent.class, CommandSender.class, new Getter<>() {
+            @Override
+            public CommandSender get(BrigCommandSuggestEvent event) {
+                return event.getCommandSender();
             }
         }, 0);
 
