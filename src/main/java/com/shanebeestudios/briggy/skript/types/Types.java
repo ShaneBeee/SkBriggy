@@ -62,6 +62,7 @@ public class Types {
                 "\nSee Wiki for more details <link>https://github.com/ShaneBeee/SkBriggy/wiki/Brig-Argument-Type</link>")
             .usage(BrigArgument.getPatterns())
             .since("1.0.0")
+            .after("classinfo")
             .parser(new Parser<>() {
 
                 @SuppressWarnings("NullableProblems")
