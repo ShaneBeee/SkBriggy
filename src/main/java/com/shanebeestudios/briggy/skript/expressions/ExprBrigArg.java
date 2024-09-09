@@ -54,7 +54,7 @@ public class ExprBrigArg extends SimpleExpression<Object> {
     protected Object[] get(Event event) {
         Object[] args;
         if (event instanceof BrigCommandTriggerEvent triggerEvent) args = triggerEvent.getArgs();
-        else if (event instanceof BrigCommandSuggestEvent suggestEvent) args = suggestEvent.getArgs();
+        else if (event instanceof BrigCommandSuggestEvent suggestEvent) args = suggestEvent.getBrigArgs();
         else return null;
 
         List<Object> objects = new ArrayList<>();

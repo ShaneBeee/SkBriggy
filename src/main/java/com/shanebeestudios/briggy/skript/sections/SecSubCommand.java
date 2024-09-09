@@ -269,12 +269,12 @@ public class SecSubCommand extends Section {
                 Variables.setLocalVariables(suggestEvent, localVars);
 
                 // Create local variables and brig-args from the previous args
-                List<Object> args = new ArrayList<>();
+                List<Object> brigArgs = new ArrayList<>();
                 info.previousArgs().argsMap().forEach((string, object) -> {
-                    args.add(object);
+                    brigArgs.add(object);
                     Variables.setVariable(string, ObjectConverter.convert(object), suggestEvent, true);
                 });
-                suggestEvent.setArgs(args.toArray());
+                suggestEvent.setBrigArgs(brigArgs.toArray());
 
                 // Pass sender thru for event-sender/player
                 suggestEvent.setCommandSender(info.sender());
@@ -283,7 +283,7 @@ public class SecSubCommand extends Section {
                 if (this.suggestions != null) {
                     for (Object object : this.suggestions.getArray(event)) {
                         String string = (object instanceof String s) ? s : Classes.toString(object);
-                        suggestEvent.addTooltip(string);
+                        suggestEvent.addSuggestion(string);
                     }
                 }
 
@@ -292,7 +292,7 @@ public class SecSubCommand extends Section {
                 // Copy variables back to main event
                 Variables.setLocalVariables(event, Variables.copyLocalVariables(suggestEvent));
                 Variables.removeLocals(suggestEvent);
-                return suggestEvent.getTooltips().toArray(new IStringTooltip[0]);
+                return suggestEvent.getSuggestions().toArray(new IStringTooltip[0]);
             }));
         }
 

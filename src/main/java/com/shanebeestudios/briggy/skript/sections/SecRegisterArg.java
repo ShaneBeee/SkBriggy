@@ -193,20 +193,20 @@ public class SecRegisterArg extends EffectSection {
                     args.add(object);
                     Variables.setVariable(string, ObjectConverter.convert(object), suggestEvent, true);
                 });
-                suggestEvent.setArgs(args.toArray());
+                suggestEvent.setBrigArgs(args.toArray());
 
                 brigCommandEvent.setSender(info.sender());
                 if (this.suggestions != null) {
                     for (Object object : this.suggestions.getArray(brigCommandEvent)) {
                         String string = (object instanceof String s) ? s : Classes.toString(object);
-                        suggestEvent.addTooltip(string);
+                        suggestEvent.addSuggestion(string);
                     }
                 }
 
                 TriggerItem.walk(trigger, suggestEvent);
                 Variables.setLocalVariables(event, Variables.copyLocalVariables(suggestEvent));
                 Variables.removeLocals(suggestEvent);
-                return suggestEvent.getTooltips().toArray(new IStringTooltip[0]);
+                return suggestEvent.getSuggestions().toArray(new IStringTooltip[0]);
             }));
         } else if (this.pattern == 1 && this.suggestions != null) {
             // No section so we apply stuff if anything to apply

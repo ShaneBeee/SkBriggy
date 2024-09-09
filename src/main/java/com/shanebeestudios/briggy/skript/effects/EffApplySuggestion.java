@@ -86,14 +86,14 @@ public class EffApplySuggestion extends Effect {
             } else {
                 stringTooltip = BukkitStringTooltip.ofString(suggestion, Classes.toString(tooltip));
             }
-            suggestEvent.addTooltip(stringTooltip);
+            suggestEvent.addSuggestion(stringTooltip);
         } else {
             for (Object object : this.objects.getArray(suggestEvent)) {
                 String string;
                 if (object instanceof String s) string = s;
                 else string = Classes.toString(object);
                 StringTooltip tooltip = BukkitStringTooltip.none(string);
-                suggestEvent.addTooltip(tooltip);
+                suggestEvent.addSuggestion(tooltip);
             }
         }
     }

@@ -12,18 +12,28 @@ import java.util.List;
 
 public class BrigCommandSuggestEvent extends Event {
 
-    private final List<IStringTooltip> tooltips = new ArrayList<>();
+    private final List<IStringTooltip> suggestions = new ArrayList<>();
     private Object[] args;
     private CommandSender commandSender;
 
     public BrigCommandSuggestEvent() {
     }
 
-    public Object[] getArgs() {
+    /**
+     * Get the arguments used for brig-arg-x
+     *
+     * @return Arguments to use for brig-arg-x
+     */
+    public Object[] getBrigArgs() {
         return args;
     }
 
-    public void setArgs(Object[] args) {
+    /**
+     * Set the arguments used for brig-arg-x
+     *
+     * @param args Arguments to add
+     */
+    public void setBrigArgs(Object[] args) {
         this.args = args;
     }
 
@@ -35,16 +45,31 @@ public class BrigCommandSuggestEvent extends Event {
         this.commandSender = commandSender;
     }
 
-    public List<IStringTooltip> getTooltips() {
-        return tooltips;
+    /**
+     * Get suggestions to apply to a command
+     *
+     * @return Suggestions to apply to command
+     */
+    public List<IStringTooltip> getSuggestions() {
+        return suggestions;
     }
 
-    public void addTooltip(IStringTooltip tooltip) {
-        this.tooltips.add(tooltip);
+    /**
+     * Add a suggestion to apply to a command
+     *
+     * @param suggestion Suggestion to apply
+     */
+    public void addSuggestion(IStringTooltip suggestion) {
+        this.suggestions.add(suggestion);
     }
 
-    public void addTooltip(String string) {
-        this.tooltips.add(BukkitStringTooltip.none(string));
+    /**
+     * Add a suggestion to apply to a command
+     *
+     * @param suggestion Suggestion to apply
+     */
+    public void addSuggestion(String suggestion) {
+        this.suggestions.add(BukkitStringTooltip.none(suggestion));
     }
 
     @Override
