@@ -216,6 +216,7 @@ public class SecSubCommand extends Section {
     @Override
     protected @Nullable TriggerItem walk(Event event) {
         if (!(event instanceof BrigTreeSubCommandEvent subCommandEvent)) return null;
+        Object localVars = Variables.copyLocalVariables(event);
 
         BrigArgument brigArg = this.brigArg.getSingle();
         String commandName = this.commandName.getSingle();
@@ -265,7 +266,32 @@ public class SecSubCommand extends Section {
             // Execute trigger when suggestions are reguested (allows for dynmaic suggestions)
             command.includeSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
                 BrigCommandSuggestEvent suggestEvent = new BrigCommandSuggestEvent();
-                this.suggestionsTrigger.execute(suggestEvent);
+                Variables.setLocalVariables(suggestEvent, localVars);
+
+                // Create local variables and brig-args from the previous args
+                List<Object> args = new ArrayList<>();
+                info.previousArgs().argsMap().forEach((string, object) -> {
+                    args.add(object);
+                    Variables.setVariable(string, ObjectConverter.convert(object), suggestEvent, true);
+                });
+                suggestEvent.setArgs(args.toArray());
+
+                // Pass sender thru for event-sender/player
+                suggestEvent.setCommandSender(info.sender());
+
+                // Apply suggestions
+                if (this.suggestions != null) {
+                    for (Object object : this.suggestions.getArray(event)) {
+                        String string = (object instanceof String s) ? s : Classes.toString(object);
+                        suggestEvent.addTooltip(string);
+                    }
+                }
+
+                // Walk suggestions trigger section
+                TriggerItem.walk(this.suggestionsTrigger, suggestEvent);
+                // Copy variables back to main event
+                Variables.setLocalVariables(event, Variables.copyLocalVariables(suggestEvent));
+                Variables.removeLocals(suggestEvent);
                 return suggestEvent.getTooltips().toArray(new IStringTooltip[0]);
             }));
         }
