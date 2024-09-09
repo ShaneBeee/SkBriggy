@@ -204,7 +204,7 @@ public class SecRegisterArg extends EffectSection {
                 }
 
                 TriggerItem.walk(trigger, suggestEvent);
-                Variables.setLocalVariables(suggestEvent, Variables.copyLocalVariables(suggestEvent));
+                Variables.setLocalVariables(event, Variables.copyLocalVariables(suggestEvent));
                 Variables.removeLocals(suggestEvent);
                 return suggestEvent.getTooltips().toArray(new IStringTooltip[0]);
             }));
