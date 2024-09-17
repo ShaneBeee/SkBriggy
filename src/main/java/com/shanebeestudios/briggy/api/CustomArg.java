@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class CustomArg {
 
-    private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).map(mat -> mat.getKey().getKey()).toList();
+    private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).filter(material -> !material.isLegacy()).map(mat -> mat.getKey().getKey()).toList();
     private static final World MAIN_WORLD = Bukkit.getWorlds().get(0);
 
     static final CustomArg MESSAGE = new CustomArg() {
