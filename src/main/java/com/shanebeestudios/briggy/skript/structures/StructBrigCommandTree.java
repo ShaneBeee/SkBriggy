@@ -175,7 +175,7 @@ public class StructBrigCommandTree extends Structure {
 
         // Register command permission
         String permission = entryContainer.getOptional("permission", String.class, false);
-        commandTree.withPermission(permission);
+        if (permission != null) commandTree.withPermission(permission);
 
         // Register command description
         String description = entryContainer.getOptional("description", String.class, true);
