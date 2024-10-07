@@ -103,7 +103,7 @@ public class StructBrigCommandTree extends Structure {
     private static final Pattern COMMA_PATTERN = Pattern.compile("\\s*,\\s*");
 
     static {
-        @SuppressWarnings("DataFlowIssue")
+        @SuppressWarnings("RedundantIfStatement")
         EntryValidator entryValidator = EntryValidator.builder()
             .addEntry("permission", null, true)
             .addEntry("description", "SkBriggy Command", true)
