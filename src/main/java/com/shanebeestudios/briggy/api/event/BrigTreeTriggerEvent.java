@@ -19,6 +19,10 @@ public class BrigTreeTriggerEvent extends Event {
         return this.executionInfo.sender();
     }
 
+    public Object[] getArgs() {
+        return this.executionInfo.args().args();
+    }
+
     @Override
     public @NotNull HandlerList getHandlers() {
         throw new IllegalStateException("BrigTreeTriggerEvent should not be called");
