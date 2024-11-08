@@ -69,7 +69,7 @@ public class BrigArgument {
         register("component", CustomArg.COMPONENT);
         register("dimension", WorldArgument.class);
         register("enchantment", "enchant[ment]", EnchantmentArgument.class);
-        register("entitytype", EntityTypeArgument.class);
+        register("entitytype", "entity[ ]type", EntityTypeArgument.class);
         register("itemstack", "item[[ ]stack]", ItemStackArgument.class);
         register("itempredicate", "item[[ ]stack][ ]predicate", CustomArg.ITEM_STACK_PREDICATE);
         register("loottable", "loot[ ]table", LootTableArgument.class);
@@ -98,7 +98,7 @@ public class BrigArgument {
         register("namespaced key", "(namespaced[ ]key|mc[ ]key)", NamespacedKeyArgument.class);
 
         // Skript
-        register("entitydata", CustomArg.ENTITY_DATA);
+        register("entitydata", "entity[ ]data", CustomArg.ENTITY_DATA);
         register("itemtype", "item[ ]type", CustomArg.ITEM_TYPE);
         register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
 
