@@ -98,8 +98,9 @@ public class BrigArgument {
         register("namespaced key", "(namespaced[ ]key|mc[ ]key)", NamespacedKeyArgument.class);
 
         // Skript
-        register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
+        register("entitydata", CustomArg.ENTITY_DATA);
         register("itemtype", "item[ ]type", CustomArg.ITEM_TYPE);
+        register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
 
         // Other
         register("boolean", BooleanArgument.class);

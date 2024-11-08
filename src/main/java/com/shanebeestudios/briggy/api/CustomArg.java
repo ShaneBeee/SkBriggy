@@ -1,6 +1,7 @@
 package com.shanebeestudios.briggy.api;
 
 import ch.njol.skript.aliases.ItemType;
+import ch.njol.skript.bukkitutil.EntityUtils;
 import ch.njol.skript.util.SkriptColor;
 import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
@@ -13,6 +14,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.BlockPredicateArgument;
 import dev.jorel.commandapi.arguments.CustomArgument;
+import dev.jorel.commandapi.arguments.EntityTypeArgument;
 import dev.jorel.commandapi.arguments.ItemStackPredicateArgument;
 import dev.jorel.commandapi.arguments.Location2DArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
@@ -44,7 +46,8 @@ public abstract class CustomArg {
         Argument<?> get(String name) {
             return new CustomArgument<>(new AdventureChatArgument(name), info -> {
                 Component component = info.currentInput();
-                if (SkBriggy.HAS_SKBEE_COMPONENT) return ComponentWrapper.fromComponent(component);
+                if (SkBriggy.HAS_SKBEE_COMPONENT)
+                    return ComponentWrapper.fromComponent(component);
                 return LegacyComponentSerializer.legacySection().serialize(component);
             });
         }
@@ -70,9 +73,18 @@ public abstract class CustomArg {
         Argument<?> get(String name) {
             return new CustomArgument<>(new AdventureChatComponentArgument(name), info -> {
                 Component component = info.currentInput();
-                if (SkBriggy.HAS_SKBEE_COMPONENT) return ComponentWrapper.fromComponent(component);
+                if (SkBriggy.HAS_SKBEE_COMPONENT)
+                    return ComponentWrapper.fromComponent(component);
                 return LegacyComponentSerializer.legacySection().serialize(component);
             });
+        }
+    };
+
+    static final CustomArg ENTITY_DATA = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new EntityTypeArgument(name), info ->
+                EntityUtils.toSkriptEntityData(info.currentInput()));
         }
     };
 
@@ -110,7 +122,8 @@ public abstract class CustomArg {
         Argument<?> get(String name) {
             return new CustomArgument<>(new NBTCompoundArgument<>(name), info -> {
                 String nbtString = info.input();
-                if (SkBriggy.HAS_SKBEE_NBT) return NBTApi.validateNBT(nbtString);
+                if (SkBriggy.HAS_SKBEE_NBT)
+                    return NBTApi.validateNBT(nbtString);
                 return nbtString;
             });
         }
@@ -130,9 +143,9 @@ public abstract class CustomArg {
         @Override
         Argument<?> get(String name) {
             return new CustomArgument<>(new StringArgument(name), info ->
-                    SkriptColor.fromName(info.input().replace("_", " ")))
-                    .replaceSuggestions(ArgumentSuggestions.strings(
-                            Arrays.stream(SkriptColor.values()).map(skriptColor -> skriptColor.getName().replace(" ", "_")).toArray(String[]::new)));
+                SkriptColor.fromName(info.input().replace("_", " ")))
+                .replaceSuggestions(ArgumentSuggestions.strings(
+                    Arrays.stream(SkriptColor.values()).map(skriptColor -> skriptColor.getName().replace(" ", "_")).toArray(String[]::new)));
         }
     };
 
@@ -140,9 +153,9 @@ public abstract class CustomArg {
         @Override
         Argument<World> get(String name) {
             return new CustomArgument<>(new StringArgument(name), info ->
-                    Bukkit.getWorld(info.input()))
-                    .includeSuggestions(ArgumentSuggestions.stringCollectionAsync(commandSenderSuggestionInfo ->
-                            CompletableFuture.supplyAsync(() -> Bukkit.getWorlds().stream().map(World::getName).toList())));
+                Bukkit.getWorld(info.input()))
+                .includeSuggestions(ArgumentSuggestions.stringCollectionAsync(commandSenderSuggestionInfo ->
+                    CompletableFuture.supplyAsync(() -> Bukkit.getWorlds().stream().map(World::getName).toList())));
 
         }
     };
