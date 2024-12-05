@@ -88,7 +88,8 @@ public class Types {
                 public @NotNull String toVariableNameString(BrigArgument brigArgument) {
                     return toString(brigArgument, 0);
                 }
-            }));
+            })
+            .supplier(BrigArgument.getSupplier()));
 
         Classes.registerClass(new ClassInfo<>(ParticleData.class, "particledata")
             .user("particle ?datas?")
