@@ -38,11 +38,16 @@ import dev.jorel.commandapi.arguments.WorldArgument;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class BrigArgument {
+
+    // STATIC STUFF
 
     private static final Map<String, BrigArgument> MAP_BY_NAME = new HashMap<>();
     private static final Number[] INT_MIN_MAX = new Number[]{Integer.MIN_VALUE, Integer.MAX_VALUE};
@@ -69,7 +74,7 @@ public class BrigArgument {
         register("component", CustomArg.COMPONENT);
         register("dimension", WorldArgument.class);
         register("enchantment", "enchant[ment]", EnchantmentArgument.class);
-        register("entitytype", EntityTypeArgument.class);
+        register("entitytype", "entity[ ]type", EntityTypeArgument.class);
         register("itemstack", "item[[ ]stack]", ItemStackArgument.class);
         register("itempredicate", "item[[ ]stack][ ]predicate", CustomArg.ITEM_STACK_PREDICATE);
         register("loottable", "loot[ ]table", LootTableArgument.class);
@@ -98,8 +103,9 @@ public class BrigArgument {
         register("namespaced key", "(namespaced[ ]key|mc[ ]key)", NamespacedKeyArgument.class);
 
         // Skript
-        register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
+        register("entitydata", "entity[ ]data", CustomArg.ENTITY_DATA);
         register("itemtype", "item[ ]type", CustomArg.ITEM_TYPE);
+        register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
 
         // Other
         register("boolean", BooleanArgument.class);
@@ -127,6 +133,33 @@ public class BrigArgument {
         register(name, name, customArg);
     }
 
+    public static String getPatterns() {
+        List<String> patterns = new ArrayList<>();
+        for (BrigArgument value : MAP_BY_NAME.values()) {
+            patterns.add(value.pattern);
+        }
+        Collections.sort(patterns);
+        return StringUtils.join(patterns, ", ");
+    }
+
+    public static BrigArgument parse(String string) {
+        for (BrigArgument brigArgument : MAP_BY_NAME.values()) {
+            if (brigArgument.skriptPattern.match(string) != null)
+                return brigArgument;
+        }
+        return null;
+    }
+
+    /**
+     * Supplier used for Skript's ClassInfo
+     *
+     * @return Supplier of all types
+     */
+    public static Supplier<Iterator<BrigArgument>> getSupplier() {
+        return () -> MAP_BY_NAME.values().stream().sorted(Comparator.comparing(BrigArgument::getName)).iterator();
+    }
+
+    // CLASS STUFF
 
     private final String name;
     private final String pattern;
@@ -168,7 +201,8 @@ public class BrigArgument {
         }
         try {
             return this.argClass.getDeclaredConstructor(String.class).newInstance(name);
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+        } catch (InstantiationException | NoSuchMethodException |
+                 InvocationTargetException |
                  IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -195,22 +229,6 @@ public class BrigArgument {
 
     public Class<? extends Argument<?>> getArgClass() {
         return argClass;
-    }
-
-    public static String getPatterns() {
-        List<String> patterns = new ArrayList<>();
-        for (BrigArgument value : MAP_BY_NAME.values()) {
-            patterns.add(value.pattern);
-        }
-        Collections.sort(patterns);
-        return StringUtils.join(patterns, ", ");
-    }
-
-    public static BrigArgument parse(String string) {
-        for (BrigArgument brigArgument : MAP_BY_NAME.values()) {
-            if (brigArgument.skriptPattern.match(string) != null) return brigArgument;
-        }
-        return null;
     }
 
     public String getName() {

@@ -14,6 +14,7 @@ import ch.njol.skript.log.ErrorQuality;
 import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
+import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,7 @@ public class ExprBrigArg extends SimpleExpression<Object> {
     @SuppressWarnings({"NullableProblems", "unchecked"})
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-        if (!getParser().isCurrentEvent(BrigCommandTriggerEvent.class, BrigCommandSuggestEvent.class)) {
+        if (!getParser().isCurrentEvent(BrigCommandTriggerEvent.class, BrigCommandSuggestEvent.class, BrigTreeTriggerEvent.class)) {
             Skript.error("'brig-arg' can only be used in a brig command 'trigger' and 'register arg' sections.", ErrorQuality.SEMANTIC_ERROR);
             return false;
         }
@@ -55,6 +56,7 @@ public class ExprBrigArg extends SimpleExpression<Object> {
         Object[] args;
         if (event instanceof BrigCommandTriggerEvent triggerEvent) args = triggerEvent.getArgs();
         else if (event instanceof BrigCommandSuggestEvent suggestEvent) args = suggestEvent.getBrigArgs();
+        else if (event instanceof BrigTreeTriggerEvent treeEvent) args = treeEvent.getArgs();
         else return null;
 
         List<Object> objects = new ArrayList<>();

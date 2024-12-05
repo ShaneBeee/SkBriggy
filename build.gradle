@@ -8,8 +8,6 @@ plugins {
 group 'com.shanebeestudios'
 
 compileJava {
-    sourceCompatibility = '17'
-    targetCompatibility = '17'
     options.encoding = 'UTF-8'
 }
 
@@ -34,7 +32,7 @@ repositories {
 
 dependencies {
     // Paper
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
 
     // Skript
     compileOnly(group: 'com.github.SkriptLang', name: 'Skript', version: '2.7.0') {
@@ -42,10 +40,14 @@ dependencies {
     }
 
     // Command Api
-    implementation("dev.jorel:commandapi-bukkit-shade:9.6.0")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.7.0")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.5.8")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-source', '' + 17, '-target', '' + 17]
 }
 
 build {
@@ -71,5 +73,5 @@ shadowJar {
 tasks.register('server', Copy) {
     from shadowJar
     // Change this to wherever you want your jar to build
-    into '/Users/ShaneBee/Desktop/Server/Skript/1-21-2/plugins'
+    into '/Users/ShaneBee/Desktop/Server/Skript/1-21-4/plugins'
 }
