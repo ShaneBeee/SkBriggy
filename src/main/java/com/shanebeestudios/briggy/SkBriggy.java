@@ -12,6 +12,8 @@ import com.shanebeestudios.skbee.config.Config;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.exceptions.UnsupportedVersionException;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -100,9 +102,16 @@ public class SkBriggy extends JavaPlugin {
             Utils.log("&ehttps://github.com/ShaneBeee/SkBriggy/issues");
         }
 
+        registerMetrics();
+
         CommandAPI.onEnable();
         long finish = System.currentTimeMillis() - start;
         Utils.log("Finished loading in &b" + finish + "ms");
+    }
+
+    private void registerMetrics() {
+        Metrics metrics = new Metrics(this, 24320);
+        metrics.addCustomChart(new SimplePie("skript_version", () -> Skript.getVersion().toString()));
     }
 
     @Override
