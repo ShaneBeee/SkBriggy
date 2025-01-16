@@ -11,12 +11,18 @@ test "SkBriggy - Command Tree":
 	delete {brig_test::*}
 	set {_i} to random integer between 1 and 100
 	set {_s} to random uuid
-	execute console command "/brigtest %{_i}% %{_s}%"
+	set {_c} to run command "/brigtest %{_i}% %{_s}%"
+	assert {_c} = true with "The command should have fun"
 	assert {brig_test::%{_s}%} = {_i} with "The command (with 2 args) should have run"
-	delete {_i}
+	delete {_i} and {_c}
 
 	set {_i} to random integer between 1 and 100
-	execute console command "/brigtest %{_i}%"
+	set {_c} to run command "/brigtest %{_i}%"
+	assert {_c} = true with "The command should have fun"
 	assert {brig_test::just_int} = {_i} with "The command (with 1 arg) should have run"
-	delete {_i}
+	delete {_i} and {_c}
+
+	set {_c} to run command "/nothingcommand"
+	assert {_c} = false with "The command should have failed"
+
 	delete {brig_test::*}
