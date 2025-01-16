@@ -1,0 +1,22 @@
+
+brig command tree /brigtest:
+	int arg "int":
+		string arg "s":
+			trigger:
+				set {brig_test::%{_s}%} to {_int}
+		trigger:
+			set {brig_test::just_int} to {_int}
+
+test "SkBriggy - Command Tree":
+	delete {brig_test::*}
+	set {_i} to random integer between 1 and 100
+	set {_s} to random uuid
+	execute console command "/brigtest %{_i}% %{_s}%"
+	assert {brig_test::%{_s}%} = {_i} with "The command (with 2 args) should have run"
+	delete {_i}
+
+	set {_i} to random integer between 1 and 100
+	execute console command "/brigtest %{_i}%"
+	assert {brig_test::just_int} = {_i} with "The command (with 1 arg) should have run"
+	delete {_i}
+	delete {brig_test::*}

@@ -13,6 +13,7 @@ import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.util.SimpleEvent;
+import ch.njol.skript.test.runner.TestMode;
 import ch.njol.skript.util.Utils;
 import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.event.BrigTreeCreateEvent;
@@ -216,7 +217,11 @@ public class StructBrigCommandTree extends Structure {
             Skript.error("Command tree must have at least a subcommand or a trigger.");
             return false;
         }
-        Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> commandTree.register(this.namespace), 2);
+        if (TestMode.ENABLED) { // Tests can't have delays
+            commandTree.register(this.namespace);
+        } else {
+            Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> commandTree.register(this.namespace), 2);
+        }
         return true;
     }
 
