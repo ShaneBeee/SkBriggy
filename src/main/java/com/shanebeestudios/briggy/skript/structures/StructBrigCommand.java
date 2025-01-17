@@ -12,6 +12,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.VariableString;
 import ch.njol.skript.lang.util.SimpleEvent;
+import ch.njol.skript.test.runner.TestMode;
 import ch.njol.skript.util.Utils;
 import ch.njol.util.StringUtils;
 import com.shanebeestudios.briggy.SkBriggy;
@@ -174,8 +175,12 @@ public class StructBrigCommand extends Structure {
         // Build command
         brigCommand.addExecution(trigger);
 
-        // Run later to prevent reload issues
-        Bukkit.getScheduler().runTaskLater(PLUGIN, brigCommand::build, 0);
+        if (TestMode.ENABLED) { // Tests can't have delays
+            brigCommand.build();
+        } else {
+            // Run later to prevent reload issues
+            Bukkit.getScheduler().runTaskLater(PLUGIN, brigCommand::build, 0);
+        }
 
         getParser().deleteCurrentEvent();
         return true;

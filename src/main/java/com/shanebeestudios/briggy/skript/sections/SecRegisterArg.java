@@ -86,7 +86,7 @@ public class SecRegisterArg extends EffectSection {
         Skript.registerSection(SecRegisterArg.class,
                 base,
                 base + " (with suggestions|using) %objects%",
-                base + " with min %number% [and] [with] max %number%");
+                base + " with [min %-number%] [and] [with] [max %-number%]");
     }
 
     private int pattern;

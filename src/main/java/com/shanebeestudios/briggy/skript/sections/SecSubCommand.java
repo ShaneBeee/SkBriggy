@@ -125,7 +125,7 @@ public class SecSubCommand extends Section {
         Skript.registerSection(SecSubCommand.class,
             base,
             base + " (with suggestions|using) %objects%",
-            base + " with min %number% [and] [with] max %number%");
+            base + " with [min %-number%] [and] [with] [max %-number%]");
     }
 
     // Section Pattern
