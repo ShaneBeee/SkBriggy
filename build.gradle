@@ -35,7 +35,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
 
     // Skript
-    compileOnly(group: 'com.github.SkriptLang', name: 'Skript', version: '2.7.0') {
+    compileOnly(group: 'com.github.SkriptLang', name: 'Skript', version: '2.10.0') {
         transitive = false
     }
 
@@ -44,6 +44,9 @@ dependencies {
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.5.8")
+
+    // bStats
+    implementation(group: 'org.bstats', name: 'bstats-bukkit', version: '3.1.0')
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -67,6 +70,7 @@ processResources {
 shadowJar {
     archiveClassifier = null
     relocate("dev.jorel.commandapi", "com.shanebeestudios.briggy.api.commandapi")
+    relocate("org.bstats", "com.shanebeestudios.briggy.metrics")
 }
 
 // Run task to build jar to another spot
