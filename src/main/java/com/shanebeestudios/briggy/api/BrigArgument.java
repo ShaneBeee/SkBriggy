@@ -2,7 +2,9 @@ package com.shanebeestudios.briggy.api;
 
 import ch.njol.skript.patterns.PatternCompiler;
 import ch.njol.skript.patterns.SkriptPattern;
+import ch.njol.skript.util.Timespan;
 import ch.njol.util.StringUtils;
+import com.shanebeestudios.briggy.api.util.Utils;
 import dev.jorel.commandapi.arguments.AngleArgument;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.BiomeArgument;
@@ -106,6 +108,9 @@ public class BrigArgument {
         register("entitydata", "entity[ ]data", CustomArg.ENTITY_DATA);
         register("itemtype", "item[ ]type", CustomArg.ITEM_TYPE);
         register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
+        if (Utils.classInfoExistsFor(Timespan.TimePeriod.class)) { // SkBee is adding this
+            register("timespanperiod", "time[ ]span[ ]period", CustomArg.TIME_PERIOD);
+        }
 
         // Other
         register("boolean", BooleanArgument.class);
