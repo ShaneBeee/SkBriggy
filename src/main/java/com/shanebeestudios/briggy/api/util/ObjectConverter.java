@@ -26,6 +26,7 @@ public class ObjectConverter {
         return toReturn.toArray(new Object[0]);
     }
 
+    @SuppressWarnings("removal") // Sound#getKey deprecated by Paper
     public static Object convert(Object object) {
         if (object instanceof Sound sound) {
             return sound.getKey().toString();
