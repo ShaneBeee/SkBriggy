@@ -3,6 +3,7 @@ package com.shanebeestudios.briggy.api;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.EntityUtils;
 import ch.njol.skript.util.SkriptColor;
+import ch.njol.skript.util.Timespan;
 import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
 import com.shanebeestudios.briggy.api.wrapper.ItemStackPredicate;
@@ -39,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
 public abstract class CustomArg {
 
     private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).filter(material -> !material.isLegacy()).map(mat -> mat.getKey().getKey()).toList();
-    private static final World MAIN_WORLD = Bukkit.getWorlds().get(0);
+    private static final World MAIN_WORLD = Bukkit.getWorlds().getFirst();
 
     static final CustomArg MESSAGE = new CustomArg() {
         @Override
@@ -146,6 +147,17 @@ public abstract class CustomArg {
                 SkriptColor.fromName(info.input().replace("_", " ")))
                 .replaceSuggestions(ArgumentSuggestions.strings(
                     Arrays.stream(SkriptColor.values()).map(skriptColor -> skriptColor.getName().replace(" ", "_")).toArray(String[]::new)));
+        }
+    };
+
+    static final CustomArg TIME_PERIOD = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new StringArgument(name), info ->
+                Timespan.TimePeriod.valueOf(info.input().toUpperCase(Locale.ROOT)))
+                .replaceSuggestions(ArgumentSuggestions.strings(
+                    Arrays.stream(Timespan.TimePeriod.values()).map(timePeriod -> timePeriod.name().toLowerCase(Locale.ROOT)).toArray(String[]::new)
+                ));
         }
     };
 
