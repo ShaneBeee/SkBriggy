@@ -36,7 +36,7 @@ jobs:
           # Artifact name
           name: SkBriggy-Artifact
           # A file, directory or wildcard pattern that describes what to upload
-          path: build/libs/SkBriggy*.jar
+          path: build/libs/SkBriggy-*.jar
   test:
     name: Test Skript 2.10.2
     runs-on: ubuntu-latest
