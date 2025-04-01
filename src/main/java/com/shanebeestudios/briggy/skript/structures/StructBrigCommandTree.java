@@ -231,7 +231,7 @@ public class StructBrigCommandTree extends Structure {
                     CommandAPI.unregister(this.command, true);
                 }
                 commandTree.register(this.namespace);
-            }, 10);
+            }, 2);
         }
         return true;
     }
