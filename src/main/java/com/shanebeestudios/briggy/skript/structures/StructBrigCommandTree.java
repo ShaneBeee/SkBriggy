@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.entry.EntryContainer;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.entry.KeyValueEntryData;
+import org.skriptlang.skript.lang.entry.util.LiteralEntryData;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 
@@ -50,6 +51,7 @@ import java.util.regex.Pattern;
     "`description` = Just like Skript, this is a string that will be used in the help command.",
     "`usages` = This is the usage which is shown in the specific `/help <command>` page. Separate multiple usages by comma.",
     "`aliases` = Aliases for this command.",
+    "`override` = Whether to completely wipe out other commands with the same name, such as vanilla Minecraft commands (Defaults to false).",
     "`register arg` = Register another subcommand within this one. Supports multiple.",
     "`trigger` = Like any other command, this is what will execute when the command is run."})
 @Examples({"# Example with optional arg that can be bypassed",
@@ -108,6 +110,7 @@ public class StructBrigCommandTree extends Structure {
         EntryValidator entryValidator = EntryValidator.builder()
             .addEntry("permission", null, true)
             .addEntry("description", "SkBriggy Command", true)
+            .addEntryData(new LiteralEntryData<>("override", false, true, Boolean.class))
             .addEntryData(new KeyValueEntryData<List<String>>("usages", new ArrayList<>(), true) {
                 @Override
                 protected List<String> getValue(String value) {
@@ -145,6 +148,7 @@ public class StructBrigCommandTree extends Structure {
     private EntryContainer entryContainer;
     private String namespace = "minecraft";
     private String command;
+    private boolean override = false;
 
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
@@ -182,6 +186,10 @@ public class StructBrigCommandTree extends Structure {
         description = Utils.replaceEnglishChatStyles(description);
         commandTree.withShortDescription(description);
 
+        // Override vanilla command
+        Boolean override = this.entryContainer.getOptional("override", Boolean.class, false);
+        if (override != null) this.override = override;
+
         // Register command usage
         List<String> usages = (List<String>) this.entryContainer.get("usages", true);
         if (!usages.isEmpty()) commandTree.withUsage(usages.toArray(new String[0]));
@@ -218,14 +226,19 @@ public class StructBrigCommandTree extends Structure {
         if (TestMode.ENABLED) { // Tests can't have delays
             commandTree.register(this.namespace);
         } else {
-            Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> commandTree.register(this.namespace), 2);
+            Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> {
+                if (this.override) {
+                    CommandAPI.unregister(this.command, true);
+                }
+                commandTree.register(this.namespace);
+            }, 10);
         }
         return true;
     }
 
     @Override
     public void unload() {
-        CommandAPI.unregister(this.command, true);
+        CommandAPI.unregister(this.command, this.override);
     }
 
     @Override
