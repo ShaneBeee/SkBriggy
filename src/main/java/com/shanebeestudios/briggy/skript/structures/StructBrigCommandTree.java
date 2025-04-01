@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.entry.EntryContainer;
 import org.skriptlang.skript.lang.entry.EntryValidator;
 import org.skriptlang.skript.lang.entry.KeyValueEntryData;
+import org.skriptlang.skript.lang.entry.util.LiteralEntryData;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 
@@ -50,6 +51,7 @@ import java.util.regex.Pattern;
     "`description` = Just like Skript, this is a string that will be used in the help command.",
     "`usages` = This is the usage which is shown in the specific `/help <command>` page. Separate multiple usages by comma.",
     "`aliases` = Aliases for this command.",
+    "`override` = Whether to completely wipe out other commands with the same name, such as vanilla Minecraft commands (Defaults to false).",
     "`register arg` = Register another subcommand within this one. Supports multiple.",
     "`trigger` = Like any other command, this is what will execute when the command is run."})
 @Examples({"# Example with optional arg that can be bypassed",
@@ -108,8 +110,8 @@ public class StructBrigCommandTree extends Structure {
         EntryValidator entryValidator = EntryValidator.builder()
             .addEntry("permission", null, true)
             .addEntry("description", "SkBriggy Command", true)
+            .addEntryData(new LiteralEntryData<>("override", false, true, Boolean.class))
             .addEntryData(new KeyValueEntryData<List<String>>("usages", new ArrayList<>(), true) {
-                @SuppressWarnings("NullableProblems")
                 @Override
                 protected List<String> getValue(String value) {
                     value = Util.getColString(value);
@@ -119,12 +121,11 @@ public class StructBrigCommandTree extends Structure {
                 }
             })
             .addEntryData(new KeyValueEntryData<List<String>>("aliases", new ArrayList<>(), true) {
-                @SuppressWarnings("NullableProblems")
                 @Override
                 protected List<String> getValue(String value) {
                     value = value.replace("/", "");
                     List<String> aliases = new ArrayList<>(Arrays.asList(COMMA_PATTERN.split(value)));
-                    if (aliases.get(0).isEmpty()) return null;
+                    if (aliases.getFirst().isEmpty()) return null;
                     return aliases;
                 }
             })
@@ -144,13 +145,15 @@ public class StructBrigCommandTree extends Structure {
         Skript.registerStructure(StructBrigCommandTree.class, entryValidator, "brig[(gy|adier)] command[ ]tree /<.+>");
     }
 
+    private EntryContainer entryContainer;
     private String namespace = "minecraft";
     private String command;
+    private boolean override = false;
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
-        String command = parseResult.regexes.get(0).group();
+        this.entryContainer = entryContainer;
+        String command = parseResult.regexes.getFirst().group();
         if (command.contains(":")) {
             String[] split = command.split(":");
             this.namespace = split[0];
@@ -171,31 +174,34 @@ public class StructBrigCommandTree extends Structure {
         Script currentScript = getParser().getCurrentScript();
         getParser().setCurrentEvent("BrigTreeCreate", BrigTreeCreateEvent.class);
 
-        EntryContainer entryContainer = getEntryContainer();
         CommandTree commandTree = new CommandTree(this.command);
 
         // Register command permission
-        String permission = entryContainer.getOptional("permission", String.class, false);
+        String permission = this.entryContainer.getOptional("permission", String.class, false);
         if (permission != null) commandTree.withPermission(permission);
 
         // Register command description
-        String description = entryContainer.getOptional("description", String.class, true);
+        String description = this.entryContainer.getOptional("description", String.class, true);
         assert description != null;
         description = Utils.replaceEnglishChatStyles(description);
         commandTree.withShortDescription(description);
 
+        // Override vanilla command
+        Boolean override = this.entryContainer.getOptional("override", Boolean.class, false);
+        if (override != null) this.override = override;
+
         // Register command usage
-        List<String> usages = (List<String>) entryContainer.get("usages", true);
+        List<String> usages = (List<String>) this.entryContainer.get("usages", true);
         if (!usages.isEmpty()) commandTree.withUsage(usages.toArray(new String[0]));
 
         // Register command aliases
-        List<String> aliases = (List<String>) entryContainer.get("aliases", true);
+        List<String> aliases = (List<String>) this.entryContainer.get("aliases", true);
         commandTree.withAliases(aliases.toArray(new String[0]));
 
         // Register sub commands
         boolean hasSubCommand = false;
         getParser().setCurrentEvent("BrigTreeSubCommand", BrigTreeSubCommandEvent.class);
-        for (Node node : entryContainer.getUnhandledNodes()) {
+        for (Node node : this.entryContainer.getUnhandledNodes()) {
             if (node instanceof SectionNode sectionNode) {
                 Section parse = Section.parse(node.getKey(), "Invalid section: " + node.getKey(), sectionNode, null);
                 if (parse == null) return false;
@@ -206,7 +212,7 @@ public class StructBrigCommandTree extends Structure {
         }
 
         // Register command trigger
-        SectionNode triggerNode = entryContainer.getOptional("trigger", SectionNode.class, false);
+        SectionNode triggerNode = this.entryContainer.getOptional("trigger", SectionNode.class, false);
         if (triggerNode != null) {
             getParser().setCurrentEvent("BrigTreeTrigger", BrigTreeTriggerEvent.class);
             Trigger triggerTrigger = new Trigger(currentScript, "briggy command /" + this.command, new SimpleEvent(), ScriptLoader.loadItems(triggerNode));
@@ -220,14 +226,19 @@ public class StructBrigCommandTree extends Structure {
         if (TestMode.ENABLED) { // Tests can't have delays
             commandTree.register(this.namespace);
         } else {
-            Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> commandTree.register(this.namespace), 2);
+            Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> {
+                if (this.override) {
+                    CommandAPI.unregister(this.command, true);
+                }
+                commandTree.register(this.namespace);
+            }, 2);
         }
         return true;
     }
 
     @Override
     public void unload() {
-        CommandAPI.unregister(this.command, true);
+        CommandAPI.unregister(this.command, this.override);
     }
 
     @Override

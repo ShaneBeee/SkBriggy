@@ -5,7 +5,6 @@ import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.EventValues;
-import ch.njol.skript.util.Getter;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
@@ -24,33 +23,10 @@ public class Types {
 
     static {
         // Event Values
-        EventValues.registerEventValue(BrigCommandEvent.class, CommandSender.class, new Getter<>() {
-            @Override
-            public @Nullable CommandSender get(BrigCommandEvent event) {
-                return event.getSender();
-            }
-        }, 0);
-
-        EventValues.registerEventValue(BrigCommandEvent.class, World.class, new Getter<>() {
-            @Override
-            public World get(BrigCommandEvent event) {
-                return event.getWorld();
-            }
-        }, 0);
-
-        EventValues.registerEventValue(BrigTreeTriggerEvent.class, CommandSender.class, new Getter<>() {
-            @Override
-            public @Nullable CommandSender get(BrigTreeTriggerEvent event) {
-                return event.getSender();
-            }
-        }, 0);
-
-        EventValues.registerEventValue(BrigCommandSuggestEvent.class, CommandSender.class, new Getter<>() {
-            @Override
-            public CommandSender get(BrigCommandSuggestEvent event) {
-                return event.getCommandSender();
-            }
-        }, 0);
+        EventValues.registerEventValue(BrigCommandEvent.class, CommandSender.class, BrigCommandEvent::getSender, EventValues.TIME_NOW);
+        EventValues.registerEventValue(BrigCommandEvent.class, World.class, BrigCommandEvent::getWorld, EventValues.TIME_NOW);
+        EventValues.registerEventValue(BrigTreeTriggerEvent.class, CommandSender.class, BrigTreeTriggerEvent::getSender, EventValues.TIME_NOW);
+        EventValues.registerEventValue(BrigCommandSuggestEvent.class, CommandSender.class, BrigCommandSuggestEvent::getCommandSender, EventValues.TIME_NOW);
 
         // Classes
         Classes.registerClass(new ClassInfo<>(IntegerRange.class, "intrange")
@@ -72,8 +48,6 @@ public class Types {
             .since("1.0.0")
             .after("classinfo")
             .parser(new Parser<>() {
-
-                @SuppressWarnings("NullableProblems")
                 @Override
                 public @Nullable BrigArgument parse(String string, ParseContext context) {
                     return BrigArgument.parse(string);
@@ -126,19 +100,16 @@ public class Types {
      */
     public static <T> Parser<T> getDefaultParser() {
         return new Parser<>() {
-            @SuppressWarnings("NullableProblems")
             @Override
             public boolean canParse(ParseContext context) {
                 return false;
             }
 
-            @SuppressWarnings("NullableProblems")
             @Override
             public String toString(T o, int flags) {
                 return o.toString();
             }
 
-            @SuppressWarnings("NullableProblems")
             @Override
             public String toVariableNameString(T o) {
                 return o.toString();

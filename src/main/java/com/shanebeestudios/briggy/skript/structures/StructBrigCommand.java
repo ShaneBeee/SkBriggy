@@ -97,12 +97,11 @@ public class StructBrigCommand extends Structure {
             .addEntry("description", "SkBriggy Command", true)
             .addEntryData(new VariableStringEntryData("usage", null, true))
             .addEntryData(new KeyValueEntryData<List<String>>("aliases", new ArrayList<>(), true) {
-                @SuppressWarnings("NullableProblems")
                 @Override
                 protected List<String> getValue(String value) {
                     value = value.replace("/", "");
                     List<String> aliases = new ArrayList<>(Arrays.asList(ALIASES_PATTERN.split(value)));
-                    if (aliases.get(0).isEmpty()) return null;
+                    if (aliases.getFirst().isEmpty()) return null;
                     return aliases;
                 }
             })
@@ -112,13 +111,14 @@ public class StructBrigCommand extends Structure {
         Skript.registerStructure(StructBrigCommand.class, entryValidator, "brig[(gy|adier)] command /<.+>");
     }
 
+    private EntryContainer entryContainer;
     private String command;
     private String argString;
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
-        String[] split = parseResult.regexes.get(0).group().split(" ", 2);
+        this.entryContainer = entryContainer;
+        String[] split = parseResult.regexes.getFirst().group().split(" ", 2);
         this.command = split[0];
         this.argString = split.length > 1 ? split[1] : null;
         return true;
@@ -130,7 +130,6 @@ public class StructBrigCommand extends Structure {
         // Create Command
         Script currentScript = getParser().getCurrentScript();
         getParser().setCurrentEvent("BrigCommandArguments", BrigCommandArgumentsEvent.class);
-        EntryContainer entryContainer = getEntryContainer();
         BrigCommand brigCommand = new BrigCommand(this.command);
 
         // Register command arguments
@@ -139,36 +138,36 @@ public class StructBrigCommand extends Structure {
         }
 
         // Register section arguments
-        SectionNode argNode = entryContainer.getOptional("arguments", SectionNode.class, false);
+        SectionNode argNode = this.entryContainer.getOptional("arguments", SectionNode.class, false);
         if (argNode != null) {
             Trigger argTrigger = new Trigger(currentScript, "briggy command /" + this.command, new SimpleEvent(), ScriptLoader.loadItems(argNode));
             Trigger.walk(argTrigger, new BrigCommandArgumentsEvent(brigCommand));
         }
 
         // Register command permission
-        String permission = entryContainer.getOptional("permission", String.class, false);
+        String permission = this.entryContainer.getOptional("permission", String.class, false);
         brigCommand.setPermission(permission);
 
         // Register command description
-        String description = entryContainer.getOptional("description", String.class, true);
+        String description = this.entryContainer.getOptional("description", String.class, true);
         assert description != null;
         description = Utils.replaceEnglishChatStyles(description);
         brigCommand.setDescription(description);
 
         // Regiseter command usage
-        VariableString usage = entryContainer.getOptional("usage", VariableString.class, false);
+        VariableString usage = this.entryContainer.getOptional("usage", VariableString.class, false);
         if (usage != null && usage.isSimple()) {
             String string = usage.toString(null);
             brigCommand.setUsage(string);
         }
 
         // Register command aliases
-        List<String> aliases = (List<String>) entryContainer.get("aliases", true);
+        List<String> aliases = (List<String>) this.entryContainer.get("aliases", true);
         brigCommand.setAliases(aliases);
 
         // Register command trigger
         getParser().setCurrentEvent("BrigCommandTrigger", BrigCommandTriggerEvent.class);
-        SectionNode triggerNode = entryContainer.get("trigger", SectionNode.class, false);
+        SectionNode triggerNode = this.entryContainer.get("trigger", SectionNode.class, false);
         Trigger trigger = new Trigger(currentScript, "briggy command /" + this.command, new SimpleEvent(), ScriptLoader.loadItems(triggerNode));
         trigger.setLineNumber(triggerNode.getLine());
 
@@ -260,7 +259,7 @@ public class StructBrigCommand extends Structure {
 
             // GreedyString args have to be last
             List<Argument<?>> brigArgs = brigCommand.getArguments();
-            if (!brigArgs.isEmpty() && brigArgs.get(brigArgs.size() - 1) instanceof GreedyStringArgument) {
+            if (!brigArgs.isEmpty() && brigArgs.getLast() instanceof GreedyStringArgument) {
                 Skript.error("You cannot place another arg after a <greedystring> arg.");
                 return false;
             }

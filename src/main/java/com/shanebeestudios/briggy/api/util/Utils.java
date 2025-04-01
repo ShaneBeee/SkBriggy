@@ -1,5 +1,6 @@
 package com.shanebeestudios.briggy.api.util;
 
+import ch.njol.skript.registrations.Classes;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -27,6 +28,10 @@ public class Utils {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean classInfoExistsFor(Class<?> infoClass) {
+        return Classes.getExactClassInfo(infoClass) != null;
     }
 
 }
