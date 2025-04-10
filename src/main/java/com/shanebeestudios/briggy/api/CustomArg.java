@@ -15,6 +15,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.BlockPredicateArgument;
 import dev.jorel.commandapi.arguments.CustomArgument;
+import dev.jorel.commandapi.arguments.CustomArgument.CustomArgumentException;
 import dev.jorel.commandapi.arguments.EntityTypeArgument;
 import dev.jorel.commandapi.arguments.ItemStackPredicateArgument;
 import dev.jorel.commandapi.arguments.Location2DArgument;
@@ -102,8 +103,10 @@ public abstract class CustomArg {
         Argument<?> get(String name) {
             return new CustomArgument<>(new StringArgument(name), info -> {
                 Material material = Material.getMaterial(info.input().toUpperCase(Locale.ROOT));
-                if (material != null) return new ItemType(material);
-                return null;
+                if (material == null) {
+                    throw CustomArgumentException.fromString("Unknown item type '" + info.input() + "'");
+                }
+                return new ItemType(material);
             }).includeSuggestions(ArgumentSuggestions.strings(MATERIAL_NAMES.toArray(String[]::new)));
         }
     };
@@ -143,31 +146,43 @@ public abstract class CustomArg {
     static final CustomArg SKRIPT_COLOR = new CustomArg() {
         @Override
         Argument<?> get(String name) {
-            return new CustomArgument<>(new StringArgument(name), info ->
-                SkriptColor.fromName(info.input().replace("_", " ")))
-                .replaceSuggestions(ArgumentSuggestions.strings(
-                    Arrays.stream(SkriptColor.values()).map(skriptColor -> skriptColor.getName().replace(" ", "_")).toArray(String[]::new)));
+            return new CustomArgument<>(new StringArgument(name), info -> {
+                SkriptColor skriptColor = SkriptColor.fromName(info.input().replace("_", " "));
+                if (skriptColor == null) {
+                    throw CustomArgumentException.fromString("Unknown skript color '" + info.input() + "'");
+                }
+                return skriptColor;
+            }).replaceSuggestions(ArgumentSuggestions.strings(
+                Arrays.stream(SkriptColor.values()).map(skriptColor -> skriptColor.getName().replace(" ", "_")).toArray(String[]::new)));
         }
     };
 
     static final CustomArg TIME_PERIOD = new CustomArg() {
         @Override
         Argument<?> get(String name) {
-            return new CustomArgument<>(new StringArgument(name), info ->
-                Timespan.TimePeriod.valueOf(info.input().toUpperCase(Locale.ROOT)))
-                .replaceSuggestions(ArgumentSuggestions.strings(
-                    Arrays.stream(Timespan.TimePeriod.values()).map(timePeriod -> timePeriod.name().toLowerCase(Locale.ROOT)).toArray(String[]::new)
-                ));
+            return new CustomArgument<>(new StringArgument(name), info -> {
+                try {
+                    return Timespan.TimePeriod.valueOf(info.input().toUpperCase(Locale.ROOT));
+                } catch (Exception e) {
+                    throw CustomArgumentException.fromString("Unknown time period '" + info.input() + "'");
+                }
+            }).replaceSuggestions(ArgumentSuggestions.strings(
+                Arrays.stream(Timespan.TimePeriod.values()).map(timePeriod -> timePeriod.name().toLowerCase(Locale.ROOT)).toArray(String[]::new)
+            ));
         }
     };
 
     static final CustomArg WORLD = new CustomArg() {
         @Override
         Argument<World> get(String name) {
-            return new CustomArgument<>(new StringArgument(name), info ->
-                Bukkit.getWorld(info.input()))
-                .includeSuggestions(ArgumentSuggestions.stringCollectionAsync(commandSenderSuggestionInfo ->
-                    CompletableFuture.supplyAsync(() -> Bukkit.getWorlds().stream().map(World::getName).toList())));
+            return new CustomArgument<>(new StringArgument(name), info -> {
+                World world = Bukkit.getWorld(info.input());
+                if (world == null) {
+                    throw CustomArgumentException.fromString("Unknown world '" + info.input() + "'");
+                }
+                return world;
+            }).includeSuggestions(ArgumentSuggestions.stringCollectionAsync(commandSenderSuggestionInfo ->
+                CompletableFuture.supplyAsync(() -> Bukkit.getWorlds().stream().map(World::getName).toList())));
 
         }
     };
