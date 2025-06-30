@@ -4,9 +4,9 @@ plugins {
 }
 
 // Version of SkBriggy
-val projectVersion = "1.5.1"
+val projectVersion = "1.5.2"
 // Where this builds on the server
-val serverLocation = "Skript/1-21-5"
+val serverLocation = "Skript/1-21-6"
 // Minecraft version to build against
 val minecraftVersion = "1.21.4"
 
@@ -40,7 +40,7 @@ dependencies {
     compileOnly("com.github.ShaneBeee:SkBee:3.5.8")
 
     // Command Api
-    implementation("dev.jorel:commandapi-bukkit-shade:10.0.1")
+    implementation("dev.jorel:commandapi-bukkit-shade:10.1.0")
 
     // bStats
     implementation("org.bstats:bstats-bukkit:3.1.0")
