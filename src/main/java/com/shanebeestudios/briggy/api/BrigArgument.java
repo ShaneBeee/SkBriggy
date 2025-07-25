@@ -108,6 +108,7 @@ public class BrigArgument {
         register("entitydata", "entity[ ]data", CustomArg.ENTITY_DATA);
         register("itemtype", "item[ ]type", CustomArg.ITEM_TYPE);
         register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
+        register("timespan", "time[ ]span", CustomArg.TIME_SPAN);
         if (Utils.classInfoExistsFor(Timespan.TimePeriod.class)) { // SkBee is adding this
             register("timespanperiod", "time[ ]span[ ]period", CustomArg.TIME_PERIOD);
         }
