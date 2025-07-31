@@ -171,8 +171,10 @@ public abstract class CustomArg {
             }).replaceSuggestions(ArgumentSuggestions.stringCollectionAsync(info ->
                 CompletableFuture.supplyAsync(() -> {
                     String arg = info.currentArg();
-                    if (arg.matches("\\d+")) {
+                    if (arg.matches("\\d+(.\\d+)?")) {
                         return List.of(arg + "s", arg + "m", arg + "h", arg + "d", arg + "w", arg + "mo", arg + "y");
+                    } else if (arg.matches("\\d+.")) {
+                        return List.of(arg + "0s", arg + "0m", arg + "0h", arg + "0d", arg + "0w", arg + "0mo", arg + "0y");
                     } else {
                         return DEFAULT_TIMESPANS;
                     }
