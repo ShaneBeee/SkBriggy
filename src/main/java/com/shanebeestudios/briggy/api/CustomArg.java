@@ -43,7 +43,7 @@ public abstract class CustomArg {
 
     private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).filter(material -> !material.isLegacy()).map(mat -> mat.getKey().getKey()).toList();
     private static final World MAIN_WORLD = Bukkit.getWorlds().getFirst();
-    private static final List<String> DEFAULT_TIMESPANS = List.of("10s", "5m", "3d");
+    private static final List<String> DEFAULT_TIMESPANS = List.of("10s", "5m", "1h", "3d");
 
     static final CustomArg MESSAGE = new CustomArg() {
         @Override
@@ -172,7 +172,7 @@ public abstract class CustomArg {
                 CompletableFuture.supplyAsync(() -> {
                     String arg = info.currentArg();
                     if (arg.matches("\\d+")) {
-                        return List.of(arg + "s", arg + "m", arg + "h", arg + "d");
+                        return List.of(arg + "s", arg + "m", arg + "h", arg + "d", arg + "w", arg + "mo", arg + "y");
                     } else {
                         return DEFAULT_TIMESPANS;
                     }
