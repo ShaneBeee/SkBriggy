@@ -26,7 +26,6 @@ import dev.jorel.commandapi.arguments.LootTableArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.arguments.NamespacedKeyArgument;
 import dev.jorel.commandapi.arguments.ObjectiveArgument;
-import dev.jorel.commandapi.arguments.OfflinePlayerArgument;
 import dev.jorel.commandapi.arguments.ParticleArgument;
 import dev.jorel.commandapi.arguments.PotionEffectArgument;
 import dev.jorel.commandapi.arguments.RecipeArgument;
@@ -97,7 +96,7 @@ public class BrigArgument {
         register("entities", EntitySelectorArgument.ManyEntities.class);
         register("player", EntitySelectorArgument.OnePlayer.class);
         register("players", EntitySelectorArgument.ManyPlayers.class);
-        register("offlineplayer", "offline[ ]player", OfflinePlayerArgument.class);
+        //register("offlineplayer", "offline[ ]player", OfflinePlayerArgument.class); TODO needs a rework
 
         // Bukkit
         register("location", "loc[ation]", LocationArgument.class);

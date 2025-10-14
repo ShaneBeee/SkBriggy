@@ -10,11 +10,11 @@ import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
 import com.shanebeestudios.briggy.api.wrapper.ItemStackPredicate;
 import com.shanebeestudios.skbee.api.nbt.NBTApi;
 import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
-import dev.jorel.commandapi.arguments.AdventureChatArgument;
-import dev.jorel.commandapi.arguments.AdventureChatComponentArgument;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.BlockPredicateArgument;
+import dev.jorel.commandapi.arguments.ChatArgument;
+import dev.jorel.commandapi.arguments.ChatComponentArgument;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.CustomArgument.CustomArgumentException;
 import dev.jorel.commandapi.arguments.EntityTypeArgument;
@@ -48,8 +48,10 @@ public abstract class CustomArg {
     static final CustomArg MESSAGE = new CustomArg() {
         @Override
         Argument<?> get(String name) {
-            return new CustomArgument<>(new AdventureChatArgument(name), info -> {
-                Component component = info.currentInput();
+            return new CustomArgument<>(new ChatArgument(name), info -> {
+                Component component = info.currentInput().unsignedContent();
+                if (component == null) return null;
+
                 if (SkBriggy.HAS_SKBEE_COMPONENT)
                     return ComponentWrapper.fromComponent(component);
                 return LegacyComponentSerializer.legacySection().serialize(component);
@@ -75,7 +77,7 @@ public abstract class CustomArg {
     static final CustomArg COMPONENT = new CustomArg() {
         @Override
         Argument<?> get(String name) {
-            return new CustomArgument<>(new AdventureChatComponentArgument(name), info -> {
+            return new CustomArgument<>(new ChatComponentArgument(name), info -> {
                 Component component = info.currentInput();
                 if (SkBriggy.HAS_SKBEE_COMPONENT)
                     return ComponentWrapper.fromComponent(component);
