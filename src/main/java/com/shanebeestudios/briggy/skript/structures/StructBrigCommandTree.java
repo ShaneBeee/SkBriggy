@@ -13,16 +13,13 @@ import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
 import ch.njol.skript.lang.util.SimpleEvent;
-import ch.njol.skript.test.runner.TestMode;
 import ch.njol.skript.util.Utils;
-import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.event.BrigTreeCreateEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeSubCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
 import com.shanebeestudios.skbee.api.util.Util;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandTree;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -223,16 +220,10 @@ public class StructBrigCommandTree extends Structure {
             Skript.error("Command tree must have at least a subcommand or a trigger.");
             return false;
         }
-        if (TestMode.ENABLED) { // Tests can't have delays
-            commandTree.register(this.namespace);
-        } else {
-            Bukkit.getScheduler().runTaskLater(SkBriggy.getInstance(), () -> {
-                if (this.override) {
-                    CommandAPI.unregister(this.command, true);
-                }
-                commandTree.register(this.namespace);
-            }, 2);
+        if (this.override) {
+            CommandAPI.unregister(this.command, true);
         }
+        commandTree.register(this.namespace);
         return true;
     }
 
