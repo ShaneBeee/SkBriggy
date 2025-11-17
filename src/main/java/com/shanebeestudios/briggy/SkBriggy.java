@@ -10,7 +10,7 @@ import com.shanebeestudios.skbee.api.nbt.NBTContainer;
 import com.shanebeestudios.skbee.api.nbt.utils.MinecraftVersion;
 import com.shanebeestudios.skbee.config.Config;
 import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.jorel.commandapi.exceptions.UnsupportedVersionException;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -26,15 +26,15 @@ public class SkBriggy extends JavaPlugin {
     private static SkBriggy INSTANCE;
     private static boolean commandApiCanLoad;
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onLoad() {
         try {
-            CommandAPIBukkitConfig commandAPIBukkitConfig = new CommandAPIBukkitConfig(this).silentLogs(true);
-            commandAPIBukkitConfig.skipReloadDatapacks(true);
+            CommandAPIPaperConfig config = new CommandAPIPaperConfig(this).silentLogs(true);
             if (Bukkit.getPluginManager().getPlugin("SkBee") != null && MinecraftVersion.getVersion() != MinecraftVersion.UNKNOWN) {
-                commandAPIBukkitConfig.initializeNBTAPI(NBTContainer.class, NBTContainer::new);
+                config.initializeNBTAPI(NBTContainer.class, NBTContainer::new);
             }
-            CommandAPI.onLoad(commandAPIBukkitConfig.verboseOutput(false));
+            CommandAPI.onLoad(config.verboseOutput(false));
             commandApiCanLoad = true;
         } catch (UnsupportedVersionException ignore) {
             commandApiCanLoad = false;

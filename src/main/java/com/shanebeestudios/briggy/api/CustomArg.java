@@ -2,18 +2,20 @@ package com.shanebeestudios.briggy.api;
 
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.EntityUtils;
+import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.util.SkriptColor;
 import ch.njol.skript.util.Timespan;
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
 import com.shanebeestudios.briggy.api.wrapper.ItemStackPredicate;
 import com.shanebeestudios.skbee.api.nbt.NBTApi;
 import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
-import dev.jorel.commandapi.arguments.AdventureChatArgument;
-import dev.jorel.commandapi.arguments.AdventureChatComponentArgument;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.BlockPredicateArgument;
+import dev.jorel.commandapi.arguments.ChatArgument;
+import dev.jorel.commandapi.arguments.ChatComponentArgument;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.CustomArgument.CustomArgumentException;
 import dev.jorel.commandapi.arguments.EntityTypeArgument;
@@ -22,6 +24,7 @@ import dev.jorel.commandapi.arguments.Location2DArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
 import dev.jorel.commandapi.arguments.NBTCompoundArgument;
+import dev.jorel.commandapi.arguments.PlayerProfileArgument;
 import dev.jorel.commandapi.arguments.RotationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -42,12 +45,15 @@ public abstract class CustomArg {
 
     private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).filter(material -> !material.isLegacy()).map(mat -> mat.getKey().getKey()).toList();
     private static final World MAIN_WORLD = Bukkit.getWorlds().getFirst();
+    private static final List<String> DEFAULT_TIMESPANS = List.of("10s", "5m", "1h", "3d");
 
     static final CustomArg MESSAGE = new CustomArg() {
         @Override
         Argument<?> get(String name) {
-            return new CustomArgument<>(new AdventureChatArgument(name), info -> {
-                Component component = info.currentInput();
+            return new CustomArgument<>(new ChatArgument(name), info -> {
+                Component component = info.currentInput().unsignedContent();
+                if (component == null) return null;
+
                 if (SkBriggy.HAS_SKBEE_COMPONENT)
                     return ComponentWrapper.fromComponent(component);
                 return LegacyComponentSerializer.legacySection().serialize(component);
@@ -73,7 +79,7 @@ public abstract class CustomArg {
     static final CustomArg COMPONENT = new CustomArg() {
         @Override
         Argument<?> get(String name) {
-            return new CustomArgument<>(new AdventureChatComponentArgument(name), info -> {
+            return new CustomArgument<>(new ChatComponentArgument(name), info -> {
                 Component component = info.currentInput();
                 if (SkBriggy.HAS_SKBEE_COMPONENT)
                     return ComponentWrapper.fromComponent(component);
@@ -133,6 +139,17 @@ public abstract class CustomArg {
         }
     };
 
+    static final CustomArg OFFLINE_PLAYER = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new PlayerProfileArgument(name), info -> {
+                PlayerProfile playerProfile = (PlayerProfile) info.currentInput().getFirst();
+                if (playerProfile == null || playerProfile.getName() == null) return null;
+                return Bukkit.getOfflinePlayer(playerProfile.getName());
+            });
+        }
+    };
+
     static final CustomArg ROTATION = new CustomArg() {
         @Override
         Argument<?> get(String name) {
@@ -154,6 +171,29 @@ public abstract class CustomArg {
                 return skriptColor;
             }).replaceSuggestions(ArgumentSuggestions.strings(
                 Arrays.stream(SkriptColor.values()).map(skriptColor -> skriptColor.getName().replace(" ", "_")).toArray(String[]::new)));
+        }
+    };
+
+    static final CustomArg TIME_SPAN = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new StringArgument(name), info -> {
+                Timespan parse = Timespan.parse(info.input(), ParseContext.COMMAND);
+                if (parse == null) {
+                    throw CustomArgumentException.fromString("Unknown timespan '" + info.input() + "'");
+                }
+                return parse;
+            }).replaceSuggestions(ArgumentSuggestions.stringCollectionAsync(info ->
+                CompletableFuture.supplyAsync(() -> {
+                    String arg = info.currentArg();
+                    if (arg.matches("\\d+(.\\d+)?")) {
+                        return List.of(arg + "s", arg + "m", arg + "h", arg + "d", arg + "w", arg + "mo", arg + "y");
+                    } else if (arg.matches("\\d+\\.")) {
+                        return List.of(arg + "0s", arg + "0m", arg + "0h", arg + "0d", arg + "0w", arg + "0mo", arg + "0y");
+                    } else {
+                        return DEFAULT_TIMESPANS;
+                    }
+                })));
         }
     };
 

@@ -26,7 +26,6 @@ import dev.jorel.commandapi.arguments.LootTableArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import dev.jorel.commandapi.arguments.NamespacedKeyArgument;
 import dev.jorel.commandapi.arguments.ObjectiveArgument;
-import dev.jorel.commandapi.arguments.OfflinePlayerArgument;
 import dev.jorel.commandapi.arguments.ParticleArgument;
 import dev.jorel.commandapi.arguments.PotionEffectArgument;
 import dev.jorel.commandapi.arguments.RecipeArgument;
@@ -97,7 +96,7 @@ public class BrigArgument {
         register("entities", EntitySelectorArgument.ManyEntities.class);
         register("player", EntitySelectorArgument.OnePlayer.class);
         register("players", EntitySelectorArgument.ManyPlayers.class);
-        register("offlineplayer", "offline[ ]player", OfflinePlayerArgument.class);
+        register("offlineplayer", "offline[ ]player", CustomArg.OFFLINE_PLAYER);
 
         // Bukkit
         register("location", "loc[ation]", LocationArgument.class);
@@ -108,6 +107,7 @@ public class BrigArgument {
         register("entitydata", "entity[ ]data", CustomArg.ENTITY_DATA);
         register("itemtype", "item[ ]type", CustomArg.ITEM_TYPE);
         register("skriptcolor", "skript[ ]color", CustomArg.SKRIPT_COLOR);
+        register("timespan", "time[ ]span", CustomArg.TIME_SPAN);
         if (Utils.classInfoExistsFor(Timespan.TimePeriod.class)) { // SkBee is adding this
             register("timespanperiod", "time[ ]span[ ]period", CustomArg.TIME_PERIOD);
         }

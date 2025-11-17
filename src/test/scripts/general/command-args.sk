@@ -1,0 +1,73 @@
+brig command tree /argtest:
+	# OTHER
+	literal arg "stringarg":
+		string arg "string":
+			trigger:
+				set {brig_test::string_arg} to {_string}
+
+	literal arg "greedystringarg":
+		greedy string arg "string":
+			trigger:
+				set {brig_test::greedy_string_arg} to {_string}
+
+	# NUMBERS
+	literal arg "intarg":
+		int arg "i":
+			trigger:
+				set {brig_test::int_arg} to {_i}
+
+	# MINECRAFT
+	literal arg "blockposarg":
+		block pos arg "b":
+			trigger:
+				set {brig_test::block_pos_arg} to {_b}
+
+	literal arg "dimensionarg":
+		dimension arg "d":
+			trigger:
+				set {brig_test::dimension_arg} to {_d}
+
+	# SKRIPT
+	literal arg "itemtypearg":
+		itemtype arg "i":
+			trigger:
+				set {brig_test::itemtype_arg} to {_i}
+	literal arg "timespanarg":
+		timespan arg "t":
+			trigger:
+				set {brig_test::timespan_arg} to {_t}
+
+test "SkBriggy - Command Args":
+	stop
+	# This test is currently broken due to CommandAPI change
+	# The command cannot be executed in console right away
+	# Once the commands finish loading, the datapacks need to reload before they can be used
+	# Unfortunately CommandAPI no longer has an option to disable this.
+	delete {brig_test::*}
+
+	# OTHER
+	execute console command "argtest stringarg test"
+	assert {brig_test::string_arg} = "test" with "The arg should have set to 'test'"
+
+	execute console command "argtest greedystringarg this is a test"
+	assert {brig_test::greedy_string_arg} = "this is a test" with "The arg should have set to 'this is a test'"
+
+	# NUMBERS
+	execute console command "argtest intarg 15"
+	assert {brig_test::int_arg} = 15 with "The arg should have set to 15"
+
+	# MINECRAFT
+	execute console command "argtest blockposarg 1 100 1"
+	assert {brig_test::block_pos_arg} = location(1,100,1, world "world") with "The arg should have set the location"
+
+	execute console command "argtest dimensionarg minecraft:overworld"
+	assert {brig_test::dimension_arg} = world "world" with "The arg should have set to the main world"
+
+	# SKRIPT
+	execute console command "argtest itemtypearg diamond_sword"
+	assert {brig_test::itemtype_arg} = 1 of diamond sword with "The arg should have set to a diamond sword"
+
+	execute console command "argtest timespanarg 5h"
+	assert {brig_test::timespan_arg} = 5 hours with "The arg should have set to 5 hours"
+
+	delete {brig_test::*}
