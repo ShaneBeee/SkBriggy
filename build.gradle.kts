@@ -4,7 +4,7 @@ plugins {
 }
 
 // Version of SkBriggy
-val projectVersion = "1.5.4"
+val projectVersion = "1.5.5"
 // Where this builds on the server
 val serverLocation = "Skript/1-21-10"
 // Minecraft version to build against
