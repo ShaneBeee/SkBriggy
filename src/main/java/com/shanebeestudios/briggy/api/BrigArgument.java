@@ -96,7 +96,7 @@ public class BrigArgument {
         register("entities", EntitySelectorArgument.ManyEntities.class);
         register("player", EntitySelectorArgument.OnePlayer.class);
         register("players", EntitySelectorArgument.ManyPlayers.class);
-        //register("offlineplayer", "offline[ ]player", OfflinePlayerArgument.class); TODO needs a rework
+        register("offlineplayer", "offline[ ]player", CustomArg.OFFLINE_PLAYER);
 
         // Bukkit
         register("location", "loc[ation]", LocationArgument.class);

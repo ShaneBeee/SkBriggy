@@ -5,6 +5,7 @@ import ch.njol.skript.bukkitutil.EntityUtils;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.util.SkriptColor;
 import ch.njol.skript.util.Timespan;
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
 import com.shanebeestudios.briggy.api.wrapper.ItemStackPredicate;
@@ -23,6 +24,7 @@ import dev.jorel.commandapi.arguments.Location2DArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
 import dev.jorel.commandapi.arguments.NBTCompoundArgument;
+import dev.jorel.commandapi.arguments.PlayerProfileArgument;
 import dev.jorel.commandapi.arguments.RotationArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.wrappers.Location2D;
@@ -133,6 +135,17 @@ public abstract class CustomArg {
                 if (SkBriggy.HAS_SKBEE_NBT)
                     return NBTApi.validateNBT(nbtString);
                 return nbtString;
+            });
+        }
+    };
+
+    static final CustomArg OFFLINE_PLAYER = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new PlayerProfileArgument(name), info -> {
+                PlayerProfile playerProfile = (PlayerProfile) info.currentInput().getFirst();
+                if (playerProfile == null || playerProfile.getName() == null) return null;
+                return Bukkit.getOfflinePlayer(playerProfile.getName());
             });
         }
     };
