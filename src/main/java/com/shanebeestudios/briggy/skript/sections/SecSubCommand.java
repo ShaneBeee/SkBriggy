@@ -309,7 +309,7 @@ public class SecSubCommand extends Section {
                 BrigTreeTriggerEvent brigTreeTriggerEvent = new BrigTreeTriggerEvent(executerInfo);
                 // Create local variable from arg
                 executerInfo.args().argsMap().forEach((argName, argObject) -> {
-                    if (argObject instanceof ArrayList<?> arrayList) {
+                    if (argObject instanceof List<?> arrayList) {
                         for (int i = 0; i < arrayList.size(); i++) {
                             Object convert = ObjectConverter.convert(arrayList.get(i));
                             Variables.setVariable(argName + "::" + i, convert, brigTreeTriggerEvent, true);
