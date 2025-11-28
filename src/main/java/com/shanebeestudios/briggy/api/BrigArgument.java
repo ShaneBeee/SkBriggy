@@ -76,6 +76,7 @@ public class BrigArgument {
         register("dimension", WorldArgument.class);
         register("enchantment", "enchant[ment]", EnchantmentArgument.class);
         register("entitytype", "entity[ ]type", EntityTypeArgument.class);
+        register("gamemode", "game[ ]mode", CustomArg.GAMEMODE);
         register("itemstack", "item[[ ]stack]", ItemStackArgument.class);
         register("itempredicate", "item[[ ]stack][ ]predicate", CustomArg.ITEM_STACK_PREDICATE);
         register("loottable", "loot[ ]table", LootTableArgument.class);
@@ -90,7 +91,6 @@ public class BrigArgument {
         register("team", TeamArgument.class);
         register("time", TimeArgument.class);
         register("world", CustomArg.WORLD);
-        register("gamemode", "game[ ]mode", CustomArg.GAMEMODE);
 
         // Entity
         register("entity", EntitySelectorArgument.OneEntity.class);
