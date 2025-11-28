@@ -90,6 +90,7 @@ public class BrigArgument {
         register("team", TeamArgument.class);
         register("time", TimeArgument.class);
         register("world", CustomArg.WORLD);
+        register("gamemode", "game[ ]mode", CustomArg.GAMEMODE);
 
         // Entity
         register("entity", EntitySelectorArgument.OneEntity.class);

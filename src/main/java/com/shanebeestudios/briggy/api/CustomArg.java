@@ -32,6 +32,7 @@ import dev.jorel.commandapi.wrappers.Rotation;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -224,6 +225,20 @@ public abstract class CustomArg {
             }).includeSuggestions(ArgumentSuggestions.stringCollectionAsync(commandSenderSuggestionInfo ->
                 CompletableFuture.supplyAsync(() -> Bukkit.getWorlds().stream().map(World::getName).toList())));
 
+        }
+    };
+
+    static final CustomArg GAMEMODE = new CustomArg() {
+
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new StringArgument(name), info -> {
+                try {
+                    return GameMode.valueOf(info.input().toUpperCase(Locale.ROOT));
+                } catch (Exception e) {
+                    throw CustomArgumentException.fromString("Unknown game mode '" + info.input() + "'");
+                }
+            }).includeSuggestions(ArgumentSuggestions.strings(Arrays.stream(GameMode.values()).map(gamemode -> gamemode.toString().toLowerCase(Locale.ROOT)).toList()));
         }
     };
 
