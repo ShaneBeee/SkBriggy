@@ -97,6 +97,20 @@ public abstract class CustomArg {
         }
     };
 
+    static final CustomArg GAMEMODE = new CustomArg() {
+
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new StringArgument(name), info -> {
+                try {
+                    return GameMode.valueOf(info.input().toUpperCase(Locale.ROOT));
+                } catch (Exception e) {
+                    throw CustomArgumentException.fromString("Unknown game mode '" + info.input() + "'");
+                }
+            }).includeSuggestions(ArgumentSuggestions.strings(Arrays.stream(GameMode.values()).map(gamemode -> gamemode.toString().toLowerCase(Locale.ROOT)).toList()));
+        }
+    };
+
     static final CustomArg ITEM_STACK_PREDICATE = new CustomArg() {
         @SuppressWarnings({"unused", "unchecked"})
         @Override
@@ -228,19 +242,6 @@ public abstract class CustomArg {
         }
     };
 
-    static final CustomArg GAMEMODE = new CustomArg() {
-
-        @Override
-        Argument<?> get(String name) {
-            return new CustomArgument<>(new StringArgument(name), info -> {
-                try {
-                    return GameMode.valueOf(info.input().toUpperCase(Locale.ROOT));
-                } catch (Exception e) {
-                    throw CustomArgumentException.fromString("Unknown game mode '" + info.input() + "'");
-                }
-            }).includeSuggestions(ArgumentSuggestions.strings(Arrays.stream(GameMode.values()).map(gamemode -> gamemode.toString().toLowerCase(Locale.ROOT)).toList()));
-        }
-    };
 
     abstract Argument<?> get(String name);
 
