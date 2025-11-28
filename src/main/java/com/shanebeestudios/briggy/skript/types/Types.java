@@ -1,14 +1,18 @@
 package com.shanebeestudios.briggy.skript.types;
 
 import ch.njol.skript.classes.ClassInfo;
+import ch.njol.skript.classes.EnumClassInfo;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
+import ch.njol.skript.localization.Language;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.EventValues;
+import ch.njol.util.StringUtils;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
+import dev.jorel.commandapi.executors.ExecutorType;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import org.bukkit.World;
@@ -16,6 +20,8 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
@@ -64,6 +70,13 @@ public class Types {
                 }
             })
             .supplier(BrigArgument.getSupplier()));
+
+        Classes.registerClass(new EnumClassInfo<>(ExecutorType.class, "executortype", "executortypes")
+            .user("executor ?types?")
+            .name("Executor Type")
+            .description("Represents the different types that can run a command.")
+            .parser(getDefaultParser())
+            .since("INSERT VERSION"));
 
         Classes.registerClass(new ClassInfo<>(ParticleData.class, "particledata")
             .user("particle ?datas?")
