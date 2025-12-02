@@ -5,10 +5,12 @@ import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.EventValues;
+import ch.njol.skript.util.EnumUtils;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
+import dev.jorel.commandapi.executors.ExecutorType;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import org.bukkit.World;
@@ -64,6 +66,15 @@ public class Types {
                 }
             })
             .supplier(BrigArgument.getSupplier()));
+
+        EnumUtils<ExecutorType> executortypes = new EnumUtils<>(ExecutorType.class, "executortypes");
+        Classes.registerClass(new ClassInfo<>(ExecutorType.class, "executortype")
+            .user("executor ?types?")
+            .name("Executor Type")
+            .description("Represents the different types that can run a command.")
+            .usage(executortypes.getAllNames())
+            .parser(getDefaultParser()) // They're never actually parsed so we use default here
+            .since("INSERT VERSION"));
 
         Classes.registerClass(new ClassInfo<>(ParticleData.class, "particledata")
             .user("particle ?datas?")

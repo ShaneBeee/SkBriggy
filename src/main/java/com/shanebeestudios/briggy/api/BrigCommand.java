@@ -7,8 +7,10 @@ import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.executors.CommandArguments;
+import dev.jorel.commandapi.executors.ExecutorType;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 public class BrigCommand {
 
+    private List<ExecutorType> executorType = List.of(ExecutorType.ALL);
     private final String namespace;
     private final String name;
     private String permission = null;
@@ -35,6 +38,10 @@ public class BrigCommand {
             this.namespace = "minecraft";
             this.name = name;
         }
+    }
+
+    public void setExecutorType(List<ExecutorType> executorType) {
+        this.executorType = executorType;
     }
 
     public void setPermission(String permission) {
@@ -80,10 +87,10 @@ public class BrigCommand {
 
         commandAPICommand.withArguments(args.values().toArray(new Argument[0]));
         commandAPICommand.withShortDescription(this.description);
-        commandAPICommand.executesNative(info -> {
+        commandAPICommand.executes(info -> {
             CommandArguments arguments = info.args();
-            CommandSender sender = info.sender().getCallee();
-            World world = info.sender().getWorld();
+            CommandSender sender = info.sender();
+            World world = sender instanceof Entity entity ? entity.getWorld() : null;
             BrigCommandTriggerEvent brigCommandRunEvent = new BrigCommandTriggerEvent(this, sender, arguments.args(), world);
 
             // Register local variables for arg names
@@ -100,7 +107,7 @@ public class BrigCommand {
             });
 
             trigger.execute(brigCommandRunEvent);
-        });
+        }, this.executorType.toArray(new ExecutorType[0]));
 
         commandAPICommand.register(this.namespace);
     }
