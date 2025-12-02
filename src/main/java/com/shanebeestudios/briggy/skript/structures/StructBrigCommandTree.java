@@ -163,6 +163,7 @@ public class StructBrigCommandTree extends Structure {
     private String namespace = "minecraft";
     private String command;
     private boolean override = false;
+    private List<String> aliases =  new ArrayList<>();
 
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
@@ -213,8 +214,8 @@ public class StructBrigCommandTree extends Structure {
         if (!usages.isEmpty()) commandTree.withUsage(usages.toArray(new String[0]));
 
         // Register command aliases
-        List<String> aliases = (List<String>) this.entryContainer.get("aliases", true);
-        commandTree.withAliases(aliases.toArray(new String[0]));
+        this.aliases = (List<String>) this.entryContainer.get("aliases", true);
+        commandTree.withAliases(this.aliases.toArray(new String[0]));
 
         // Register sub commands
         boolean hasSubCommand = false;
@@ -250,7 +251,18 @@ public class StructBrigCommandTree extends Structure {
 
     @Override
     public void unload() {
+        // Unregister command and namespace+command
         CommandAPI.unregister(this.command, this.override);
+        CommandAPI.unregister(this.namespace + ":" + this.command, this.override);
+
+        // Unregister command aliases and namespace+alias
+        if (!this.aliases.isEmpty()) {
+            this.aliases.forEach((alias) -> {
+                CommandAPI.unregister(alias, this.override);
+                CommandAPI.unregister(this.namespace + ":" + alias, this.override);
+            });
+            this.aliases.clear();
+        }
     }
 
     @Override
