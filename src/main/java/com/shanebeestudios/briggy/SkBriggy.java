@@ -36,7 +36,7 @@ public class SkBriggy extends JavaPlugin {
             }
             CommandAPI.onLoad(config.verboseOutput(false));
             commandApiCanLoad = true;
-        } catch (UnsupportedVersionException ignore) {
+        } catch (RuntimeException ignore) {
             commandApiCanLoad = false;
         }
     }
