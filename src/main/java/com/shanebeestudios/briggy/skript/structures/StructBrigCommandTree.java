@@ -20,6 +20,7 @@ import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
 import com.shanebeestudios.skbee.api.util.Util;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandTree;
+import dev.jorel.commandapi.executors.ExecutorType;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +45,7 @@ import java.util.regex.Pattern;
     "Defaults to `minecraft` when excluded.",
     "",
     "**Entries/Sections**:",
+    "`executor_type` = What types of execturs can run this command (Optional, defaults to `all`).",
     "`permission` = Just like Skript, the permission the player will require for this command.",
     "`description` = Just like Skript, this is a string that will be used in the help command.",
     "`usages` = This is the usage which is shown in the specific `/help <command>` page. Separate multiple usages by comma.",
@@ -108,6 +110,21 @@ public class StructBrigCommandTree extends Structure {
             .addEntry("permission", null, true)
             .addEntry("description", "SkBriggy Command", true)
             .addEntryData(new LiteralEntryData<>("override", false, true, Boolean.class))
+            .addEntryData(new KeyValueEntryData<List<ExecutorType>>("executor_type", new ArrayList<>(), true) {
+                @Override
+                protected @NotNull List<ExecutorType> getValue(String value) {
+                    List<ExecutorType> executorTypes = new ArrayList<>();
+                    for (String s : COMMA_PATTERN.split(value)) {
+                        try {
+                            ExecutorType executorType = ExecutorType.valueOf(s.toUpperCase());
+                            executorTypes.add(executorType);
+                        }  catch (IllegalArgumentException e) {
+                            Skript.error("Invalid executor_type: " + s);
+                        }
+                    }
+                    return executorTypes;
+                }
+            })
             .addEntryData(new KeyValueEntryData<List<String>>("usages", new ArrayList<>(), true) {
                 @Override
                 protected List<String> getValue(String value) {
@@ -146,6 +163,7 @@ public class StructBrigCommandTree extends Structure {
     private String namespace = "minecraft";
     private String command;
     private boolean override = false;
+    private List<String> aliases =  new ArrayList<>();
 
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
@@ -173,6 +191,10 @@ public class StructBrigCommandTree extends Structure {
 
         CommandTree commandTree = new CommandTree(this.command);
 
+        // Register executor types
+        List<ExecutorType> executorTypes = (List<ExecutorType>) this.entryContainer.get("executor_type", true);
+        if (executorTypes.isEmpty()) executorTypes.add(ExecutorType.ALL);
+
         // Register command permission
         String permission = this.entryContainer.getOptional("permission", String.class, false);
         if (permission != null) commandTree.withPermission(permission);
@@ -192,8 +214,8 @@ public class StructBrigCommandTree extends Structure {
         if (!usages.isEmpty()) commandTree.withUsage(usages.toArray(new String[0]));
 
         // Register command aliases
-        List<String> aliases = (List<String>) this.entryContainer.get("aliases", true);
-        commandTree.withAliases(aliases.toArray(new String[0]));
+        this.aliases = (List<String>) this.entryContainer.get("aliases", true);
+        commandTree.withAliases(this.aliases.toArray(new String[0]));
 
         // Register sub commands
         boolean hasSubCommand = false;
@@ -215,7 +237,7 @@ public class StructBrigCommandTree extends Structure {
             Trigger triggerTrigger = new Trigger(currentScript, "briggy command /" + this.command, new SimpleEvent(), ScriptLoader.loadItems(triggerNode));
             commandTree.executes(executionInfo -> {
                 triggerTrigger.execute(new BrigTreeTriggerEvent(executionInfo));
-            });
+            }, executorTypes.toArray(new ExecutorType[0]));
         } else if (!hasSubCommand) {
             Skript.error("Command tree must have at least a subcommand or a trigger.");
             return false;
@@ -229,7 +251,18 @@ public class StructBrigCommandTree extends Structure {
 
     @Override
     public void unload() {
+        // Unregister command and namespace+command
         CommandAPI.unregister(this.command, this.override);
+        CommandAPI.unregister(this.namespace + ":" + this.command, this.override);
+
+        // Unregister command aliases and namespace+alias
+        if (!this.aliases.isEmpty()) {
+            this.aliases.forEach((alias) -> {
+                CommandAPI.unregister(alias, this.override);
+                CommandAPI.unregister(this.namespace + ":" + alias, this.override);
+            });
+            this.aliases.clear();
+        }
     }
 
     @Override

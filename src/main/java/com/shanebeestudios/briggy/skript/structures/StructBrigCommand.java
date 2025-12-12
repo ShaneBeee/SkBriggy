@@ -24,6 +24,7 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
+import dev.jorel.commandapi.executors.ExecutorType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +60,7 @@ import java.util.regex.Pattern;
     "Just like Skript commands, wrapping your arg in `[]` makes it optional. Do note at this time there is no support for defaults.",
     "",
     "Entries and Sections:",
+    "`executor_type` = What types of execturs can run this command (Optional, defaults to `all`).",
     "`permission:` = Just like Skript, the permission the player will require for this command.",
     "`description:` = Just like Skript, this is a string that will be used in the help command.",
     "`arguments:` = Section for registering arguments. See `Register Argument` effect.",
@@ -88,19 +90,34 @@ import java.util.regex.Pattern;
 public class StructBrigCommand extends Structure {
 
     private static final SkBriggy PLUGIN = SkBriggy.getInstance();
-    private static final Pattern ALIASES_PATTERN = Pattern.compile("\\s*,\\s*");
+    private static final Pattern COMMA_PATTERN = Pattern.compile("\\s*,\\s*");
     private static final Pattern ARGUMENT_PATTERN = Pattern.compile("\\[?<.*?>]?");
 
     static {
         EntryValidator entryValidator = EntryValidator.builder()
             .addEntry("permission", null, true)
             .addEntry("description", "SkBriggy Command", true)
+            .addEntryData(new KeyValueEntryData<List<ExecutorType>>("executor_type", new ArrayList<>(), true) {
+                @Override
+                protected @NotNull List<ExecutorType> getValue(String value) {
+                    List<ExecutorType> executorTypes = new ArrayList<>();
+                    for (String s : COMMA_PATTERN.split(value)) {
+                        try {
+                            ExecutorType executorType = ExecutorType.valueOf(s.toUpperCase());
+                            executorTypes.add(executorType);
+                        } catch (IllegalArgumentException e) {
+                            Skript.error("Invalid executor_type: " + s);
+                        }
+                    }
+                    return executorTypes;
+                }
+            })
             .addEntryData(new VariableStringEntryData("usage", null, true))
             .addEntryData(new KeyValueEntryData<List<String>>("aliases", new ArrayList<>(), true) {
                 @Override
                 protected List<String> getValue(String value) {
                     value = value.replace("/", "");
-                    List<String> aliases = new ArrayList<>(Arrays.asList(ALIASES_PATTERN.split(value)));
+                    List<String> aliases = new ArrayList<>(Arrays.asList(COMMA_PATTERN.split(value)));
                     if (aliases.getFirst().isEmpty()) return null;
                     return aliases;
                 }
@@ -137,6 +154,11 @@ public class StructBrigCommand extends Structure {
             return false;
         }
 
+        // Register executor types
+        List<ExecutorType> executorTypes = (List<ExecutorType>) this.entryContainer.get("executor_type", true);
+        if (executorTypes.isEmpty()) executorTypes.add(ExecutorType.ALL);
+        brigCommand.setExecutorType(executorTypes);
+
         // Register section arguments
         SectionNode argNode = this.entryContainer.getOptional("arguments", SectionNode.class, false);
         if (argNode != null) {
@@ -154,7 +176,7 @@ public class StructBrigCommand extends Structure {
         description = Utils.replaceEnglishChatStyles(description);
         brigCommand.setDescription(description);
 
-        // Regiseter command usage
+        // Register command usage
         VariableString usage = this.entryContainer.getOptional("usage", VariableString.class, false);
         if (usage != null && usage.isSimple()) {
             String string = usage.toString(null);
