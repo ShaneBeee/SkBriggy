@@ -74,7 +74,7 @@ public class Types {
             .description("Represents the different types that can run a command.")
             .usage(executortypes.getAllNames())
             .parser(getDefaultParser()) // They're never actually parsed so we use default here
-            .since("INSERT VERSION"));
+            .since("1.5.7"));
 
         Classes.registerClass(new ClassInfo<>(ParticleData.class, "particledata")
             .user("particle ?datas?")
