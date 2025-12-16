@@ -14,6 +14,7 @@ import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.BlockPredicateArgument;
+import dev.jorel.commandapi.arguments.BlockStateArgument;
 import dev.jorel.commandapi.arguments.ChatArgument;
 import dev.jorel.commandapi.arguments.ChatComponentArgument;
 import dev.jorel.commandapi.arguments.CustomArgument;
@@ -59,6 +60,13 @@ public abstract class CustomArg {
                     return ComponentWrapper.fromComponent(component);
                 return LegacyComponentSerializer.legacySection().serialize(component);
             });
+        }
+    };
+
+    static final CustomArg BLOCK_DATA = new CustomArg() {
+        @Override
+        Argument<?> get(String name) {
+            return new CustomArgument<>(new BlockStateArgument(name), info -> info.currentInput().getBlockData());
         }
     };
 
