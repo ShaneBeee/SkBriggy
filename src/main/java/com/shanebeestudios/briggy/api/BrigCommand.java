@@ -95,7 +95,7 @@ public class BrigCommand {
 
             // Register local variables for arg names
             arguments.argsMap().forEach((argName, argObject) -> {
-                if (argObject instanceof ArrayList<?> arrayList) {
+                if (argObject instanceof List<?> arrayList) {
                     for (int i = 0; i < arrayList.size(); i++) {
                         Object convert = ObjectConverter.convert(arrayList.get(i));
                         Variables.setVariable(argName + "::" + i, convert, brigCommandRunEvent, true);
