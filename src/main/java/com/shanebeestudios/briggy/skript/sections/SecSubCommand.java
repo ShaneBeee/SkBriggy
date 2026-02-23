@@ -270,11 +270,15 @@ public class SecSubCommand extends Section {
 
                 // Create local variables and brig-args from the previous args
                 List<Object> brigArgs = new ArrayList<>();
+
                 info.previousArgs().argsMap().forEach((string, object) -> {
                     brigArgs.add(object);
                     Variables.setVariable(string, ObjectConverter.convert(object), suggestEvent, true);
                 });
                 suggestEvent.setBrigArgs(brigArgs.toArray());
+
+                // Set variable for current typed arg
+                Variables.setVariable(commandName, info.currentArg(), suggestEvent, true);
 
                 // Pass sender thru for event-sender/player
                 suggestEvent.setCommandSender(info.sender());
