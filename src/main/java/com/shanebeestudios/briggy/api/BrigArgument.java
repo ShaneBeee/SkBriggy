@@ -68,7 +68,8 @@ public class BrigArgument {
         register("angle", AngleArgument.class);
         register("biome", BiomeArgument.class);
         register("biomekey", "biome[ ]key", BiomeArgument.NamespacedKey.class);
-        register("block state", "block[[ ](state|data)]", BlockStateArgument.class);
+        register("block data", "block[ ]data", CustomArg.BLOCK_DATA);
+        register("block state", "block[ ]state", BlockStateArgument.class);
         register("blockpredicate", "block[ ]predicate", CustomArg.BLOCK_PREDICATE);
         register("blockpos", "block[ ]pos", CustomArg.BLOCK_POS);
         register("command", CommandArgument.class);

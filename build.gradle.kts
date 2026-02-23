@@ -40,7 +40,7 @@ dependencies {
     compileOnly("com.github.ShaneBeee:SkBee:3.5.8")
 
     // Command Api
-    implementation("dev.jorel:commandapi-paper-shade:11.0.1-SNAPSHOT")
+    implementation("dev.jorel:commandapi-paper-shade:11.1.0")
 
     // bStats
     implementation("org.bstats:bstats-bukkit:3.1.0")

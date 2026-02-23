@@ -11,7 +11,6 @@ import com.shanebeestudios.skbee.api.nbt.utils.MinecraftVersion;
 import com.shanebeestudios.skbee.config.Config;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIPaperConfig;
-import dev.jorel.commandapi.exceptions.UnsupportedVersionException;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -44,7 +43,7 @@ public class SkBriggy extends JavaPlugin {
     public static boolean HAS_SKBEE_COMPONENT;
     public static boolean HAS_SKBEE_NBT;
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
     @Override
     public void onEnable() {
         INSTANCE = this;
@@ -72,8 +71,15 @@ public class SkBriggy extends JavaPlugin {
         Plugin skBeePlugin = pluginManager.getPlugin("SkBee");
         if (skBeePlugin != null && skBeePlugin.isEnabled() && skBeePlugin instanceof SkBee skBee) {
             Config skBeeConfig = skBee.getPluginConfig();
-            if (skBeeConfig.ELEMENTS_TEXT_COMPONENT) {
+
+            if (new Version(skBee.getPluginMeta().getVersion()).isLargerThan(new Version(3, 16, 999))) {
+                // In SkBee 3.17.0+ text components are always enabled
                 HAS_SKBEE_COMPONENT = true;
+            } else {
+                HAS_SKBEE_COMPONENT = skBeeConfig.ELEMENTS_TEXT_COMPONENT;
+            }
+
+            if (HAS_SKBEE_COMPONENT) {
                 Utils.log("&5SkBee Text Components &asuccessfully hooked");
             }
             if (skBeeConfig.ELEMENTS_NBT && NBTApi.isEnabled()) {
