@@ -2,10 +2,6 @@ package com.shanebeestudios.briggy.skript.sections;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.Literal;
@@ -21,6 +17,7 @@ import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import dev.jorel.commandapi.BukkitStringTooltip;
 import dev.jorel.commandapi.IStringTooltip;
@@ -36,57 +33,58 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Name("Register Argument")
-@Description({"Register an argument for a brig command.",
-        "\nWithin this section you can apply suggestions with tooltips.",
-        "The section itself will run when a player types a command, thus variables CAN be used and the [event-]player",
-        "will be the player typing the command.",
-        "Local variables will be created for the previously typed args, and can be used in this section. See examples.",
-        "\n`brigarg` = Type of argument. See Brig Argument Type for more details.",
-        "\n`string` = Name of the argument. (Used for local variables and how it shows in game)",
-        "\n`%objects`% = Suggestions for this argument. (If object is not a string, Skript will stringify it)",
-        "\n`min/max` = The min/max range of a number (long/int/float/double) argument."})
-@Examples({"register string arg \"world\" using all worlds",
-        "register string arg \"world\":",
-        "\tapply suggestion all worlds",
-        "register string arg \"homes\" using indexes of {homes::%uuid of player%::*}",
-        "register string arg \"homes\" using:",
-        "\tapply suggestions indexes of {homes::%uuid of player%::*}",
-        "register string arg \"homes\" using:",
-        "\tloop {homes::%uuid of player%::*}:",
-        "\t\tapply suggestion loop-index with tooltip loop-value",
-        "register string arg \"gamemode\":",
-        "\tapply suggestion \"0\" with tooltip \"survival\"",
-        "\tapply suggestion \"1\" with tooltip \"creative\"",
-        "\tapply suggestion \"2\" with tooltip \"adventure\"",
-        "\tapply suggestion \"3\" with tooltip \"spectator\"",
-        "",
-        "brig command /breaky:",
-        "\targuments:",
-        "\t\tregister string arg named \"type\" using \"bacon\", \"eggs\" and \"toast\"",
-        "\t\tregister string arg named \"style\":",
-        "\t\t\tif brig-arg-1 = \"bacon\": # Brig-Args can be used here",
-        "\t\t\t\tapply suggestion \"crispy\" with tooltip \"nice and crispy\"",
-        "\t\t\t\tapply suggestion \"soft\" with tooltip \"ewww\"",
-        "\t\t\telse if {_type} = \"eggs\": # Local variables of the previous arg are also created",
-        "\t\t\t\tapply suggestion \"sunny_side_up\" with tooltip \"facing the sun\"",
-        "\t\t\t\tapply suggestion \"scrambled\" with tooltip \"all mixed up\"",
-        "\t\t\t\tapply suggestion \"soft_boiled\" with tooltip \"swimmin for a short time\"",
-        "\t\t\t\tapply suggestion \"hard_boiled\" with tooltip \"eww, thats nasty bitch\"",
-        "\t\t\telse if {_type} = \"toast\":",
-        "\t\t\t\tapply suggestion \"light\" with tooltip \"just a touch of heat\"",
-        "\t\t\t\tapply suggestion \"medium\" with tooltip \"well that sounds perfect\"",
-        "\t\t\t\tapply suggestion \"dark\" with tooltip \"nice and crisy\"",
-        "\t\t\t\tapply suggestion \"burnt\" with tooltip \"now ya done an fucked er up\""})
-@Since("1.0.0")
 public class SecRegisterArg extends EffectSection {
 
-    static {
+    public static void register(Registration reg) {
         String base = "register [:optional] %*brigarg% arg[ument] [(named|with name)] %string%";
-        Skript.registerSection(SecRegisterArg.class,
+        reg.newSection(SecRegisterArg.class,
                 base,
                 base + " (with suggestions|using) %objects%",
-                base + " with [min %-number%] [and] [with] [max %-number%]");
+                base + " with [min %-number%] [and] [with] [max %-number%]")
+            .name("Register Argument")
+            .description("Register an argument for a brig command.",
+                "\nWithin this section you can apply suggestions with tooltips.",
+                "The section itself will run when a player types a command, thus variables CAN be used and the [event-]player",
+                "will be the player typing the command.",
+                "Local variables will be created for the previously typed args, and can be used in this section. See examples.",
+                "\n`brigarg` = Type of argument. See Brig Argument Type for more details.",
+                "\n`string` = Name of the argument. (Used for local variables and how it shows in game)",
+                "\n`%objects`% = Suggestions for this argument. (If object is not a string, Skript will stringify it)",
+                "\n`min/max` = The min/max range of a number (long/int/float/double) argument.")
+            .examples("register string arg \"world\" using all worlds",
+                "register string arg \"world\":",
+                "\tapply suggestion all worlds",
+                "register string arg \"homes\" using indexes of {homes::%uuid of player%::*}",
+                "register string arg \"homes\" using:",
+                "\tapply suggestions indexes of {homes::%uuid of player%::*}",
+                "register string arg \"homes\" using:",
+                "\tloop {homes::%uuid of player%::*}:",
+                "\t\tapply suggestion loop-index with tooltip loop-value",
+                "register string arg \"gamemode\":",
+                "\tapply suggestion \"0\" with tooltip \"survival\"",
+                "\tapply suggestion \"1\" with tooltip \"creative\"",
+                "\tapply suggestion \"2\" with tooltip \"adventure\"",
+                "\tapply suggestion \"3\" with tooltip \"spectator\"",
+                "",
+                "brig command /breaky:",
+                "\targuments:",
+                "\t\tregister string arg named \"type\" using \"bacon\", \"eggs\" and \"toast\"",
+                "\t\tregister string arg named \"style\":",
+                "\t\t\tif brig-arg-1 = \"bacon\": # Brig-Args can be used here",
+                "\t\t\t\tapply suggestion \"crispy\" with tooltip \"nice and crispy\"",
+                "\t\t\t\tapply suggestion \"soft\" with tooltip \"ewww\"",
+                "\t\t\telse if {_type} = \"eggs\": # Local variables of the previous arg are also created",
+                "\t\t\t\tapply suggestion \"sunny_side_up\" with tooltip \"facing the sun\"",
+                "\t\t\t\tapply suggestion \"scrambled\" with tooltip \"all mixed up\"",
+                "\t\t\t\tapply suggestion \"soft_boiled\" with tooltip \"swimmin for a short time\"",
+                "\t\t\t\tapply suggestion \"hard_boiled\" with tooltip \"eww, thats nasty bitch\"",
+                "\t\t\telse if {_type} = \"toast\":",
+                "\t\t\t\tapply suggestion \"light\" with tooltip \"just a touch of heat\"",
+                "\t\t\t\tapply suggestion \"medium\" with tooltip \"well that sounds perfect\"",
+                "\t\t\t\tapply suggestion \"dark\" with tooltip \"nice and crisy\"",
+                "\t\t\t\tapply suggestion \"burnt\" with tooltip \"now ya done an fucked er up\"")
+            .since("1.0.0")
+            .register();
     }
 
     private int pattern;

@@ -4,10 +4,6 @@ import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -17,6 +13,7 @@ import ch.njol.skript.util.Utils;
 import com.shanebeestudios.briggy.api.event.BrigTreeCreateEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeSubCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import com.shanebeestudios.skbee.api.util.Util;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandTree;
@@ -36,75 +33,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Name("CommandTree - Command")
-@Description({"Command trees are similar to regular commands with the difference being the arguments are in a tree.",
-    "By having a tree, each argument can have sub args as well as their own triggers.",
-    "See [**SkBriggy Wiki**](https://github.com/ShaneBeee/SkBriggy/wiki/Command-Tree) for more detailed info.",
-    "",
-    "Command names can include namespaces, ex: `brig command tree /mycommands:somecommand`.",
-    "Defaults to `minecraft` when excluded.",
-    "",
-    "**Entries/Sections**:",
-    "`executor_type` = What types of execturs can run this command (Optional, defaults to `all`).",
-    "`permission` = Just like Skript, the permission the player will require for this command.",
-    "`description` = Just like Skript, this is a string that will be used in the help command.",
-    "`usages` = This is the usage which is shown in the specific `/help <command>` page. Separate multiple usages by comma.",
-    "`aliases` = Aliases for this command.",
-    "`override` = Whether to completely wipe out other commands with the same name, such as vanilla Minecraft commands (Defaults to false).",
-    "`register arg` = Register another subcommand within this one. Supports multiple.",
-    "`trigger` = Like any other command, this is what will execute when the command is run."})
-@Examples({"# Example with optional arg that can be bypassed",
-    "brig command tree /legamemode:",
-    "\tliteral arg \"gamemode\" using \"adventure\", \"creative\", \"spectator\", \"survival\":",
-    "\t\t# When optional, the trigger will still run but the arg is ignored",
-    "\t\toptional players arg \"players\":",
-    "\t\t\ttrigger:",
-    "\t\t\t\t# if the player arg is not used, we will default to the command sender",
-    "\t\t\t\tset {_players::*} to {_players::*} ? player",
-    "\t\t\t\tset {_gamemode} to {_gamemode} parsed as gamemode",
-    "\t\t\t\tset gamemode of {_players::*} to {_gamemode}",
-    "",
-    "# Example similar to above but using 2 different triggers",
-    "brig command tree /spawn:",
-    "\tworld arg \"world\":",
-    "\t\ttrigger:",
-    "\t\t\tteleport player to spawn of {_world}",
-    "\t# if the argument isn't entered, this will execute",
-    "\ttrigger:",
-    "\t\tteleport player to spawn of world of player",
-    "",
-    "# Example showing off suggestions with tooltips",
-    "brig command tree /lewarp:",
-    "\tstring arg \"warp\":",
-    "\t\tsuggestions:",
-    "\t\t\tloop {warps::*}:",
-    "\t\t\t\tset {_s} to \"&7x: &b%x coord of loop-value% &7y: &b%y coord of loop-value% &7z: &b%z coord of loop-value% &7world: &a%world of loop-value%\"",
-    "\t\t\t\tapply suggestion loop-index with tooltip {_s}",
-    "\t\ttrigger:",
-    "\t\t\tif {warps::%{_warp}%} is set:",
-    "\t\t\t\tteleport player to {warps::%{_warp}%}",
-    "\t\t\telse:",
-    "\t\t\t\tsend \"No warp available for %{_warp}%\"",
-    "",
-    "brig command tree /leban:",
-    "\tdescription: &bThis allows you to ban players",
-    "\tusages: /leban &7<&bplayers&7> &7<&btimespan&7>",
-    "\tplayers arg \"players\":",
-    "\t\tint arg \"time\":",
-    "\t\t\tstring arg \"span\" using \"minutes\", \"hours\", \"days\":",
-    "\t\t\t\t# When optional, the trigger will still run but the arg is ignored",
-    "\t\t\t\toptional greedy string arg \"reason\":",
-    "\t\t\t\t\ttrigger:",
-    "\t\t\t\t\t\tset {_timespan} to \"%{_time}% %{_span}%\" parsed as timespan",
-    "\t\t\t\t\t\tset {_reason} to {_reason} ? \"Unknown Reason\"",
-    "\t\t\t\t\t\tban {_players::*} due to \"&c\" + {_reason} for {_timespan}",
-    "\t\t\t\t\t\tkick {_players::*} due to \"&c\" + {_reason}"})
-@Since("1.4.0")
 public class StructBrigCommandTree extends Structure {
 
     private static final Pattern COMMA_PATTERN = Pattern.compile("\\s*,\\s*");
 
-    static {
+    public static void register(Registration reg) {
         @SuppressWarnings("RedundantIfStatement")
         EntryValidator entryValidator = EntryValidator.builder()
             .addEntry("permission", null, true)
@@ -118,7 +51,7 @@ public class StructBrigCommandTree extends Structure {
                         try {
                             ExecutorType executorType = ExecutorType.valueOf(s.toUpperCase());
                             executorTypes.add(executorType);
-                        }  catch (IllegalArgumentException e) {
+                        } catch (IllegalArgumentException e) {
                             Skript.error("Invalid executor_type: " + s);
                         }
                     }
@@ -156,14 +89,79 @@ public class StructBrigCommandTree extends Structure {
                 return true;
             })
             .build();
-        Skript.registerStructure(StructBrigCommandTree.class, entryValidator, "brig[(gy|adier)] command[ ]tree /<.+>");
+        reg.newStructure(StructBrigCommandTree.class, entryValidator, "brig[(gy|adier)] command[ ]tree /<.+>")
+            .name("CommandTree - Command")
+            .description("Command trees are similar to regular commands with the difference being the arguments are in a tree.",
+                "By having a tree, each argument can have sub args as well as their own triggers.",
+                "See [**SkBriggy Wiki**](https://github.com/ShaneBeee/SkBriggy/wiki/Command-Tree) for more detailed info.",
+                "",
+                "Command names can include namespaces, ex: `brig command tree /mycommands:somecommand`.",
+                "Defaults to `minecraft` when excluded.",
+                "",
+                "**Entries/Sections**:",
+                "`executor_type` = What types of execturs can run this command (Optional, defaults to `all`).",
+                "`permission` = Just like Skript, the permission the player will require for this command.",
+                "`description` = Just like Skript, this is a string that will be used in the help command.",
+                "`usages` = This is the usage which is shown in the specific `/help <command>` page. Separate multiple usages by comma.",
+                "`aliases` = Aliases for this command.",
+                "`override` = Whether to completely wipe out other commands with the same name, such as vanilla Minecraft commands (Defaults to false).",
+                "`register arg` = Register another subcommand within this one. Supports multiple.",
+                "`trigger` = Like any other command, this is what will execute when the command is run.")
+            .examples("# Example with optional arg that can be bypassed",
+                "brig command tree /legamemode:",
+                "\tliteral arg \"gamemode\" using \"adventure\", \"creative\", \"spectator\", \"survival\":",
+                "\t\t# When optional, the trigger will still run but the arg is ignored",
+                "\t\toptional players arg \"players\":",
+                "\t\t\ttrigger:",
+                "\t\t\t\t# if the player arg is not used, we will default to the command sender",
+                "\t\t\t\tset {_players::*} to {_players::*} ? player",
+                "\t\t\t\tset {_gamemode} to {_gamemode} parsed as gamemode",
+                "\t\t\t\tset gamemode of {_players::*} to {_gamemode}",
+                "",
+                "# Example similar to above but using 2 different triggers",
+                "brig command tree /spawn:",
+                "\tworld arg \"world\":",
+                "\t\ttrigger:",
+                "\t\t\tteleport player to spawn of {_world}",
+                "\t# if the argument isn't entered, this will execute",
+                "\ttrigger:",
+                "\t\tteleport player to spawn of world of player",
+                "",
+                "# Example showing off suggestions with tooltips",
+                "brig command tree /lewarp:",
+                "\tstring arg \"warp\":",
+                "\t\tsuggestions:",
+                "\t\t\tloop {warps::*}:",
+                "\t\t\t\tset {_s} to \"&7x: &b%x coord of loop-value% &7y: &b%y coord of loop-value% &7z: &b%z coord of loop-value% &7world: &a%world of loop-value%\"",
+                "\t\t\t\tapply suggestion loop-index with tooltip {_s}",
+                "\t\ttrigger:",
+                "\t\t\tif {warps::%{_warp}%} is set:",
+                "\t\t\t\tteleport player to {warps::%{_warp}%}",
+                "\t\t\telse:",
+                "\t\t\t\tsend \"No warp available for %{_warp}%\"",
+                "",
+                "brig command tree /leban:",
+                "\tdescription: &bThis allows you to ban players",
+                "\tusages: /leban &7<&bplayers&7> &7<&btimespan&7>",
+                "\tplayers arg \"players\":",
+                "\t\tint arg \"time\":",
+                "\t\t\tstring arg \"span\" using \"minutes\", \"hours\", \"days\":",
+                "\t\t\t\t# When optional, the trigger will still run but the arg is ignored",
+                "\t\t\t\toptional greedy string arg \"reason\":",
+                "\t\t\t\t\ttrigger:",
+                "\t\t\t\t\t\tset {_timespan} to \"%{_time}% %{_span}%\" parsed as timespan",
+                "\t\t\t\t\t\tset {_reason} to {_reason} ? \"Unknown Reason\"",
+                "\t\t\t\t\t\tban {_players::*} due to \"&c\" + {_reason} for {_timespan}",
+                "\t\t\t\t\t\tkick {_players::*} due to \"&c\" + {_reason}")
+            .since("1.4.0")
+            .register();
     }
 
     private EntryContainer entryContainer;
     private String namespace = "minecraft";
     private String command;
     private boolean override = false;
-    private List<String> aliases =  new ArrayList<>();
+    private List<String> aliases = new ArrayList<>();
 
     @Override
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {

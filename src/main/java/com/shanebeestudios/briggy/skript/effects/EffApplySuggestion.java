@@ -1,10 +1,6 @@
 package com.shanebeestudios.briggy.skript.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -13,36 +9,38 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
 import dev.jorel.commandapi.BukkitStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
-@Name("Apply Suggestion")
-@Description({"Apply a suggestion with tooltip or list of suggestions to an argument.",
-    "This is used only in the argument registration section of a brig command and the suggestions section of a big command tree."})
-@Examples({"register string arg \"world\":",
-    "\tapply suggestion all worlds",
-    "register string arg \"homes\" using:",
-    "\tapply suggestions indexes of {homes::%uuid of player%::*}",
-    "register string arg \"homes\" using:",
-    "\tloop {homes::%uuid of player%::*}:",
-    "\t\tapply suggestion loop-index with tooltip loop-value",
-    "register string arg \"gamemode\":",
-    "\tapply suggestion \"0\" with tooltip \"survival\"",
-    "\tapply suggestion \"1\" with tooltip \"creative\"",
-    "\tapply suggestion \"2\" with tooltip \"adventure\"",
-    "\tapply suggestion \"3\" with tooltip \"spectator\""})
-@Since("1.0.0")
 public class EffApplySuggestion extends Effect {
 
     private static final boolean HAS_COMP = SkBriggy.HAS_SKBEE_COMPONENT;
 
-    static {
-        Skript.registerEffect(EffApplySuggestion.class,
-            "apply suggestion %string% with tooltip %~object%",
-            "apply suggestion[s] %~objects%");
+    public static void register(Registration reg) {
+        reg.newEffect(EffApplySuggestion.class,
+                "apply suggestion %string% with tooltip %~object%",
+                "apply suggestion[s] %~objects%")
+            .name("Apply Suggestion")
+            .description("Apply a suggestion with tooltip or list of suggestions to an argument.",
+                "This is used only in the argument registration section of a brig command and the suggestions section of a big command tree.")
+            .examples("register string arg \"world\":",
+                "\tapply suggestion all worlds",
+                "register string arg \"homes\" using:",
+                "\tapply suggestions indexes of {homes::%uuid of player%::*}",
+                "register string arg \"homes\" using:",
+                "\tloop {homes::%uuid of player%::*}:",
+                "\t\tapply suggestion loop-index with tooltip loop-value",
+                "register string arg \"gamemode\":",
+                "\tapply suggestion \"0\" with tooltip \"survival\"",
+                "\tapply suggestion \"1\" with tooltip \"creative\"",
+                "\tapply suggestion \"2\" with tooltip \"adventure\"",
+                "\tapply suggestion \"3\" with tooltip \"spectator\"")
+            .since("1.0.0")
+            .register();
     }
 
     private int pattern;
@@ -50,7 +48,7 @@ public class EffApplySuggestion extends Effect {
     private Expression<Object> tooltip;
     private Expression<Object> objects;
 
-    @SuppressWarnings({"NullableProblems", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
         if (!getParser().isCurrentEvent(BrigCommandSuggestEvent.class)) {

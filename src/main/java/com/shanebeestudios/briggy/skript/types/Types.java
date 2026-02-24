@@ -1,15 +1,14 @@
 package com.shanebeestudios.briggy.skript.types;
 
-import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.EventValues;
-import ch.njol.skript.util.EnumUtils;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import dev.jorel.commandapi.executors.ExecutorType;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.ParticleData;
@@ -20,10 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-@SuppressWarnings("unused")
 public class Types {
 
-    static {
+    public static void register(Registration reg) {
         // Event Values
         EventValues.registerEventValue(BrigCommandEvent.class, CommandSender.class, BrigCommandEvent::getSender, EventValues.TIME_NOW);
         EventValues.registerEventValue(BrigCommandEvent.class, World.class, BrigCommandEvent::getWorld, EventValues.TIME_NOW);
@@ -31,15 +29,16 @@ public class Types {
         EventValues.registerEventValue(BrigCommandSuggestEvent.class, CommandSender.class, BrigCommandSuggestEvent::getCommandSender, EventValues.TIME_NOW);
 
         // Classes
-        Classes.registerClass(new ClassInfo<>(IntegerRange.class, "intrange")
+        reg.newType(IntegerRange.class, "intrange")
             .user("int[eger] ?ranges?")
             .name("Integer Range")
             .description("Represents a range between 2 integers.",
                 "Use the IntegerRange expression to get the high/low value.")
             .since("1.0.0")
-            .parser(getDefaultParser()));
+            .parser(getDefaultParser())
+            .register();
 
-        Classes.registerClass(new ClassInfo<>(BrigArgument.class, "brigarg")
+        reg.newType(BrigArgument.class, "brigarg")
             .user("brig ?args?")
             .name("Brig Argument Type")
             .description("Represents a type of argument for a Brig Command.",
@@ -65,18 +64,18 @@ public class Types {
                     return toString(brigArgument, 0);
                 }
             })
-            .supplier(BrigArgument.getSupplier()));
+            .supplier(BrigArgument.getSupplier())
+            .register();
 
-        EnumUtils<ExecutorType> executortypes = new EnumUtils<>(ExecutorType.class, "executortypes");
-        Classes.registerClass(new ClassInfo<>(ExecutorType.class, "executortype")
+        reg.newEnumType(ExecutorType.class, "executortype")
             .user("executor ?types?")
             .name("Executor Type")
             .description("Represents the different types that can run a command.")
-            .usage(executortypes.getAllNames())
             .parser(getDefaultParser()) // They're never actually parsed so we use default here
-            .since("1.5.7"));
+            .since("1.5.7")
+            .register();
 
-        Classes.registerClass(new ClassInfo<>(ParticleData.class, "particledata")
+        reg.newType(ParticleData.class, "particledata")
             .user("particle ?datas?")
             .name("Particle Data")
             .description("Represents a particle along with its provided data.",
@@ -91,15 +90,17 @@ public class Types {
                 "\t\telse:",
                 "\t\t\tmake 1 of {_particle} at {_loc} with extra 0")
             .since("1.1.0")
-            .parser(getDefaultParser()));
+            .parser(getDefaultParser())
+            .register();
 
         if (Classes.getExactClassInfo(Predicate.class) == null) {
-            Classes.registerClass(new ClassInfo<>(Predicate.class, "predicate")
+            reg.newType(Predicate.class, "predicate")
                 .user("predicates?")
                 .name("Predicate")
                 .description("Represents a predicate which can be used for filtering.")
                 .since("1.3.0")
-                .parser(getDefaultParser()));
+                .parser(getDefaultParser())
+                .register();
         }
     }
 

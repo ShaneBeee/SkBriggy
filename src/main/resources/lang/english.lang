@@ -6,14 +6,3 @@ types:
     intrange: int range¦s @an
     particledata: particle data¦s
     predicate: predicate¦s
-
-executortypes:
-    player: player
-    entity: entity
-    console: console
-    block: block
-    all: all
-    proxy: proxy
-    native: native
-    remote: remote
-    feedback_forwarding: feedback_forwarding

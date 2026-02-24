@@ -34,7 +34,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:${minecraftVersion}-R0.1-SNAPSHOT")
 
     // Skript
-    compileOnly("com.github.SkriptLang:Skript:2.10.2")
+    compileOnly("com.github.SkriptLang:Skript:2.14.0")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.5.8")
@@ -51,7 +51,7 @@ tasks {
         dependsOn("shadowJar")
         from("build/libs") {
             include("SkBriggy-*.jar")
-            destinationDir = file("/Users/ShaneBee/Desktop/Server/${serverLocation}/plugins/")
+            destinationDir = file("/Users/ShaneBee/Desktop/Server/Minecraft/${serverLocation}/plugins/")
         }
     }
     processResources {

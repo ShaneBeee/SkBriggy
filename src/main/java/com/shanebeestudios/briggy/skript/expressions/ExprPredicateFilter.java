@@ -1,15 +1,10 @@
 package com.shanebeestudios.briggy.skript.expressions;
 
-import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
 import com.shanebeestudios.briggy.api.wrapper.ItemStackPredicate;
 import org.bukkit.block.Block;
@@ -20,30 +15,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-@Name("Predicate - Filter")
-@Description("Represents a item/block predicate for filtering objects.")
-@Examples({"# /destroy minecraft:short_grass 10",
-        "# /destroy #minecraft:stairs 50",
-        "brig command /destroy <b:blockpredicate> [<rad:int>]:",
-        "\ttrigger:",
-        "\t\tif {_rad} is not set:",
-        "\t\t\tset {_rad} to 5",
-        "\t\tloop ((blocks in radius {_rad} around target block) that match block predicate {_b}):",
-        "\t\t\tbreak loop-block",
-        "",
-        "# /remove @a #minecraft:swords",
-        "# /remove @a #minecraft:swords{Damage:0}",
-        "brig command /remove <players> <i:itempredicate>:",
-        "\ttrigger:",
-        "\t\tloop {_players::*}:",
-        "\t\t\tremove ((items in loop-value's inventory) that match item predicate {_i}) from inventory of loop-value"})
-@Since("1.3.0")
 public class ExprPredicateFilter extends SimpleExpression<Object> {
 
-    static {
-        Skript.registerExpression(ExprPredicateFilter.class, Object.class, ExpressionType.COMBINED,
+    public static void register(Registration reg) {
+        reg.newCombinedExpression(ExprPredicateFilter.class, Object.class,
                 "%itemstacks% (that|which) match item[[ ]stack] predicate %predicate%",
-                "%blocks% (that|which) match block predicate %predicate%");
+                "%blocks% (that|which) match block predicate %predicate%")
+            .name("Predicate - Filter")
+            .description("Represents a item/block predicate for filtering objects.")
+            .examples("# /destroy minecraft:short_grass 10",
+                "# /destroy #minecraft:stairs 50",
+                "brig command /destroy <b:blockpredicate> [<rad:int>]:",
+                "\ttrigger:",
+                "\t\tif {_rad} is not set:",
+                "\t\t\tset {_rad} to 5",
+                "\t\tloop ((blocks in radius {_rad} around target block) that match block predicate {_b}):",
+                "\t\t\tbreak loop-block",
+                "",
+                "# /remove @a #minecraft:swords",
+                "# /remove @a #minecraft:swords{Damage:0}",
+                "brig command /remove <players> <i:itempredicate>:",
+                "\ttrigger:",
+                "\t\tloop {_players::*}:",
+                "\t\t\tremove ((items in loop-value's inventory) that match item predicate {_i}) from inventory of loop-value")
+            .since("1.3.0")
+            .register();
     }
 
     private int pattern;
@@ -51,7 +47,7 @@ public class ExprPredicateFilter extends SimpleExpression<Object> {
     private Expression<Block> blocks;
     private Expression<Predicate<?>> predicate;
 
-    @SuppressWarnings({"NullableProblems", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
         this.pattern = matchedPattern;
@@ -64,7 +60,6 @@ public class ExprPredicateFilter extends SimpleExpression<Object> {
         return true;
     }
 
-    @SuppressWarnings({"NullableProblems"})
     @Override
     protected @Nullable Object[] get(Event event) {
         if (this.predicate == null) return null;
