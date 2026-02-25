@@ -14,11 +14,12 @@ public class SkBriggyAddonModule implements AddonModule {
 
     @Override
     public void init(SkriptAddon addon) {
+        this.registration.registerInit();
     }
 
     @Override
     public void load(SkriptAddon addon) {
-
+        this.registration.registerLoad();
     }
 
     @Override

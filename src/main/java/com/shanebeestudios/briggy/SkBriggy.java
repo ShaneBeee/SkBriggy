@@ -91,8 +91,9 @@ public class SkBriggy extends JavaPlugin {
         // Register Skript addon
         if (Skript.isAcceptRegistrations()) {
             this.registration = new Registration();
-            new SkBriggyAddonModule(this.registration);
             ElementRegistration.register(this.registration);
+            SkBriggyAddonModule skBriggyAddonModule = new SkBriggyAddonModule(this.registration);
+            this.registration.getAddon().loadModules(skBriggyAddonModule);
         } else {
             Utils.log("&cSkript isn't accepting registrations?!?!?");
         }
