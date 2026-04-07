@@ -76,7 +76,7 @@ public class SkBriggy extends JavaPlugin {
                 // In SkBee 3.17.0+ text components are always enabled
                 HAS_SKBEE_COMPONENT = true;
             } else {
-                HAS_SKBEE_COMPONENT = skBeeConfig.ELEMENTS_TEXT_COMPONENT;
+                HAS_SKBEE_COMPONENT = false;
             }
 
             if (HAS_SKBEE_COMPONENT) {
@@ -90,10 +90,8 @@ public class SkBriggy extends JavaPlugin {
 
         // Register Skript addon
         if (Skript.isAcceptRegistrations()) {
-            this.registration = new Registration();
+            this.registration = new Registration("SkBriggy", true);
             ElementRegistration.register(this.registration);
-            SkBriggyAddonModule skBriggyAddonModule = new SkBriggyAddonModule(this.registration);
-            this.registration.getAddon().loadModules(skBriggyAddonModule);
         } else {
             Utils.log("&cSkript isn't accepting registrations?!?!?");
         }

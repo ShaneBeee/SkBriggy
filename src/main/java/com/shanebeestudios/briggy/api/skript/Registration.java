@@ -17,12 +17,13 @@ import ch.njol.skript.lang.Section;
 import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.function.Functions;
 import ch.njol.skript.registrations.Classes;
-import com.shanebeestudios.briggy.SkBriggyAddonModule;
+import com.shanebeestudios.briggy.api.util.Utils;
 import org.bukkit.Keyed;
 import org.bukkit.Registry;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.addon.AddonModule;
 import org.skriptlang.skript.addon.SkriptAddon;
 import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
 import org.skriptlang.skript.common.function.DefaultFunction;
@@ -39,10 +40,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Registration {
 
     private final SkriptAddon addon;
+    private final RegistrationAddonModule module;
+    private final List<Registrar<?>> preRegistrations = new ArrayList<>();
     private final List<TypeRegistrar<?>> types = new ArrayList<>();
     private final List<EffectRegistrar> effects = new ArrayList<>();
     private final List<ConditionRegistrar> conditions = new ArrayList<>();
@@ -52,9 +55,12 @@ public class Registration {
     private final List<StructureRegistrar<?>> structures = new ArrayList<>();
     private final List<FunctionRegistrar> functions = new ArrayList<>();
 
-    public Registration() {
-        this.addon = Skript.instance().registerAddon(SkBriggyAddonModule.class, "SkBriggy");
-        this.addon.localizer().setSourceDirectories("lang", null);
+    public Registration(String name, boolean includeLang) {
+        this.addon = Skript.instance().registerAddon(RegistrationAddonModule.class, name);
+        if (includeLang) {
+            this.addon.localizer().setSourceDirectories("lang", null);
+        }
+        this.module = new RegistrationAddonModule(name, this);
     }
 
     public SkriptAddon getAddon() {
@@ -94,9 +100,13 @@ public class Registration {
     }
 
     @SuppressWarnings("unchecked")
-    public static class Registrar<T extends Registrar<T>> {
+    public class Registrar<T extends Registrar<T>> {
         private final Documentation documentation = new Documentation();
         private boolean registered;
+
+        public Registrar() {
+            Registration.this.preRegistrations.add(this);
+        }
 
         public T noDoc() {
             this.documentation.setNoDoc(true);
@@ -132,14 +142,13 @@ public class Registration {
             return this.documentation;
         }
 
-        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         public boolean isRegistered() {
             return this.registered;
         }
 
         public void register() {
             if (this.registered) {
-                Skript.error("Syntax '%s' is already registered!", this.documentation.getName());
+                skriptError("Syntax '%s' is already registered!", this.documentation.getName());
                 return;
             }
             this.registered = true;
@@ -229,12 +238,15 @@ public class Registration {
         public final String prefix;
         public final String suffix;
         public final @NotNull EnumWrapper<T> enumWrapper;
+        public final ClassInfo<T> classInfo;
 
         public EnumTypeRegistrar(Class<T> type, String codename, String prefix, String suffix, boolean plurals) {
             super(type, codename);
             this.prefix = prefix;
             this.suffix = suffix;
             this.enumWrapper = new EnumWrapper<>(type, prefix, suffix, plurals);
+            this.usage = this.enumWrapper.getAllNames();
+            this.classInfo = this.enumWrapper.getClassInfo(codename);
         }
 
         public EnumTypeRegistrar(Class<T> type, @NotNull EnumWrapper<T> enumWrapper, String codename, String prefix, String suffix) {
@@ -242,6 +254,8 @@ public class Registration {
             this.prefix = prefix;
             this.suffix = suffix;
             this.enumWrapper = enumWrapper;
+            this.usage = this.enumWrapper.getAllNames();
+            this.classInfo = this.enumWrapper.getClassInfo(codename);
         }
     }
 
@@ -274,6 +288,7 @@ public class Registration {
         public final String prefix;
         public final String suffix;
         public final boolean createUsage;
+        public final ClassInfo<T> classInfo;
 
         public RegistryTypeRegistrar(Registry<T> registry, Class<T> type, String codename, boolean createUsage, String prefix, String suffix) {
             super(type, codename);
@@ -281,6 +296,12 @@ public class Registration {
             this.prefix = prefix;
             this.suffix = suffix;
             this.createUsage = createUsage;
+
+            this.classInfo = RegistryClassInfo.create(registry, type, createUsage, codename, prefix, suffix);
+            @Nullable String[] classInfoUsage = this.classInfo.getUsage();
+            if (classInfoUsage != null) {
+                this.usage = String.join(", ", classInfoUsage);
+            }
         }
     }
 
@@ -390,7 +411,6 @@ public class Registration {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public EventRegistrar newEvent(Class<? extends SkriptEvent> skriptEventClass, Class<? extends Event> eventClass, String... patterns) {
         return new EventRegistrar(skriptEventClass, new Class[]{eventClass}, patterns);
     }
@@ -419,22 +439,21 @@ public class Registration {
     }
 
     public <T, E extends Expression<T>> ExpressionRegistrar<T, E> newExpression(Class<E> expressionClass, Class<T> returnType, Priority priority, String... patterns) {
-        return new ExpressionRegistrar<>(expressionClass, returnType, priority, patterns);
+        return new ExpressionRegistrar(expressionClass, returnType, priority, patterns);
     }
 
     public <T, E extends Expression<T>> ExpressionRegistrar<T, E> newSimpleExpression(Class<E> expressionClass, Class<T> returnType, String... patterns) {
-        return new ExpressionRegistrar<>(expressionClass, returnType, SyntaxInfo.SIMPLE, patterns);
+        return new ExpressionRegistrar(expressionClass, returnType, SyntaxInfo.SIMPLE, patterns);
     }
 
     public <T, E extends Expression<T>> ExpressionRegistrar<T, E> newEventExpression(Class<E> expressionClass, Class<T> returnType, String... patterns) {
-        return new ExpressionRegistrar<>(expressionClass, returnType, EventValueExpression.DEFAULT_PRIORITY, patterns);
+        return new ExpressionRegistrar(expressionClass, returnType, EventValueExpression.DEFAULT_PRIORITY, patterns);
     }
 
     public <T, E extends Expression<T>> ExpressionRegistrar<T, E> newCombinedExpression(Class<E> expressionClass, Class<T> returnType, String... patterns) {
-        return new ExpressionRegistrar<>(expressionClass, returnType, SyntaxInfo.COMBINED, patterns);
+        return new ExpressionRegistrar(expressionClass, returnType, SyntaxInfo.COMBINED, patterns);
     }
 
-    @SuppressWarnings("unchecked")
     public <T, E extends Expression<T>> ExpressionRegistrar newPropertyExpression(Class<E> expressionClass, Class<T> returnType, String property, String owner) {
         return new ExpressionRegistrar(expressionClass, returnType, SyntaxInfo.SIMPLE,
             SimplePropertyExpression.getPatterns(property, owner));
@@ -483,33 +502,39 @@ public class Registration {
         return new FunctionRegistrar<T>(function);
     }
 
-    @SuppressWarnings("unchecked")
+    public void finalizeRegistration() {
+        this.addon.loadModules(this.module);
+    }
+
     public void registerInit() {
+        // CHECK REGISTRATION
+        this.preRegistrations.forEach(registrar -> {
+            if (!registrar.isRegistered()) {
+                String name = registrar.documentation.getName();
+                if (name == null) {
+                    name = registrar.getClass().getSimpleName();
+                    skriptError("Unnamed registrar in '%s' not registered!", name);
+                } else {
+                    skriptError("Registrar for '%s' not registered!", name);
+                }
+            }
+        });
+        this.preRegistrations.clear();
+
         // TYPES
         for (TypeRegistrar type : getTypes()) {
-            if (!type.isRegistered()) {
-                Skript.error("Type '" + type.codename + "' is not registered!");
-                continue;
-            }
             ClassInfo<?> classInfo;
             if (type instanceof EnumTypeRegistrar<?> enumTypeRegistrar) {
-                classInfo = enumTypeRegistrar.enumWrapper.getClassInfo(enumTypeRegistrar.codename);
+                classInfo = enumTypeRegistrar.classInfo;
             } else if (type instanceof RegistryTypeRegistrar<? extends Keyed> registryTypeRegistrar) {
-                Class<? extends Keyed> registryClass = registryTypeRegistrar.type;
-                Registry<? extends Keyed> registry = registryTypeRegistrar.registry;
-                String codename = registryTypeRegistrar.codename;
-                String prefix = registryTypeRegistrar.prefix;
-                String suffix = registryTypeRegistrar.suffix;
-                boolean usage = registryTypeRegistrar.createUsage;
-
-                classInfo = RegistryClassInfo.create(registry, registryClass, usage, codename, prefix, suffix);
+                classInfo = registryTypeRegistrar.classInfo;
             } else {
                 classInfo = new ClassInfo<>(type.type, type.codename);
             }
             if (type.user != null) {
                 classInfo.user(type.user);
             }
-            if (type.usage != null) {
+            if (type.usage != null && classInfo.getUsage() == null) {
                 classInfo.usage(type.usage);
             }
             if (type.before != null) {
@@ -540,16 +565,12 @@ public class Registration {
         }
     }
 
-    @SuppressWarnings({"UnstableApiUsage", "unchecked", "rawtypes"})
+    @SuppressWarnings("UnstableApiUsage")
     public void registerLoad() {
         SyntaxRegistry syntaxInfos = this.addon.syntaxRegistry();
 
         // STRUCTURES
         for (Registration.StructureRegistrar<?> structure : getStructures()) {
-            if (!structure.isRegistered()) {
-                Skript.error("Structure '%s' is not registered!", structure.structureClass.getSimpleName());
-                continue;
-            }
 
             DefaultSyntaxInfos.Structure<Structure> build = DefaultSyntaxInfos.Structure.builder(
                     (Class<Structure>) structure.structureClass)
@@ -561,10 +582,6 @@ public class Registration {
         }
         // EVENTS
         for (Registration.EventRegistrar event : getEvents()) {
-            if (!event.isRegistered()) {
-                Skript.error("Event '" + event.getDocumentation().getName() + "' is not registered!");
-                continue;
-            }
             BukkitSyntaxInfos.Event.Builder<? extends BukkitSyntaxInfos.Event.Builder<?, SkriptEvent>, SkriptEvent> builder = BukkitSyntaxInfos.Event.builder(
                 (Class<SkriptEvent>) event.skriptEventClass,
                 event.getDocumentation().getName());
@@ -578,10 +595,6 @@ public class Registration {
 
         // SECTIONS
         for (Registration.SectionRegistrar section : getSections()) {
-            if (!section.isRegistered()) {
-                Skript.error("Section '" + section.section.getSimpleName() + "' is not registered!");
-                continue;
-            }
 
             Supplier<Section> supplier = () -> {
                 try {
@@ -600,10 +613,6 @@ public class Registration {
 
         // EFFECTS
         for (EffectRegistrar effect : getEffects()) {
-            if (!effect.isRegistered()) {
-                Skript.error("Effect '" + effect.effect.getSimpleName() + "' is not registered!");
-                continue;
-            }
             Supplier<Effect> supplier = () -> {
                 try {
                     return effect.effect.getConstructor().newInstance();
@@ -622,10 +631,6 @@ public class Registration {
 
         // EXPRESSIONS
         for (Registration.ExpressionRegistrar<?, ?> expression : getExpressions()) {
-            if (!expression.isRegistered()) {
-                Skript.error("Expression '%s' is not registered!", expression.expressionClass.getSimpleName());
-                continue;
-            }
             Supplier<Expression> supplier = () -> {
                 try {
                     return expression.expressionClass.getConstructor().newInstance();
@@ -644,19 +649,12 @@ public class Registration {
 
         // FUNCTIONS
         for (FunctionRegistrar function : getFunctions()) {
-            if (!function.isRegistered()) {
-                Skript.error("Function '%s' is not register", function.function.name());
-            }
 
             Functions.register(function.function);
         }
 
         // CONDITIONS
         for (ConditionRegistrar condition : getConditions()) {
-            if (!condition.isRegistered()) {
-                Skript.error("Condition '" + condition.condition.getSimpleName() + "' is not registered!");
-                continue;
-            }
             Supplier<Condition> supplier = () -> {
                 try {
                     return condition.condition.getConstructor().newInstance();
@@ -673,4 +671,36 @@ public class Registration {
             );
         }
     }
+
+    private static void skriptError(String format, Object... args) {
+        Utils.log("&c" + String.format(format, args));
+    }
+
+    public static class RegistrationAddonModule implements AddonModule {
+
+        private final String name;
+        private final Registration registration;
+
+        public RegistrationAddonModule(String name, Registration registration) {
+            this.name = name;
+            this.registration = registration;
+        }
+
+        @Override
+        public void init(SkriptAddon addon) {
+            this.registration.registerInit();
+        }
+
+        @Override
+        public void load(SkriptAddon addon) {
+            this.registration.registerLoad();
+        }
+
+        @Override
+        public String name() {
+            return this.name;
+        }
+
+    }
+
 }

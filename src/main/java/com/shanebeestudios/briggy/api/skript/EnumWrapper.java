@@ -16,6 +16,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
+/**
+ * Wrapper class for wrapping Enums to be used in Skript
+ * <p>
+ * This class is copied from Skript, with the language node stripped out and other changes
+ * <a href="https://github.com/SkriptLang/Skript/blob/master/src/main/java/ch/njol/skript/util/EnumUtils.java">EnumUtils</a>
+ * </p>
+ *
+ * @author Peter Güttinger (original)
+ */
 public final class EnumWrapper<E extends Enum<E>> {
 
     private final Class<E> enumClass;
@@ -90,7 +99,7 @@ public final class EnumWrapper<E extends Enum<E>> {
         return names[e.ordinal()];
     }
 
-    private String getAllNames() {
+    public String getAllNames() {
         List<String> names = new ArrayList<>();
         Collections.addAll(names, this.names);
         Collections.sort(names);

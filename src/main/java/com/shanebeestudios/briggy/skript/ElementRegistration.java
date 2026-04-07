@@ -46,6 +46,8 @@ public class ElementRegistration {
 
         // TYPES
         Types.register(registration);
+
+        registration.finalizeRegistration();
     }
 
 }
