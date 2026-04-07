@@ -35,7 +35,6 @@ public class Types {
             .description("Represents a range between 2 integers.",
                 "Use the IntegerRange expression to get the high/low value.")
             .since("1.0.0")
-            .parser(getDefaultParser())
             .register();
 
         reg.newType(BrigArgument.class, "brigarg")
@@ -71,7 +70,6 @@ public class Types {
             .user("executor ?types?")
             .name("Executor Type")
             .description("Represents the different types that can run a command.")
-            .parser(getDefaultParser()) // They're never actually parsed so we use default here
             .since("1.5.7")
             .register();
 
@@ -90,7 +88,6 @@ public class Types {
                 "\t\telse:",
                 "\t\t\tmake 1 of {_particle} at {_loc} with extra 0")
             .since("1.1.0")
-            .parser(getDefaultParser())
             .register();
 
         if (Classes.getExactClassInfo(Predicate.class) == null) {
@@ -99,34 +96,8 @@ public class Types {
                 .name("Predicate")
                 .description("Represents a predicate which can be used for filtering.")
                 .since("1.3.0")
-                .parser(getDefaultParser())
                 .register();
         }
-    }
-
-    /**
-     * Get a default instance of a Parser for ClassInfos
-     *
-     * @param <T> ClassType
-     * @return New instance of default parser
-     */
-    public static <T> Parser<T> getDefaultParser() {
-        return new Parser<>() {
-            @Override
-            public boolean canParse(ParseContext context) {
-                return false;
-            }
-
-            @Override
-            public String toString(T o, int flags) {
-                return o.toString();
-            }
-
-            @Override
-            public String toVariableNameString(T o) {
-                return o.toString();
-            }
-        };
     }
 
 }
