@@ -6,7 +6,7 @@ plugins {
 // Version of SkBriggy
 val projectVersion = "1.5.8"
 // Where this builds on the server
-val serverLocation = "Skript/1-21-11"
+val serverLocation = "Skript/26-1"
 // Minecraft version to build against
 val minecraftVersion = "1.21.4"
 
@@ -34,13 +34,13 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:${minecraftVersion}-R0.1-SNAPSHOT")
 
     // Skript
-    compileOnly("com.github.SkriptLang:Skript:2.10.2")
+    compileOnly("com.github.SkriptLang:Skript:2.14.0")
 
     // SkBee
-    compileOnly("com.github.ShaneBeee:SkBee:3.5.8")
+    compileOnly("com.github.ShaneBeee:SkBee:3.18.0@jar")
 
     // Command Api
-    implementation("dev.jorel:commandapi-paper-shade:11.1.0")
+    implementation("dev.jorel:commandapi-paper-shade:11.2.0")
 
     // bStats
     implementation("org.bstats:bstats-bukkit:3.1.0")
@@ -51,7 +51,7 @@ tasks {
         dependsOn("shadowJar")
         from("build/libs") {
             include("SkBriggy-*.jar")
-            destinationDir = file("/Users/ShaneBee/Desktop/Server/${serverLocation}/plugins/")
+            destinationDir = file("/Users/ShaneBee/Desktop/Server/Minecraft/${serverLocation}/plugins/")
         }
     }
     processResources {

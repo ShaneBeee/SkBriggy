@@ -1,32 +1,30 @@
 package com.shanebeestudios.briggy.skript.expressions;
 
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@Name("IntegerRange - Low/High")
-@Description("Get the low/high point of an integer range.")
-@Examples({"set {_low} to low range of {_intrange}",
-        "set {_high} to high range of {_intrange}",
-        "set {_ints::} to integers between {_low} and {_high}"})
-@Since("1.0.0")
 public class ExprIntegerRange extends SimplePropertyExpression<IntegerRange, Number> {
 
-    static {
-        register(ExprIntegerRange.class, Number.class, "(low|:high) range", "intrange");
+    public static void register(Registration reg) {
+        reg.newPropertyExpression(ExprIntegerRange.class, Number.class,
+                "(low|:high) range", "intrange")
+            .name("IntegerRange - Low/High")
+            .description("Get the low/high point of an integer range.")
+            .examples("set {_low} to low range of {_intrange}",
+                "set {_high} to high range of {_intrange}",
+                "set {_ints::} to integers between {_low} and {_high}")
+            .since("1.0.0")
+            .register();
     }
 
     private boolean high;
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
         this.high = parseResult.hasTag("high");

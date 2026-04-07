@@ -2,12 +2,7 @@ package com.shanebeestudios.briggy.skript.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.log.ErrorQuality;
@@ -15,6 +10,7 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import org.bukkit.event.Event;
@@ -25,34 +21,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Name("Argument Suggestions")
-@Description({"Set the suggestions for an argument.",
-        "Will accept any object, but strings are the best way to go.",
-        "For args you can use a number (the position of the argument) or a string (name of the argument), see examples.",
-        "NOTE: This expression is not dynamic, meaning if variables/expressions are used, they wont update."})
-@Examples({"brig command /spawn <string>:",
-        "\targuments:",
-        "\t\tset suggestions of arg 1 to all worlds",
-        "\ttrigger:",
-        "\t\tteleport player to spawn of world({_string})",
-        "",
-        "brig command /setnick <name:string>:",
-        "\targuments:",
-        "\t\tset suggestions of \"name\" argument to \"<put your nick here>\"",
-        "\ttrigger:",
-        "\t\tset display name of player to {_name}"})
-@Since("1.0.0")
 public class ExprArgSuggestions extends SimpleExpression<Object> {
 
-    static {
-        Skript.registerExpression(ExprArgSuggestions.class, Object.class, ExpressionType.COMBINED,
+    public static void register(Registration reg) {
+        reg.newCombinedExpression(ExprArgSuggestions.class, Object.class,
                 "suggestions of arg[ument][s] %strings/numbers%",
-                "suggestions of %strings/numbers% arg[ument][s]");
+                "suggestions of %strings/numbers% arg[ument][s]")
+            .name("Argument Suggestions")
+            .description("Set the suggestions for an argument.",
+                "Will accept any object, but strings are the best way to go.",
+                "For args you can use a number (the position of the argument) or a string (name of the argument), see examples.",
+                "NOTE: This expression is not dynamic, meaning if variables/expressions are used, they wont update.")
+            .examples("brig command /spawn <string>:",
+                "\targuments:",
+                "\t\tset suggestions of arg 1 to all worlds",
+                "\ttrigger:",
+                "\t\tteleport player to spawn of world({_string})",
+                "",
+                "brig command /setnick <name:string>:",
+                "\targuments:",
+                "\t\tset suggestions of \"name\" argument to \"<put your nick here>\"",
+                "\ttrigger:",
+                "\t\tset display name of player to {_name}")
+            .since("1.0.0")
+            .register();
     }
 
     private Expression<?> arg;
 
-    @SuppressWarnings({"NullableProblems"})
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
         if (!getParser().isCurrentEvent(BrigCommandArgumentsEvent.class)) {
@@ -63,20 +59,17 @@ public class ExprArgSuggestions extends SimpleExpression<Object> {
         return true;
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     protected @Nullable Object[] get(Event event) {
         return null;
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public @Nullable Class<?>[] acceptChange(ChangeMode mode) {
         if (mode == ChangeMode.SET) return CollectionUtils.array(Object[].class);
         return null;
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
         if (!(event instanceof BrigCommandArgumentsEvent brigEvent)) return;
@@ -100,7 +93,7 @@ public class ExprArgSuggestions extends SimpleExpression<Object> {
                 if (value instanceof String string) stringSuggestions.add(string);
                 else stringSuggestions.add(Classes.toString(value));
             }
-            if (stringSuggestions.size() > 0)
+            if (!stringSuggestions.isEmpty())
                 argument.includeSuggestions(ArgumentSuggestions.strings(stringSuggestions));
         }
 

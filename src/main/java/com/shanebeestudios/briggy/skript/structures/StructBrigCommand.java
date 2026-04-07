@@ -3,10 +3,6 @@ package com.shanebeestudios.briggy.skript.structures;
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.Trigger;
@@ -20,6 +16,7 @@ import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
@@ -43,57 +40,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Name("Brig Command")
-@Description({"Register a new Brigadier command.",
-    "See wiki for more details on registering: [**SkBriggy Wiki**](https://github.com/ShaneBeee/SkBriggy/wiki/Registering-New-Command)",
-    "",
-    "Command Format:",
-    "`brig command /namespace:commandName <brigArgType> [<brigArgType>] <argName:brigArgType> [<argName:brigArgType>]:`",
-    "`namespace` = The namespace of a command. (Optional, defaults to \"minecraft:\")",
-    "`commandName` = Represents the command itself, ex: '/mycommand'.",
-    "`brigArgType` = Represents a brig argument type.",
-    "- While some may match Skript types, this doesn't actually support Skript types.",
-    "`argName` = The name of the arg, which will be used to create a local variable for the arg.",
-    "- In some cases this will show when typing out a command in game.",
-    "- If this isn't set a local variable will be created using the type (see examples).",
-    "",
-    "Just like Skript commands, wrapping your arg in `[]` makes it optional. Do note at this time there is no support for defaults.",
-    "",
-    "Entries and Sections:",
-    "`executor_type` = What types of execturs can run this command (Optional, defaults to `all`).",
-    "`permission:` = Just like Skript, the permission the player will require for this command.",
-    "`description:` = Just like Skript, this is a string that will be used in the help command.",
-    "`arguments:` = Section for registering arguments. See `Register Argument` effect.",
-    "`trigger:` = Section, just like Skript, for executing your code in the command.",
-    "",
-    "Event Values:",
-    "`[event-]sender` = The sender (console/player/entity) who ran the command or the sender used in Minecraft's `/execute as <sender>` command.",
-    "`[event-]world` = World of the sender, or default world if sender is console, or world used in Minecraft's `/execute in <world>` command."})
-@Examples({"brig command /move <player> <location>:",
-    "\ttrigger:",
-    "\t\tteleport {_player} to {_location}",
-    "",
-    "brig command /move <p1:player> <p2:player>:",
-    "\ttrigger:",
-    "\t\tteleport {_p1} to {_p2}",
-    "",
-    "brig command /i <item> [<amount:int>]:",
-    "\ttrigger:",
-    "\t\tset {_amount} to 1 if {_amount} isn't set",
-    "\t\tgive {_amount} of {_item} to player",
-    "",
-    "brig command /coolserver:party:",
-    "\tpermission: coolserver.party",
-    "\ttrigger:",
-    "\t\tteleport all players to spawn of world \"world_party\""})
-@Since("1.0.0")
 public class StructBrigCommand extends Structure {
 
     private static final SkBriggy PLUGIN = SkBriggy.getInstance();
     private static final Pattern COMMA_PATTERN = Pattern.compile("\\s*,\\s*");
     private static final Pattern ARGUMENT_PATTERN = Pattern.compile("\\[?<.*?>]?");
 
-    static {
+    public static void register(Registration reg) {
         EntryValidator entryValidator = EntryValidator.builder()
             .addEntry("permission", null, true)
             .addEntry("description", "SkBriggy Command", true)
@@ -125,7 +78,53 @@ public class StructBrigCommand extends Structure {
             .addSection("arguments", true)
             .addSection("trigger", false)
             .build();
-        Skript.registerStructure(StructBrigCommand.class, entryValidator, "brig[(gy|adier)] command /<.+>");
+
+        reg.newStructure(StructBrigCommand.class, entryValidator, "brig[(gy|adier)] command /<.+>")
+            .name("Brig Command")
+            .description("Register a new Brigadier command.",
+                "See wiki for more details on registering: [**SkBriggy Wiki**](https://github.com/ShaneBeee/SkBriggy/wiki/Registering-New-Command)",
+                "",
+                "Command Format:",
+                "`brig command /namespace:commandName <brigArgType> [<brigArgType>] <argName:brigArgType> [<argName:brigArgType>]:`",
+                "`namespace` = The namespace of a command. (Optional, defaults to \"minecraft:\")",
+                "`commandName` = Represents the command itself, ex: '/mycommand'.",
+                "`brigArgType` = Represents a brig argument type.",
+                "- While some may match Skript types, this doesn't actually support Skript types.",
+                "`argName` = The name of the arg, which will be used to create a local variable for the arg.",
+                "- In some cases this will show when typing out a command in game.",
+                "- If this isn't set a local variable will be created using the type (see examples).",
+                "",
+                "Just like Skript commands, wrapping your arg in `[]` makes it optional. Do note at this time there is no support for defaults.",
+                "",
+                "Entries and Sections:",
+                "`executor_type` = What types of execturs can run this command (Optional, defaults to `all`).",
+                "`permission:` = Just like Skript, the permission the player will require for this command.",
+                "`description:` = Just like Skript, this is a string that will be used in the help command.",
+                "`arguments:` = Section for registering arguments. See `Register Argument` effect.",
+                "`trigger:` = Section, just like Skript, for executing your code in the command.",
+                "",
+                "Event Values:",
+                "`[event-]sender` = The sender (console/player/entity) who ran the command or the sender used in Minecraft's `/execute as <sender>` command.",
+                "`[event-]world` = World of the sender, or default world if sender is console, or world used in Minecraft's `/execute in <world>` command.")
+            .examples("brig command /move <player> <location>:",
+                "\ttrigger:",
+                "\t\tteleport {_player} to {_location}",
+                "",
+                "brig command /move <p1:player> <p2:player>:",
+                "\ttrigger:",
+                "\t\tteleport {_p1} to {_p2}",
+                "",
+                "brig command /i <item> [<amount:int>]:",
+                "\ttrigger:",
+                "\t\tset {_amount} to 1 if {_amount} isn't set",
+                "\t\tgive {_amount} of {_item} to player",
+                "",
+                "brig command /coolserver:party:",
+                "\tpermission: coolserver.party",
+                "\ttrigger:",
+                "\t\tteleport all players to spawn of world \"world_party\"")
+            .since("1.0.0")
+            .register();
     }
 
     private EntryContainer entryContainer;

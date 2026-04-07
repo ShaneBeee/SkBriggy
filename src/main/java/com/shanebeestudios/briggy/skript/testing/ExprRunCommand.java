@@ -1,25 +1,24 @@
 package com.shanebeestudios.briggy.skript.testing;
 
-import ch.njol.skript.Skript;
-import ch.njol.skript.doc.NoDoc;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
-@NoDoc
 public class ExprRunCommand extends SimpleExpression<Boolean> {
 
     private static final CommandSender CONSOLE = Bukkit.getConsoleSender();
 
-    static {
-        Skript.registerExpression(ExprRunCommand.class, Boolean.class, ExpressionType.COMBINED,
-            "run command %string%");
+    public static void register(Registration reg) {
+        reg.newCombinedExpression(ExprRunCommand.class, Boolean.class,
+                "run command %string%")
+            .noDoc()
+            .register();
     }
 
     private Expression<String> command;

@@ -1,14 +1,10 @@
 package com.shanebeestudios.briggy.skript.conditions;
 
-import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
+import com.shanebeestudios.briggy.api.skript.Registration;
 import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
 import com.shanebeestudios.briggy.api.wrapper.ItemStackPredicate;
 import org.bukkit.block.Block;
@@ -19,34 +15,35 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-@Name("Predicate - Matches")
-@Description("Check if a block/item matches a predicate.")
-@Examples({"# /remove @a #wool",
-    "# /remove @a #minecraft:swords{Damage:0}",
-    "brig command /remove <players> <i:itempredicate>:",
-    "\ttrigger:",
-    "\t\tloop {_players::*}:",
-    "\t\t\tloop items in inventory of loop-value:",
-    "\t\t\t\tif loop-item matches item predicate {_i}:",
-    "\t\t\t\t\tremove loop-item from inventory of loop-value-1",
-    "",
-    "# /replace minecraft:short_grass minecraft:air 20",
-    "# /replace #minecraft:dirt minecraft:sand 30",
-    "# /replace #minecraft:logs minecraft:stone 50",
-    "brig command /replace <b:blockpredicate> <block> [<rad:int>]:",
-    "\ttrigger:",
-    "\t\tif {_rad} is not set:",
-    "\t\t\tset {_rad} to 5",
-    "\t\tloop blocks in radius {_rad} around target block of player:",
-    "\t\t\tif loop-block matches block predicate {_b}:",
-    "\t\t\t\tset loop-block to {_block}"})
-@Since("1.3.0")
 public class CondPredicateMatch extends Condition {
 
-    static {
-        Skript.registerCondition(CondPredicateMatch.class,
-            "%itemstacks/blocks% match[es] (item|block) predicate %predicate%",
-            "%itemstacks/blocks% (doesn't|don't|do not) match[es] (item|block) predicate %predicate%");
+    public static void register(Registration reg) {
+        reg.newCondition(CondPredicateMatch.class,
+                "%itemstacks/blocks% match[es] (item|block) predicate %predicate%",
+                "%itemstacks/blocks% (doesn't|don't|do not) match[es] (item|block) predicate %predicate%")
+            .name("Predicate - Matches")
+            .description("Check if a block/item matches a predicate.")
+            .examples("# /remove @a #wool",
+                "# /remove @a #minecraft:swords{Damage:0}",
+                "brig command /remove <players> <i:itempredicate>:",
+                "\ttrigger:",
+                "\t\tloop {_players::*}:",
+                "\t\t\tloop items in inventory of loop-value:",
+                "\t\t\t\tif loop-item matches item predicate {_i}:",
+                "\t\t\t\t\tremove loop-item from inventory of loop-value-1",
+                "",
+                "# /replace minecraft:short_grass minecraft:air 20",
+                "# /replace #minecraft:dirt minecraft:sand 30",
+                "# /replace #minecraft:logs minecraft:stone 50",
+                "brig command /replace <b:blockpredicate> <block> [<rad:int>]:",
+                "\ttrigger:",
+                "\t\tif {_rad} is not set:",
+                "\t\t\tset {_rad} to 5",
+                "\t\tloop blocks in radius {_rad} around target block of player:",
+                "\t\t\tif loop-block matches block predicate {_b}:",
+                "\t\t\t\tset loop-block to {_block}")
+            .since("1.3.0")
+            .register();
     }
 
     private Expression<?> objects;
