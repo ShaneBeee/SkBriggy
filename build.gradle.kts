@@ -34,7 +34,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:${minecraftVersion}-R0.1-SNAPSHOT")
 
     // Skript
-    compileOnly("com.github.SkriptLang:Skript:2.14.0")
+    compileOnly("com.github.SkriptLang:Skript:2.15.0")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.18.0@jar")
