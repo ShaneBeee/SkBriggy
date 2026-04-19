@@ -3,12 +3,11 @@ package com.shanebeestudios.briggy.skript.types;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
-import ch.njol.skript.registrations.EventValues;
 import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import dev.jorel.commandapi.executors.ExecutorType;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import dev.jorel.commandapi.wrappers.ParticleData;
@@ -23,10 +22,18 @@ public class Types {
 
     public static void register(Registration reg) {
         // Event Values
-        EventValues.registerEventValue(BrigCommandEvent.class, CommandSender.class, BrigCommandEvent::getSender, EventValues.TIME_NOW);
-        EventValues.registerEventValue(BrigCommandEvent.class, World.class, BrigCommandEvent::getWorld, EventValues.TIME_NOW);
-        EventValues.registerEventValue(BrigTreeTriggerEvent.class, CommandSender.class, BrigTreeTriggerEvent::getSender, EventValues.TIME_NOW);
-        EventValues.registerEventValue(BrigCommandSuggestEvent.class, CommandSender.class, BrigCommandSuggestEvent::getCommandSender, EventValues.TIME_NOW);
+        reg.newEventValue(BrigCommandEvent.class, CommandSender.class)
+            .converter(BrigCommandEvent::getSender)
+            .register();
+        reg.newEventValue(BrigCommandEvent.class, World.class)
+            .converter(BrigCommandEvent::getWorld)
+            .register();
+        reg.newEventValue(BrigTreeTriggerEvent.class, CommandSender.class)
+            .converter(BrigTreeTriggerEvent::getSender)
+            .register();
+        reg.newEventValue(BrigCommandSuggestEvent.class, CommandSender.class)
+            .converter(BrigCommandSuggestEvent::getCommandSender)
+            .register();
 
         // Classes
         reg.newType(IntegerRange.class, "intrange")

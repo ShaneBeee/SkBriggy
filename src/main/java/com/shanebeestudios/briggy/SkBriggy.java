@@ -2,7 +2,8 @@ package com.shanebeestudios.briggy;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.util.Version;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.JsonDocGenerator;
+import com.github.shanebeee.skr.Registration;
 import com.shanebeestudios.briggy.api.util.Utils;
 import com.shanebeestudios.briggy.skript.ElementRegistration;
 import com.shanebeestudios.skbee.SkBee;
@@ -12,6 +13,8 @@ import com.shanebeestudios.skbee.api.nbt.utils.MinecraftVersion;
 import com.shanebeestudios.skbee.config.Config;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIPaperConfig;
+import dev.jorel.commandapi.CommandTree;
+import dev.jorel.commandapi.arguments.LiteralArgument;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -25,7 +28,7 @@ public class SkBriggy extends JavaPlugin {
     private static boolean commandApiCanLoad;
     private Registration registration;
 
-    @SuppressWarnings("UnstableApiUsage")
+    @SuppressWarnings({"deprecation"})
     @Override
     public void onLoad() {
         try {
@@ -43,7 +46,7 @@ public class SkBriggy extends JavaPlugin {
     public static boolean HAS_SKBEE_COMPONENT;
     public static boolean HAS_SKBEE_NBT;
 
-    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
+    @SuppressWarnings({"deprecation"})
     @Override
     public void onEnable() {
         INSTANCE = this;
@@ -60,9 +63,9 @@ public class SkBriggy extends JavaPlugin {
         Utils.log("Starting up SkBriggy!!!");
 
         // Skript version check
-        if (Skript.getVersion().isSmallerThan(new Version(2, 13, 999))) {
+        if (Skript.getVersion().isSmallerThan(new Version(2, 14, 999))) {
             Utils.log("&cOutdated Skript Version: &e" + Skript.getVersion() + " &cplugin will disable.");
-            Utils.log("&eSkript 2.14+ is required for SkBriggy to run.");
+            Utils.log("&eSkript 2.15+ is required for SkBriggy to run.");
             pluginManager.disablePlugin(this);
             return;
         }
@@ -106,6 +109,7 @@ public class SkBriggy extends JavaPlugin {
         registerMetrics();
 
         CommandAPI.onEnable();
+        registerCommand(this.registration);
         long finish = System.currentTimeMillis() - start;
         Utils.log("Finished loading in &b" + finish + "ms");
     }
@@ -127,6 +131,17 @@ public class SkBriggy extends JavaPlugin {
 
     public static SkBriggy getInstance() {
         return INSTANCE;
+    }
+
+    private void registerCommand(Registration reg) {
+        CommandTree skbriggy = new CommandTree("skbriggy")
+            .then(new LiteralArgument("docs")
+                .executes(context -> {
+                    JsonDocGenerator jsonDocGenerator = new JsonDocGenerator(this, reg);
+                    jsonDocGenerator.generateDocs();
+                }));
+
+        skbriggy.register();
     }
 
 }

@@ -4,7 +4,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import dev.jorel.commandapi.wrappers.IntegerRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

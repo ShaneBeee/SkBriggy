@@ -1,6 +1,6 @@
 package com.shanebeestudios.briggy.skript;
 
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import com.shanebeestudios.briggy.skript.conditions.CondPredicateMatch;
 import com.shanebeestudios.briggy.skript.effects.EffApplySuggestion;
 import com.shanebeestudios.briggy.skript.expressions.ExprArgSuggestions;

@@ -16,7 +16,7 @@ import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;

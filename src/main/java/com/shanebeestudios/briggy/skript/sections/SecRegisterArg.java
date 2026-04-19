@@ -17,7 +17,7 @@ import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.BrigCommand;
 import com.shanebeestudios.briggy.api.event.BrigCommandArgumentsEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import dev.jorel.commandapi.BukkitStringTooltip;
 import dev.jorel.commandapi.IStringTooltip;

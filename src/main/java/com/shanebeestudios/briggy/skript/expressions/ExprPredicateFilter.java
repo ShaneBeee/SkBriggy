@@ -4,7 +4,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import com.shanebeestudios.briggy.api.wrapper.BlockPredicate;
 import com.shanebeestudios.briggy.api.wrapper.ItemStackPredicate;
 import org.bukkit.block.Block;

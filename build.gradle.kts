@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("io.github.goooler.shadow") version "8.1.7"
+    id("com.gradleup.shadow") version "9.3.0"
 }
 
 // Version of SkBriggy
@@ -8,9 +8,9 @@ val projectVersion = "1.6.0"
 // Where this builds on the server
 val serverLocation = "Skript/26-1"
 // Minecraft version to build against
-val minecraftVersion = "1.21.4"
+val minecraftVersion = "1.21.11"
 
-java.sourceCompatibility = JavaVersion.VERSION_21
+java.sourceCompatibility = JavaVersion.VERSION_25
 
 repositories {
     mavenCentral()
@@ -36,6 +36,9 @@ dependencies {
     // Skript
     compileOnly("com.github.SkriptLang:Skript:2.15.0")
 
+    // SkriptRegistration
+    implementation("com.github.ShaneBeee:SkriptRegistration:1.0.1")
+
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.18.0@jar")
 
@@ -58,7 +61,7 @@ tasks {
         expand("version" to projectVersion)
     }
     compileJava {
-        options.release = 21
+        options.release = 25
         options.compilerArgs.add("-Xlint:unchecked")
         options.compilerArgs.add("-Xlint:deprecation")
     }
