@@ -69,6 +69,7 @@ tasks {
         archiveFileName.set("SkBriggy-$projectVersion.jar")
         relocate("dev.jorel.commandapi", "com.shanebeestudios.briggy.api.commandapi")
         relocate("org.bstats", "com.shanebeestudios.briggy.metrics")
+        relocate("com.github.shanebeee.skr", "com.shanebeestudios.briggy.registration")
     }
     jar {
         dependsOn(shadowJar)
