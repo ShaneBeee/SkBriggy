@@ -206,6 +206,9 @@ public class SecSubCommand extends Section {
                 return false;
             }
         }
+        if (this.suggestions != null) {
+            return LiteralUtils.canInitSafely(this.suggestions);
+        }
         return true;
     }
 
