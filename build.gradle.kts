@@ -61,7 +61,9 @@ tasks {
         expand("version" to projectVersion)
     }
     compileJava {
-        options.release = 25
+        options.release.set(21)
+        // This allows the compiler to see "newer" classes even if targeting an older version
+        options.isIncremental = false
         options.compilerArgs.add("-Xlint:unchecked")
         options.compilerArgs.add("-Xlint:deprecation")
     }
@@ -73,5 +75,11 @@ tasks {
     }
     jar {
         dependsOn(shadowJar)
+    }
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(25))
+        }
+        withSourcesJar()
     }
 }
