@@ -37,7 +37,7 @@ dependencies {
     compileOnly("com.github.SkriptLang:Skript:2.15.0")
 
     // SkriptRegistration
-    implementation("com.github.ShaneBeee:SkriptRegistration:1.0.2")
+    implementation("com.github.ShaneBeee:SkriptRegistration:1.1.0")
 
     // SkBee
     compileOnly("com.github.ShaneBeee:SkBee:3.18.0@jar")
