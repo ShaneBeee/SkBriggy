@@ -3,12 +3,18 @@ plugins {
     id("com.gradleup.shadow") version "9.3.0"
 }
 
+configurations.matching { it.isCanBeResolved }.configureEach {
+    attributes {
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
+    }
+}
+
 // Version of SkBriggy
 val projectVersion = "1.7.0"
 // Where this builds on the server
 val serverLocation = "Skript/26-1"
 // Minecraft version to build against
-val minecraftVersion = "1.21.11"
+val minecraftVersion = "26.1.2"
 
 java.sourceCompatibility = JavaVersion.VERSION_25
 
@@ -31,16 +37,16 @@ repositories {
 
 dependencies {
     // Paper
-    compileOnly("io.papermc.paper:paper-api:${minecraftVersion}-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:${minecraftVersion}.build.+")
 
     // Skript
     compileOnly("com.github.SkriptLang:Skript:2.15.0")
 
     // SkriptRegistration
-    implementation("com.github.ShaneBeee:SkriptRegistration:1.1.0")
+    implementation("com.github.ShaneBeee:SkriptRegistration:1.2.0")
 
     // SkBee
-    compileOnly("com.github.ShaneBeee:SkBee:3.18.0@jar")
+    compileOnly("com.github.ShaneBeee:SkBee:3.22.0@jar")
 
     // Command Api
     implementation("dev.jorel:commandapi-paper-shade:11.2.0")
