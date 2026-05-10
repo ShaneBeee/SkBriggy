@@ -10,7 +10,6 @@ import com.shanebeestudios.skbee.SkBee;
 import com.shanebeestudios.skbee.api.nbt.NBTApi;
 import com.shanebeestudios.skbee.api.nbt.NBTContainer;
 import com.shanebeestudios.skbee.api.nbt.utils.MinecraftVersion;
-import com.shanebeestudios.skbee.config.Config;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIPaperConfig;
 import dev.jorel.commandapi.CommandTree;
@@ -73,8 +72,6 @@ public class SkBriggy extends JavaPlugin {
         // Hook into SkBee (text components and NBT)
         Plugin skBeePlugin = pluginManager.getPlugin("SkBee");
         if (skBeePlugin != null && skBeePlugin.isEnabled() && skBeePlugin instanceof SkBee skBee) {
-            Config skBeeConfig = skBee.getPluginConfig();
-
             if (new Version(skBee.getPluginMeta().getVersion()).isLargerThan(new Version(3, 16, 999))) {
                 // In SkBee 3.17.0+ text components are always enabled
                 HAS_SKBEE_COMPONENT = true;
@@ -85,7 +82,7 @@ public class SkBriggy extends JavaPlugin {
             if (HAS_SKBEE_COMPONENT) {
                 Utils.log("&5SkBee Text Components &asuccessfully hooked");
             }
-            if (skBeeConfig.ELEMENTS_NBT && NBTApi.isEnabled()) {
+            if (NBTApi.isEnabled()) {
                 HAS_SKBEE_NBT = true;
                 Utils.log("&5SkBee NBT Compounds &asuccessfully hooked");
             }

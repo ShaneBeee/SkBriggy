@@ -46,7 +46,7 @@ dependencies {
     implementation("com.github.ShaneBeee:SkriptRegistration:1.2.0")
 
     // SkBee
-    compileOnly("com.github.ShaneBeee:SkBee:3.22.0@jar")
+    compileOnly("com.github.ShaneBeee:SkBee:3.23.0@jar")
 
     // Command Api
     implementation("dev.jorel:commandapi-paper-shade:11.2.0")
