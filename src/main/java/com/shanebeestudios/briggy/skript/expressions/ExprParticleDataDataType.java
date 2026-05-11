@@ -1,7 +1,7 @@
 package com.shanebeestudios.briggy.skript.expressions;
 
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import dev.jorel.commandapi.wrappers.ParticleData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

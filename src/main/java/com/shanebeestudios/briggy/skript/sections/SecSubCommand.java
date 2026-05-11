@@ -17,7 +17,7 @@ import com.shanebeestudios.briggy.api.BrigArgument;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeSubCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.IStringTooltip;
@@ -205,6 +205,9 @@ public class SecSubCommand extends Section {
                 Skript.error("Min/Max can only be used on number subcommands.");
                 return false;
             }
+        }
+        if (this.suggestions != null) {
+            return LiteralUtils.canInitSafely(this.suggestions);
         }
         return true;
     }

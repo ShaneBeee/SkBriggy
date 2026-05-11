@@ -9,7 +9,7 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.SkBriggy;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import com.shanebeestudios.skbee.api.wrapper.ComponentWrapper;
 import dev.jorel.commandapi.BukkitStringTooltip;
 import dev.jorel.commandapi.StringTooltip;

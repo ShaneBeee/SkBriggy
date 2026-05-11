@@ -13,7 +13,7 @@ import ch.njol.skript.util.Utils;
 import com.shanebeestudios.briggy.api.event.BrigTreeCreateEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeSubCommandEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import com.shanebeestudios.skbee.api.util.Util;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandTree;

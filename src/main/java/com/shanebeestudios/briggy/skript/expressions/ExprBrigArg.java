@@ -10,7 +10,7 @@ import ch.njol.util.Kleenean;
 import com.shanebeestudios.briggy.api.event.BrigCommandSuggestEvent;
 import com.shanebeestudios.briggy.api.event.BrigCommandTriggerEvent;
 import com.shanebeestudios.briggy.api.event.BrigTreeTriggerEvent;
-import com.shanebeestudios.briggy.api.skript.Registration;
+import com.github.shanebeee.skr.Registration;
 import com.shanebeestudios.briggy.api.util.ObjectConverter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;

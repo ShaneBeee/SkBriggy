@@ -3,6 +3,7 @@ package com.shanebeestudios.briggy.api;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.EntityUtils;
 import ch.njol.skript.lang.ParseContext;
+import ch.njol.skript.localization.Noun;
 import ch.njol.skript.util.SkriptColor;
 import ch.njol.skript.util.Timespan;
 import com.destroystokyo.paper.profile.PlayerProfile;
@@ -47,7 +48,8 @@ public abstract class CustomArg {
 
     private static final List<String> MATERIAL_NAMES = Arrays.stream(Material.values()).filter(material -> !material.isLegacy()).map(mat -> mat.getKey().getKey()).toList();
     private static final World MAIN_WORLD = Bukkit.getWorlds().getFirst();
-    private static final List<String> DEFAULT_TIMESPANS = List.of("10s", "5m", "1h", "3d");
+    private static final String TIMESPAN_FOREVER = new Noun("time.forever").toString();
+    private static final List<String> DEFAULT_TIMESPANS = List.of("10s", "5m", "1h", "3d", TIMESPAN_FOREVER);
 
     static final CustomArg MESSAGE = new CustomArg() {
         @Override
@@ -201,6 +203,9 @@ public abstract class CustomArg {
         @Override
         Argument<?> get(String name) {
             return new CustomArgument<>(new StringArgument(name), info -> {
+                if (info.input().equalsIgnoreCase(TIMESPAN_FOREVER)) {
+                    return Timespan.infinite();
+                }
                 Timespan parse = Timespan.parse(info.input(), ParseContext.COMMAND);
                 if (parse == null) {
                     throw CustomArgumentException.fromString("Unknown timespan '" + info.input() + "'");
